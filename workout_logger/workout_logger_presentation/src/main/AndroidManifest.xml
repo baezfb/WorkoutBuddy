@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.hbaez.workout_logger_presentation">
+
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application>
+        <receiver
+            android:name="com.example.workout_logger_presentation.start_workout.components.TimerExpiredReceiver"
+            android:enabled="true" />
+        <receiver
+            android:name="com.example.workout_logger_presentation.start_workout.components.TimerNotificationActionReceiver"
+            android:enabled="true" />
+    </application>
+</manifest>

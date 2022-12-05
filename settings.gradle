@@ -1,0 +1,31 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = "WorkoutBuddy"
+include ':app'
+include ':workout_logger:workout_logger_data'
+include ':core-ui'
+include ':core'
+include ':workout_logger'
+include ':workout_logger:workout_logger_presentation'
+include ':workout_logger:workout_logger_domain'
+include ':tracker:tracker_domain'
+include ':onboarding'
+include ':tracker:tracker_data'
+include ':onboarding:onboarding_domain'
+include ':tracker'
+include ':onboarding:onboarding_presentation'
+include ':tracker:tracker_presentation'
+include ':app_settings'
+include ':app_settings:settings_presentation'
