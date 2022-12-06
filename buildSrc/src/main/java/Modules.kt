@@ -16,4 +16,6 @@ object Modules {
     const val workoutLoggerPresentation = ":workout_logger:workout_logger_presentation"
 
     const val appSettingsPresentation = ":app_settings:settings_presentation"
+
+    const val analyzerPresentation = ":analyzer:analyzer_presentation"
 }

@@ -21,4 +21,6 @@ object Route {
     const val WORKOUT_SEARCH = "workout_search"
 
     const val APP_SETTINGS = "app_settings"
+
+    const val ANALYZER_OVERVIEW = "analyzer_overview"
 }
