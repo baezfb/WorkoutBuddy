@@ -18,4 +18,6 @@ object Modules {
     const val appSettingsPresentation = ":app_settings:settings_presentation"
 
     const val analyzerPresentation = ":analyzer:analyzer_presentation"
+
+    const val wearPresentation = ":wear:wear_presentation"
 }

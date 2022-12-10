@@ -21,17 +21,17 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object TrackerDataModule {
 
-//    @Provides
-//    @Singleton
-//    fun provideOkHttpClient(): OkHttpClient {
-//        return OkHttpClient.Builder()
-//            .addInterceptor(
-//                HttpLoggingInterceptor().apply {
-//                    level = HttpLoggingInterceptor.Level.BODY
-//                }
-//            )
-//            .build()
-//    }
+    @Provides
+    @Singleton
+    fun provideOkHttpClientCalorie(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(
+                HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.BODY
+                }
+            )
+            .build()
+    }
 
 
     @Provides

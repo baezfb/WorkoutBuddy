@@ -73,6 +73,7 @@ dependencies {
     implementation(project(Modules.workoutLoggerData))
     implementation(project(Modules.appSettingsPresentation))
     implementation(project(Modules.analyzerPresentation))
+    implementation(project(Modules.wearPresentation))
 
     implementation(AndroidX.coreKtx)
     implementation(AndroidX.appCompat)

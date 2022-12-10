@@ -13,6 +13,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.rememberScaffoldState
@@ -44,6 +45,7 @@ import com.hbaez.onboarding_presentation.welcome.WelcomeScreen
 import com.hbaez.settings_presentation.settings_overview.AppSettingsOverviewScreen
 import com.hbaez.tracker_presentation.search.SearchScreen
 import com.hbaez.tracker_presentation.tracker_overview.TrackerOverviewScreen
+import com.hbaez.wear_presentation.wear_overview.WearOverviewScreen
 import com.hbaez.workoutbuddy.navigation.Route
 import com.hbaez.workoutbuddy.ui.theme.BottomNavigationBar
 import com.hbaez.workoutbuddy.ui.theme.WorkoutBuddyTheme
@@ -76,7 +78,8 @@ class MainActivity : ComponentActivity() {
                     scaffoldState = scaffoldState,
                     bottomBar = {
                         if( currentRoute == Route.WORKOUT_OVERVIEW || currentRoute == Route.TRACKER_OVERVIEW
-                            || currentRoute == Route.APP_SETTINGS || currentRoute == Route.ANALYZER_OVERVIEW){
+                            || currentRoute == Route.APP_SETTINGS || currentRoute == Route.ANALYZER_OVERVIEW
+                            || currentRoute == Route.WEAR_OVERVIEW){
                             BottomNavigationBar(
                                 items = listOf(
                                     BottomNavItem(
@@ -94,6 +97,11 @@ class MainActivity : ComponentActivity() {
                                         name = "Analyze",
                                         route = Route.ANALYZER_OVERVIEW,
                                         icon = Icons.Default.ShoppingCart
+                                    ),
+                                    BottomNavItem(
+                                        name = "Wear",
+                                        route = Route.WEAR_OVERVIEW,
+                                        icon = Icons.Default.Person
                                     ),
                                     BottomNavItem(
                                         name = "Settings",
@@ -311,6 +319,11 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Route.ANALYZER_OVERVIEW) {
                             AnalyzerOverviewScreen(
+                                /*TODO*/
+                            )
+                        }
+                        composable(Route.WEAR_OVERVIEW) {
+                            WearOverviewScreen(
                                 /*TODO*/
                             )
                         }

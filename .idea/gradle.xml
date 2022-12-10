@@ -25,6 +25,8 @@
             <option value="$PROJECT_DIR$/tracker/tracker_data" />
             <option value="$PROJECT_DIR$/tracker/tracker_domain" />
             <option value="$PROJECT_DIR$/tracker/tracker_presentation" />
+            <option value="$PROJECT_DIR$/wear" />
+            <option value="$PROJECT_DIR$/wear/wear_presentation" />
             <option value="$PROJECT_DIR$/workout_logger" />
             <option value="$PROJECT_DIR$/workout_logger/workout_logger_data" />
             <option value="$PROJECT_DIR$/workout_logger/workout_logger_domain" />

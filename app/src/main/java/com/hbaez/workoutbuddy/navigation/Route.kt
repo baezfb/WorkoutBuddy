@@ -23,4 +23,6 @@ object Route {
     const val APP_SETTINGS = "app_settings"
 
     const val ANALYZER_OVERVIEW = "analyzer_overview"
+
+    const val WEAR_OVERVIEW = "wear_overview"
 }
