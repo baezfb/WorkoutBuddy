@@ -9,13 +9,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,24 +24,36 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.annotation.ExperimentalCoilApi
-import com.hbaez.user_auth_presentation.components.BasicTextButton
-import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
+import com.hbaez.core.util.UiEvent
+import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.user_auth_presentation.components.BasicButton
+import com.hbaez.user_auth_presentation.components.BasicTextButton
 import com.hbaez.user_auth_presentation.components.EmailField
 import com.hbaez.user_auth_presentation.components.PasswordField
+import kotlinx.coroutines.flow.collect
 
 @ExperimentalCoilApi
 @Composable
-fun UserAuthLoginScreen(
+fun UserAuthSignupScreen(
     scaffoldState: ScaffoldState,
-    onNavigateToSignUp: () -> Unit,
-    modifier: Modifier = Modifier,
     viewModel: UserAuthViewModel = hiltViewModel()
-) {
+){
     val spacing = LocalSpacing.current
     val state = viewModel.state
     val context = LocalContext.current
+    LaunchedEffect(key1 = true) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is UiEvent.ShowSnackbar -> {
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = event.message.asString(context)
+                    )
+                }
+                else -> Unit
+            }
+        }
+    }
 
     Column(
         Modifier
@@ -51,7 +62,7 @@ fun UserAuthLoginScreen(
         Spacer(modifier = Modifier.height(spacing.spaceExtraExtraLarge))
         Spacer(modifier = Modifier.height(spacing.spaceExtraLarge))
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
                 .clip(
@@ -67,7 +78,7 @@ fun UserAuthLoginScreen(
         ){
             Spacer(modifier = Modifier.height(spacing.spaceExtraLarge))
             Text(
-                stringResource(id = R.string.login_header),
+                stringResource(id = R.string.sign_up),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.h2,
                 modifier = Modifier
@@ -78,7 +89,7 @@ fun UserAuthLoginScreen(
             EmailField(
                 value = state.email,
                 onNewValue = {
-                             viewModel.onEvent(UserAuthEvent.OnEmailFieldChange(it))
+                    viewModel.onEvent(UserAuthEvent.OnEmailFieldChange(it))
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -97,52 +108,28 @@ fun UserAuthLoginScreen(
                         .padding(16.dp, 4.dp),
                     placeholder = R.string.password
                 )
-                BasicTextButton(R.string.forgot_password,
-                    Modifier
-                        .align(Alignment.End)
-                        .padding(16.dp, 4.dp, 16.dp, 0.dp)) {
-                    viewModel.onEvent(UserAuthEvent.OnForgotPasswordClick)
-                }
+                PasswordField(
+                    value = state.passwordRetyped,
+                    onNewValue = {
+                        viewModel.onEvent(UserAuthEvent.OnPasswordRetypeFieldChange(it))
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp, 4.dp),
+                    placeholder = R.string.retype_password
+                )
             }
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
             Column(
                 Modifier.fillMaxWidth()
             ) {
                 BasicButton(
-                    R.string.login,
+                    R.string.sign_up,
                     Modifier
                         .fillMaxWidth()
                         .padding(16.dp, 8.dp)
                 ) {
-                    viewModel.onEvent(UserAuthEvent.OnLoginClick(state.email, state.password))
-                }
-            }
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(top = spacing.spaceMedium),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.no_account),
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                    )
-                    BasicTextButton(
-                        R.string.sign_up,
-                        Modifier
-                            .align(Alignment.CenterVertically)
-                            .padding(16.dp, 4.dp, 16.dp, 0.dp)
-                    ) {
-                        viewModel.onEvent(UserAuthEvent.OnEmailFieldChange(""))
-                        viewModel.onEvent(UserAuthEvent.OnPasswordFieldChange(""))
-                        onNavigateToSignUp()
-                    }
+                    viewModel.onEvent(UserAuthEvent.OnSignupClick(state.email, state.password, state.passwordRetyped))
                 }
             }
         }

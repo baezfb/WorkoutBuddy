@@ -29,14 +29,19 @@ import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
 
 @Composable
-fun PasswordField(value: String, onNewValue: (String) -> Unit, modifier: Modifier = Modifier) {
+fun PasswordField(
+    value: String,
+    onNewValue: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    @StringRes placeholder: Int
+) {
     val spacing = LocalSpacing.current
     Column(
         modifier = modifier
     ) {
-        Text(text = stringResource(id = R.string.password), style = MaterialTheme.typography.body1)
+        Text(text = stringResource(id = placeholder), style = MaterialTheme.typography.body1)
         Spacer(modifier = Modifier.height(spacing.spaceSmall))
-        PasswordField(value, R.string.password, onNewValue)
+        PasswordField(value, placeholder, onNewValue)
     }
 }
 

@@ -46,6 +46,7 @@ import com.hbaez.settings_presentation.settings_overview.AppSettingsOverviewScre
 import com.hbaez.tracker_presentation.search.SearchScreen
 import com.hbaez.tracker_presentation.tracker_overview.TrackerOverviewScreen
 import com.hbaez.user_auth_presentation.user_auth_overview.UserAuthLoginScreen
+import com.hbaez.user_auth_presentation.user_auth_overview.UserAuthSignupScreen
 import com.hbaez.wear_presentation.wear_overview.WearOverviewScreen
 import com.hbaez.workoutbuddy.navigation.Route
 import com.hbaez.workoutbuddy.ui.theme.BottomNavigationBar
@@ -333,6 +334,15 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Route.USER_AUTH_LOGIN) {
                             UserAuthLoginScreen(
+                                scaffoldState = scaffoldState,
+                                onNavigateToSignUp = {
+                                    navController.navigate(Route.USER_AUTH_SIGNUP)
+                                }
+                            )
+                        }
+                        composable(Route.USER_AUTH_SIGNUP) {
+                            UserAuthSignupScreen(
+                                scaffoldState = scaffoldState,
                                 /*TODO*/
                             )
                         }
