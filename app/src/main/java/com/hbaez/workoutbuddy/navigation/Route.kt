@@ -25,4 +25,6 @@ object Route {
     const val ANALYZER_OVERVIEW = "analyzer_overview"
 
     const val WEAR_OVERVIEW = "wear_overview"
+
+    const val USER_AUTH_LOGIN = "user_auth_login"
 }

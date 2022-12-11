@@ -3,6 +3,7 @@ plugins {
     kotlin("android")
     id("dagger.hilt.android.plugin")
     id("kotlin-kapt")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -74,6 +75,7 @@ dependencies {
     implementation(project(Modules.appSettingsPresentation))
     implementation(project(Modules.analyzerPresentation))
     implementation(project(Modules.wearPresentation))
+    implementation(project(Modules.userAuthPresentation))
 
     implementation(AndroidX.coreKtx)
     implementation(AndroidX.appCompat)
@@ -114,4 +116,5 @@ dependencies {
 //    androidTestImplementation(Testing.testRunner)
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.17.0")
+    implementation("com.google.firebase:firebase-bom:31.1.1")
 }

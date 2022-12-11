@@ -45,6 +45,7 @@ import com.hbaez.onboarding_presentation.welcome.WelcomeScreen
 import com.hbaez.settings_presentation.settings_overview.AppSettingsOverviewScreen
 import com.hbaez.tracker_presentation.search.SearchScreen
 import com.hbaez.tracker_presentation.tracker_overview.TrackerOverviewScreen
+import com.hbaez.user_auth_presentation.user_auth_overview.UserAuthLoginScreen
 import com.hbaez.wear_presentation.wear_overview.WearOverviewScreen
 import com.hbaez.workoutbuddy.navigation.Route
 import com.hbaez.workoutbuddy.ui.theme.BottomNavigationBar
@@ -65,6 +66,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val shouldShowOnBoarding = preferences.loadShouldShowOnboarding()
+        val isLoggedIn = !preferences.loadLoginInfo().username.isNullOrEmpty()
         setContent {
             WorkoutBuddyTheme {
                 val navController = rememberNavController()
@@ -120,9 +122,11 @@ class MainActivity : ComponentActivity() {
                 ){
                     NavHost(
                         navController = navController,
-                        startDestination = if(shouldShowOnBoarding) {
+                        startDestination = if(shouldShowOnBoarding && isLoggedIn){
                             Route.WELCOME
-                        } else Route.WORKOUT_OVERVIEW
+                        } else if(!shouldShowOnBoarding && isLoggedIn){
+                            Route.WORKOUT_OVERVIEW
+                        } else Route.USER_AUTH_LOGIN
                     ){
                         composable(Route.WELCOME) {
                             WelcomeScreen(onNextClick = {
@@ -324,6 +328,11 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Route.WEAR_OVERVIEW) {
                             WearOverviewScreen(
+                                /*TODO*/
+                            )
+                        }
+                        composable(Route.USER_AUTH_LOGIN) {
+                            UserAuthLoginScreen(
                                 /*TODO*/
                             )
                         }

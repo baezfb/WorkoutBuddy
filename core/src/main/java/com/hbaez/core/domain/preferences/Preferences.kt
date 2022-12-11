@@ -4,6 +4,7 @@ import com.hbaez.core.domain.model.ActivityLevel
 import com.hbaez.core.domain.model.AuthTokenInfo
 import com.hbaez.core.domain.model.Gender
 import com.hbaez.core.domain.model.GoalType
+import com.hbaez.core.domain.model.LoginInfo
 import com.hbaez.core.domain.model.TrackedExercise
 import com.hbaez.core.domain.model.UserInfo
 
@@ -18,6 +19,8 @@ interface Preferences {
     fun saveProteinRatio(ratio: Float)
     fun saveFatRatio(ratio: Float)
 
+    fun saveLoginInfo(username: String, email: String)
+    fun loadLoginInfo(): LoginInfo
     fun loadUserInfo(): UserInfo
 
     fun saveShouldShowOnboarding(shouldShow: Boolean)
@@ -50,6 +53,9 @@ interface Preferences {
         const val KEY_AUTH = "auth_key"
         const val KEY_SHOULD_CREATE_AUTH_KEY = "should_create_auth_key"
         const val KEY_AUTH_KEY_EXP = "auth_key_exp"
+
+        const val KEY_USERNAME="username"
+        const val KEY_EMAIL="email"
 
         const val KEY_ROW_ID = "row_id"
         const val KEY_EXERCISE_ID = "exercise_id"

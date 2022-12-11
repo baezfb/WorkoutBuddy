@@ -20,4 +20,6 @@ object Modules {
     const val analyzerPresentation = ":analyzer:analyzer_presentation"
 
     const val wearPresentation = ":wear:wear_presentation"
+
+    const val userAuthPresentation = ":user_auth:user_auth_presentation"
 }

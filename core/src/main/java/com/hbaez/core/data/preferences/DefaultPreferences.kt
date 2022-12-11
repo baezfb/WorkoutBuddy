@@ -5,6 +5,7 @@ import com.hbaez.core.domain.model.ActivityLevel
 import com.hbaez.core.domain.model.AuthTokenInfo
 import com.hbaez.core.domain.model.Gender
 import com.hbaez.core.domain.model.GoalType
+import com.hbaez.core.domain.model.LoginInfo
 import com.hbaez.core.domain.model.TrackedExercise
 import com.hbaez.core.domain.model.UserInfo
 import com.hbaez.core.domain.preferences.Preferences
@@ -64,6 +65,23 @@ class DefaultPreferences(
         sharedPref.edit()
             .putFloat(Preferences.KEY_FAT_RATIO, ratio)
             .apply()
+    }
+
+    override fun saveLoginInfo(username: String, email: String) {
+        sharedPref.edit()
+            .putString(Preferences.KEY_USERNAME, username)
+            .putString(Preferences.KEY_EMAIL, email)
+            .apply()
+    }
+
+    override fun loadLoginInfo(): LoginInfo {
+        val username = sharedPref.getString(Preferences.KEY_USERNAME, "")
+        val email = sharedPref.getString(Preferences.KEY_EMAIL, "")
+
+        return LoginInfo(
+            username = username,
+            email = email
+        )
     }
 
     override fun loadUserInfo(): UserInfo {
