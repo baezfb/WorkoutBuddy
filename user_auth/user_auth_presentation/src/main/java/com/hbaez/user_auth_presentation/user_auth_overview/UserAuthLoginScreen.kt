@@ -37,6 +37,7 @@ import com.hbaez.user_auth_presentation.components.PasswordField
 fun UserAuthLoginScreen(
     scaffoldState: ScaffoldState,
     onNavigateToSignUp: () -> Unit,
+    onNavigateToHome: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: UserAuthViewModel = hiltViewModel()
 ) {
@@ -125,23 +126,39 @@ fun UserAuthLoginScreen(
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .padding(top = spacing.spaceMedium),
-                    horizontalArrangement = Arrangement.Center
+                        .padding(top = spacing.spaceSmall),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = stringResource(id = R.string.no_account),
                         modifier = Modifier
-                            .align(Alignment.CenterVertically)
+//                            .align(Alignment.CenterVertically)
                     )
                     BasicTextButton(
                         R.string.sign_up,
                         Modifier
-                            .align(Alignment.CenterVertically)
+//                            .align(Alignment.CenterVertically)
                             .padding(16.dp, 4.dp, 16.dp, 0.dp)
                     ) {
                         viewModel.onEvent(UserAuthEvent.OnEmailFieldChange(""))
                         viewModel.onEvent(UserAuthEvent.OnPasswordFieldChange(""))
                         onNavigateToSignUp()
+                    }
+                }
+                Row(
+                    Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    BasicTextButton(
+                        R.string.continue_guest,
+                        Modifier.padding(16.dp, 4.dp, 16.dp, 0.dp)
+                    ) {
+                        viewModel.onEvent(UserAuthEvent.OnEmailFieldChange(""))
+                        viewModel.onEvent(UserAuthEvent.OnPasswordFieldChange(""))
+                        onNavigateToHome()
                     }
                 }
             }

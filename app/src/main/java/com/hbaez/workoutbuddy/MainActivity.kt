@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity() {
                     bottomBar = {
                         if( currentRoute == Route.WORKOUT_OVERVIEW || currentRoute == Route.TRACKER_OVERVIEW
                             || currentRoute == Route.APP_SETTINGS || currentRoute == Route.ANALYZER_OVERVIEW
-                            || currentRoute == Route.WEAR_OVERVIEW){
+                            || currentRoute == Route.WEAR_OVERVIEW || currentRoute == Route.USER_AUTH_SIGNUP){
                             BottomNavigationBar(
                                 items = listOf(
                                     BottomNavItem(
@@ -337,6 +337,9 @@ class MainActivity : ComponentActivity() {
                                 scaffoldState = scaffoldState,
                                 onNavigateToSignUp = {
                                     navController.navigate(Route.USER_AUTH_SIGNUP)
+                                },
+                                onNavigateToHome = {
+                                    navController.navigate(Route.WORKOUT_OVERVIEW)
                                 }
                             )
                         }

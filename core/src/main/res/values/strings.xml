@@ -93,6 +93,7 @@
     <string name="retype_password">Retype Password</string>
     <string name="forgot_password">Forgot Password</string>
     <string name="sign_up">Sign up</string>
+    <string name="continue_guest">Continue as guest</string>
     <string name="no_account">Don\'t have an account?</string>
     <string name="invalid_email">Invalid email or email already taken</string>
     <string name="invalid_password">Invalid Password</string>

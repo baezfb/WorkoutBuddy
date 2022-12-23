@@ -22,4 +22,6 @@ object Modules {
     const val wearPresentation = ":wear:wear_presentation"
 
     const val userAuthPresentation = ":user_auth:user_auth_presentation"
+    const val userAuthDomain = ":user_auth:user_auth_domain"
+    const val userAuthData = ":user_auth:user_auth_data"
 }
