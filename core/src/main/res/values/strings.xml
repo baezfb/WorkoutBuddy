@@ -101,4 +101,8 @@
     <string name="try_again">Error - try again</string>
     <string name="signed_in_as_guest">Signed in as guest</string>
     <string name="or">or</string>
+    <string name="logout">Logout</string>
+    <string name="delete_account">Delete my account</string>
+    <string name="logout_description">Are you sure you want to logout?</string>
+    <string name="cancel">Cancel</string>
 </resources>

@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -21,8 +23,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.annotation.ExperimentalCoilApi
 import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
+import com.hbaez.user_auth_presentation.common.composable.DialogCancelButton
+import com.hbaez.user_auth_presentation.common.composable.DialogConfirmButton
 import com.hbaez.user_auth_presentation.components.BasicButton
 
+@OptIn(ExperimentalMaterialApi::class)
 @ExperimentalCoilApi
 @Composable
 fun AppSettingsOverviewScreen(
@@ -32,20 +37,13 @@ fun AppSettingsOverviewScreen(
 ){
     val spacing = LocalSpacing.current
     val context = LocalContext.current
+    val uiState = viewModel.uiState
     val state by viewModel.state.collectAsState(
-        initial = AppSettingsState(isAnonymous = true)
+        initial = AppSettingsState(false)
     )
 
 
-    if (!state.isAnonymous){
-        Column(
-            Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Text("Settings placeholder", textAlign = TextAlign.Center)
-        }
-    } else {
+    if (state.isAnonymous){
         Column(
             Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -71,5 +69,50 @@ fun AppSettingsOverviewScreen(
                 onNavigateToSignUp()
             }
         }
+    } else {
+        Column(
+            Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            Text("Settings placeholder", textAlign = TextAlign.Center)
+            Spacer(modifier = Modifier.height(spacing.spaceMedium))
+            BasicButton(
+                R.string.logout,
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp, 8.dp)
+            ) {
+                viewModel.onEvent(AppSettingsEvent.OnLogoutButtonClick)
+            }
+            Spacer(modifier = Modifier.height(spacing.spaceMedium))
+            BasicButton(
+                R.string.delete_account,
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp, 8.dp)
+            ) {
+                /*TODO*/
+            }
+        }
     }
+
+    if(uiState.shouldShowLogoutCard) { LogoutCard(viewModel = viewModel) }
+}
+
+@ExperimentalMaterialApi
+@Composable
+private fun LogoutCard(viewModel: AppSettingsViewModel) {
+    AlertDialog(
+        title = { Text(stringResource(R.string.logout)) },
+        text = { Text(stringResource(R.string.logout_description)) },
+        dismissButton = { DialogCancelButton(R.string.cancel) { viewModel.onEvent(AppSettingsEvent.OnLogoutButtonClick) } },
+        confirmButton = {
+            DialogConfirmButton(R.string.logout) {
+                viewModel.onEvent(AppSettingsEvent.OnLogoutButtonClick)
+                viewModel.onEvent(AppSettingsEvent.OnSignOut)
+            }
+        },
+        onDismissRequest = { viewModel.onEvent(AppSettingsEvent.OnLogoutButtonClick) }
+    )
 }
