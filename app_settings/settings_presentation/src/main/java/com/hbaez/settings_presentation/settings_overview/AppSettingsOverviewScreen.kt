@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -20,7 +22,6 @@ import coil.annotation.ExperimentalCoilApi
 import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.user_auth_presentation.components.BasicButton
-import com.hbaez.user_auth_presentation.user_auth_overview.UserAuthEvent
 
 @ExperimentalCoilApi
 @Composable
@@ -30,10 +31,13 @@ fun AppSettingsOverviewScreen(
     viewModel: AppSettingsViewModel = hiltViewModel()
 ){
     val spacing = LocalSpacing.current
-    val state = viewModel.state
     val context = LocalContext.current
+    val state by viewModel.state.collectAsState(
+        initial = AppSettingsState(isAnonymous = true)
+    )
 
-    if (state.hasAccount){
+
+    if (!state.isAnonymous){
         Column(
             Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -41,7 +45,6 @@ fun AppSettingsOverviewScreen(
         ){
             Text("Settings placeholder", textAlign = TextAlign.Center)
         }
-        TODO()
     } else {
         Column(
             Modifier.fillMaxSize(),
