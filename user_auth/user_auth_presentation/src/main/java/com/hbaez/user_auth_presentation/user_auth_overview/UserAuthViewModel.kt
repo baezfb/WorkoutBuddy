@@ -73,11 +73,10 @@ class UserAuthViewModel @Inject constructor(
                     }
                     return
                 }
-
-//                launchCatching {
-//                    accountService.linkAccount(event.email, event.password)
-//                    event.openAndPopUp("app_settings", "user_auth_signup")
-//                }
+                launchCatching {
+                    accountService.linkAccount(event.email, event.password)
+                    event.openAndPopUp("app_settings", "user_auth_signup")
+                }
             }
         }
     }

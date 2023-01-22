@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hbaez.user_auth_presentation.model.service.AccountService
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,20 +15,8 @@ class AppSettingsViewModel @Inject constructor(
     private val accountService: AccountService
 ): ViewModel(){
 
-    var state by mutableStateOf(AppSettingsState())
-        private set
-    init {
-        viewModelScope.launch {
-            state = if(!accountService.currentUser.first().isAnonymous) {
-                state.copy(
-                    hasAccount = true
-                )
-            } else {
-                state.copy(
-                    hasAccount = false
-                )
-            }
-        }
+    val state = accountService.currentUser.map {
+        AppSettingsState(it.isAnonymous)
     }
 
     fun onEvent(event: AppSettingsEvent){

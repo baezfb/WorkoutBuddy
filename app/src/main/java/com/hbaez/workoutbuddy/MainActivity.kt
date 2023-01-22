@@ -353,6 +353,7 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate(Route.WORKOUT_OVERVIEW)
                                 }
                             )
+                            /*TODO*/
                         }
                         composable(Route.USER_AUTH_SIGNUP) {
                             UserAuthSignupScreen(
@@ -363,7 +364,6 @@ class MainActivity : ComponentActivity() {
                                         popUpTo(popup) { inclusive = true }
                                     }
                                 }
-                                /*TODO*/
                             )
                         }
                     }
