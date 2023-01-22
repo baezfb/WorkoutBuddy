@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.collect
 @Composable
 fun UserAuthSignupScreen(
     scaffoldState: ScaffoldState,
+    openAndPopUp: (String, String) -> Unit,
     viewModel: UserAuthViewModel = hiltViewModel()
 ){
     val spacing = LocalSpacing.current
@@ -129,7 +130,7 @@ fun UserAuthSignupScreen(
                         .fillMaxWidth()
                         .padding(16.dp, 8.dp)
                 ) {
-                    viewModel.onEvent(UserAuthEvent.OnSignupClick(state.email, state.password, state.passwordRetyped))
+                    viewModel.onEvent(UserAuthEvent.OnSignupClick(state.email, state.password, state.passwordRetyped, openAndPopUp))
                 }
             }
         }

@@ -13,11 +13,16 @@ import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 import javax.inject.Inject
 import com.hbaez.core.R
+import com.hbaez.user_auth_presentation.AuthViewModel
+import com.hbaez.user_auth_presentation.model.service.AccountService
+import com.hbaez.user_auth_presentation.model.service.LogService
 
 @HiltViewModel
 class UserAuthViewModel @Inject constructor(
+    private val accountService: AccountService,
+    logService: LogService
 //    preferences: Preferences, // need user_auth_domain module
-): ViewModel() {
+): AuthViewModel(logService) {
     var state by mutableStateOf(UserAuthState())
         private set
 
@@ -68,6 +73,11 @@ class UserAuthViewModel @Inject constructor(
                     }
                     return
                 }
+
+//                launchCatching {
+//                    accountService.linkAccount(event.email, event.password)
+//                    event.openAndPopUp("app_settings", "user_auth_signup")
+//                }
             }
         }
     }

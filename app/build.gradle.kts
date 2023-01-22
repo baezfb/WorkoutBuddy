@@ -4,6 +4,16 @@ plugins {
     id("dagger.hilt.android.plugin")
     id("kotlin-kapt")
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
+    id("com.google.firebase.firebase-perf")
+}
+
+subprojects {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
+    apply(plugin = "com.google.firebase.firebase-perf")
+    apply(plugin = "kotlin-kapt")
+    apply(plugin = "dagger.hilt.android.plugin")
 }
 
 android {
@@ -76,6 +86,16 @@ dependencies {
     implementation(project(Modules.analyzerPresentation))
     implementation(project(Modules.wearPresentation))
     implementation(project(Modules.userAuthPresentation))
+    implementation(project(Modules.userAuthDomain))
+    implementation(project(Modules.userAuthData))
+
+    implementation(platform("com.google.firebase:firebase-bom:30.3.1"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("com.google.firebase:firebase-perf-ktx")
+    implementation("com.google.firebase:firebase-config-ktx")
 
     implementation(AndroidX.coreKtx)
     implementation(AndroidX.appCompat)
@@ -116,5 +136,4 @@ dependencies {
 //    androidTestImplementation(Testing.testRunner)
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.17.0")
-    implementation("com.google.firebase:firebase-bom:31.1.1")
 }

@@ -51,6 +51,7 @@ import com.hbaez.wear_presentation.wear_overview.WearOverviewScreen
 import com.hbaez.workoutbuddy.navigation.Route
 import com.hbaez.workoutbuddy.ui.theme.BottomNavigationBar
 import com.hbaez.workoutbuddy.ui.theme.WorkoutBuddyTheme
+import com.hbaez.user_auth_presentation.user_auth.SplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -67,7 +68,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val shouldShowOnBoarding = preferences.loadShouldShowOnboarding()
-        val isLoggedIn = !preferences.loadLoginInfo().username.isNullOrEmpty()
         setContent {
             WorkoutBuddyTheme {
                 val navController = rememberNavController()
@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity() {
                     bottomBar = {
                         if( currentRoute == Route.WORKOUT_OVERVIEW || currentRoute == Route.TRACKER_OVERVIEW
                             || currentRoute == Route.APP_SETTINGS || currentRoute == Route.ANALYZER_OVERVIEW
-                            || currentRoute == Route.WEAR_OVERVIEW || currentRoute == Route.USER_AUTH_SIGNUP){
+                            || currentRoute == Route.WEAR_OVERVIEW ){
                             BottomNavigationBar(
                                 items = listOf(
                                     BottomNavItem(
@@ -123,15 +123,26 @@ class MainActivity : ComponentActivity() {
                 ){
                     NavHost(
                         navController = navController,
-                        startDestination = if(shouldShowOnBoarding && isLoggedIn){
-                            Route.WELCOME
-                        } else if(!shouldShowOnBoarding && isLoggedIn){
-                            Route.WORKOUT_OVERVIEW
-                        } else Route.USER_AUTH_LOGIN
+                        startDestination = Route.SPLASH
                     ){
+                        composable(Route.SPLASH){
+                            SplashScreen(
+                                openAndPopUp = { route, popup ->
+                                    navController.navigate(route) {
+                                        launchSingleTop = true
+                                        popUpTo(popup) { inclusive = true }
+                                    }
+                                },
+                            )
+                        }
                         composable(Route.WELCOME) {
                             WelcomeScreen(onNextClick = {
                                 navController.navigate(Route.GENDER)
+                            })
+                        }
+                        composable(Route.GENDER) {
+                            GenderScreen(onNextClick = {
+                                navController.navigate(Route.AGE)
                             })
                         }
                         composable(Route.AGE) {
@@ -141,11 +152,6 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate(Route.HEIGHT)
                                 }
                             )
-                        }
-                        composable(Route.GENDER) {
-                            GenderScreen(onNextClick = {
-                                navController.navigate(Route.AGE)
-                            })
                         }
                         composable(Route.HEIGHT) {
                             HeightScreen(
@@ -163,14 +169,6 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
-                        composable(Route.NUTRIENT_GOAL) {
-                            NutrientGoalScreen(
-                                scaffoldState = scaffoldState,
-                                onNextClick = {
-                                    navController.navigate(Route.TRACKER_OVERVIEW)
-                                }
-                            )
-                        }
                         composable(Route.ACTIVITY) {
                             ActivityScreen(onNextClick = { navController.navigate(Route.GOAL) })
                         }
@@ -178,6 +176,14 @@ class MainActivity : ComponentActivity() {
                             GoalScreen(onNextClick = {
                                 navController.navigate(Route.NUTRIENT_GOAL)
                             })
+                        }
+                        composable(Route.NUTRIENT_GOAL) {
+                            NutrientGoalScreen(
+                                scaffoldState = scaffoldState,
+                                onNextClick = {
+                                    navController.navigate(Route.TRACKER_OVERVIEW)
+                                }
+                            )
                         }
                         composable(Route.TRACKER_OVERVIEW) {
                             Column(modifier = Modifier.padding(bottom = 58.dp)){
@@ -319,7 +325,12 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Route.APP_SETTINGS) {
                             AppSettingsOverviewScreen(
-                                /*TODO*/
+                                onNavigateToSignUp = {
+                                    navController.navigate(Route.USER_AUTH_SIGNUP)
+                                },
+                                onNavigateToLogin = {
+                                    navController.navigate(Route.USER_AUTH_LOGIN)
+                                }
                             )
                         }
                         composable(Route.ANALYZER_OVERVIEW) {
@@ -346,6 +357,12 @@ class MainActivity : ComponentActivity() {
                         composable(Route.USER_AUTH_SIGNUP) {
                             UserAuthSignupScreen(
                                 scaffoldState = scaffoldState,
+                                openAndPopUp = { route, popup ->
+                                    navController.navigate(route) {
+                                        launchSingleTop = true
+                                        popUpTo(popup) { inclusive = true }
+                                    }
+                                }
                                 /*TODO*/
                             )
                         }

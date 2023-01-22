@@ -5,6 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hbaez.core.domain.model.ActivityLevel
+import com.hbaez.core.domain.model.Gender
+import com.hbaez.core.domain.model.GoalType
+import com.hbaez.core.domain.model.UserInfo
 import com.hbaez.core.domain.use_case.FilterOutDigits
 import com.hbaez.core.util.UiEvent
 import com.hbaez.onboarding_domain.use_case.ValidateNutrients
@@ -13,13 +17,17 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import com.hbaez.core.domain.preferences.Preferences
+import com.hbaez.user_auth_presentation.model.service.ConfigurationService
+import com.hbaez.user_auth_presentation.model.service.StorageService
 import javax.inject.Inject
 
 @HiltViewModel
 class NutrientGoalViewModel @Inject constructor(
     private val preferences: Preferences,
     private val filterOutDigits: FilterOutDigits,
-    private val validateNutrients: ValidateNutrients
+    private val validateNutrients: ValidateNutrients,
+    private val storageService: StorageService,
+    private val configurationService: ConfigurationService
 ): ViewModel() {
 
     var state by mutableStateOf(NutrientGoalState())
@@ -56,8 +64,10 @@ class NutrientGoalViewModel @Inject constructor(
                         preferences.saveCarbRatio(result.carbsRatio)
                         preferences.saveProteinRatio(result.proteinRatio)
                         preferences.saveFatRatio(result.fatRatio)
+                        val userInfo = preferences.loadUserInfo()
 
                         viewModelScope.launch {
+                            storageService.saveUserInfo(userInfo)
                             _uiEvent.send(UiEvent.Success)
                         }
                     }

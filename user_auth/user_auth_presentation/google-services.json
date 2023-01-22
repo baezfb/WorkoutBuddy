@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "671045417709",
+    "project_id": "workoutbuddy-c8add",
+    "storage_bucket": "workoutbuddy-c8add.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:671045417709:android:c96599d27ca0f48070eae4",
+        "android_client_info": {
+          "package_name": "com.hbaez.user_auth_presentation"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "671045417709-9ovd1td49o51khakl3eht4a2ttgub9kn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlhiTGjmWB7qsbSBvKSKAB3Fy-hv6GRls"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "671045417709-9ovd1td49o51khakl3eht4a2ttgub9kn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

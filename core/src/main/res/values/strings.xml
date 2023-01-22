@@ -98,4 +98,7 @@
     <string name="invalid_email">Invalid email or email already taken</string>
     <string name="invalid_password">Invalid Password</string>
     <string name="mismatched_password">Passwords don\'t match</string>
+    <string name="try_again">Error - try again</string>
+    <string name="signed_in_as_guest">Signed in as guest</string>
+    <string name="or">or</string>
 </resources>
