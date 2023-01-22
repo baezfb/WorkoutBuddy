@@ -96,6 +96,8 @@
     <string name="continue_guest">Continue as guest</string>
     <string name="no_account">Don\'t have an account?</string>
     <string name="invalid_email">Invalid email or email already taken</string>
+    <string name="forgot_password_invalid_email">Please type a valid email.</string>
+    <string name="recovery_email_sent">Recovery email has been sent.</string>
     <string name="invalid_password">Invalid Password</string>
     <string name="mismatched_password">Passwords don\'t match</string>
     <string name="try_again">Error - try again</string>
@@ -105,4 +107,5 @@
     <string name="delete_account">Delete my account</string>
     <string name="logout_description">Are you sure you want to logout?</string>
     <string name="cancel">Cancel</string>
+    <string name="delete_account_description">Are you sure you want to delete your account?</string>
 </resources>

@@ -47,10 +47,36 @@ class UserAuthViewModel @Inject constructor(
                 )
             }
             is UserAuthEvent.OnForgotPasswordClick -> {
-                /*TODO*/
+                if (!event.email.isValidEmail()) {
+                    viewModelScope.launch {
+                        _uiEvent.send(UiEvent.ShowSnackbar(UiText.StringResource(R.string.forgot_password_invalid_email)))
+                    }
+                    return
+                }
+                launchCatching {
+                    accountService.sendRecoveryEmail(event.email)
+                    viewModelScope.launch {
+                        _uiEvent.send(UiEvent.ShowSnackbar(UiText.StringResource(R.string.recovery_email_sent)))
+                    }
+                }
             }
             is UserAuthEvent.OnLoginClick -> {
-                /*TODO*/
+                if (!event.email.isValidEmail()) {
+                    viewModelScope.launch {
+                        _uiEvent.send(UiEvent.ShowSnackbar(UiText.StringResource(R.string.invalid_email)))
+                    }
+                    return
+                }
+                if(event.password.isBlank()){
+                    viewModelScope.launch {
+                        _uiEvent.send(UiEvent.ShowSnackbar(UiText.StringResource(R.string.invalid_password)))
+                    }
+                    return
+                }
+                launchCatching {
+                    accountService.authenticate(event.email, event.password)
+                    event.openAndPopUp("app_settings", "user_auth_login")
+                }
             }
             is UserAuthEvent.OnSignupClick -> {
                 if (!event.email.isValidEmail()) {

@@ -26,14 +26,6 @@ class AppSettingsViewModel @Inject constructor(
 
     fun onEvent(event: AppSettingsEvent){
         when(event) {
-            is AppSettingsEvent.OnLoginClick -> {
-                TODO()
-            }
-
-            is AppSettingsEvent.OnSignupClick -> {
-                TODO()
-            }
-
             is AppSettingsEvent.OnLogoutButtonClick -> {
                 uiState = uiState.copy(
                     shouldShowLogoutCard = !uiState.shouldShowLogoutCard
@@ -44,6 +36,17 @@ class AppSettingsViewModel @Inject constructor(
                 viewModelScope.launch {
                     accountService.signOut()
                     storageService.saveUserInfo(preferences.loadUserInfo())
+                }
+            }
+            is AppSettingsEvent.OnDeleteButtonClick -> {
+                uiState = uiState.copy(
+                    shouldShowDeleteCard = !uiState.shouldShowDeleteCard
+                )
+            }
+            is AppSettingsEvent.OnDeleteAccount -> {
+                viewModelScope.launch {
+                    storageService.deleteAllForUser(accountService.currentUserId)
+                    accountService.deleteAccount()
                 }
             }
         }

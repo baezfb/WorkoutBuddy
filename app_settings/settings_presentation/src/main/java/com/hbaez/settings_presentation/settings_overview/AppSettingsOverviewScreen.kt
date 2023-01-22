@@ -33,6 +33,7 @@ import com.hbaez.user_auth_presentation.components.BasicButton
 fun AppSettingsOverviewScreen(
     onNavigateToSignUp: () -> Unit,
     onNavigateToLogin: () -> Unit,
+    deleteMyAccount: () -> Unit,
     viewModel: AppSettingsViewModel = hiltViewModel()
 ){
     val spacing = LocalSpacing.current
@@ -92,12 +93,14 @@ fun AppSettingsOverviewScreen(
                     .fillMaxWidth()
                     .padding(16.dp, 8.dp)
             ) {
-                /*TODO*/
+                viewModel.onEvent(AppSettingsEvent.OnDeleteButtonClick)
             }
         }
     }
 
     if(uiState.shouldShowLogoutCard) { LogoutCard(viewModel = viewModel) }
+
+    if(uiState.shouldShowDeleteCard) { DeleteMyAccountCard(viewModel = viewModel, deleteMyAccount = deleteMyAccount) }
 }
 
 @ExperimentalMaterialApi
@@ -114,5 +117,23 @@ private fun LogoutCard(viewModel: AppSettingsViewModel) {
             }
         },
         onDismissRequest = { viewModel.onEvent(AppSettingsEvent.OnLogoutButtonClick) }
+    )
+}
+
+@ExperimentalMaterialApi
+@Composable
+private fun DeleteMyAccountCard(viewModel: AppSettingsViewModel, deleteMyAccount: () -> Unit) {
+    AlertDialog(
+        title = { Text(stringResource(R.string.delete_account)) },
+        text = { Text(stringResource(R.string.delete_account_description)) },
+        dismissButton = { DialogCancelButton(R.string.cancel) { viewModel.onEvent(AppSettingsEvent.OnDeleteButtonClick) } },
+        confirmButton = {
+            DialogConfirmButton(R.string.delete_account) {
+                viewModel.onEvent(AppSettingsEvent.OnDeleteButtonClick)
+                viewModel.onEvent(AppSettingsEvent.OnDeleteAccount)
+                deleteMyAccount()
+            }
+        },
+        onDismissRequest = { viewModel.onEvent(AppSettingsEvent.OnDeleteButtonClick) }
     )
 }

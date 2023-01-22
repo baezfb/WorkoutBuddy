@@ -330,6 +330,12 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onNavigateToLogin = {
                                     navController.navigate(Route.USER_AUTH_LOGIN)
+                                },
+                                deleteMyAccount = {
+                                    navController.navigate(Route.SPLASH) {
+                                        launchSingleTop = true
+                                        popUpTo(0) { inclusive = true }
+                                    }
                                 }
                             )
                         }
@@ -351,6 +357,12 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onNavigateToHome = {
                                     navController.navigate(Route.WORKOUT_OVERVIEW)
+                                },
+                                openAndPopUp = { route, popup ->
+                                    navController.navigate(route) {
+                                        launchSingleTop = true
+                                        popUpTo(popup) { inclusive = true }
+                                    }
                                 }
                             )
                             /*TODO*/

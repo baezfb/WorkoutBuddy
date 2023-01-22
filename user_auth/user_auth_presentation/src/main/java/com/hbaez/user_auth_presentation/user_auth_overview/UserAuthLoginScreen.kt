@@ -38,6 +38,7 @@ fun UserAuthLoginScreen(
     scaffoldState: ScaffoldState,
     onNavigateToSignUp: () -> Unit,
     onNavigateToHome: () -> Unit,
+    openAndPopUp: (String, String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: UserAuthViewModel = hiltViewModel()
 ) {
@@ -102,7 +103,7 @@ fun UserAuthLoginScreen(
                     Modifier
                         .align(Alignment.End)
                         .padding(16.dp, 4.dp, 16.dp, 0.dp)) {
-                    viewModel.onEvent(UserAuthEvent.OnForgotPasswordClick)
+                    viewModel.onEvent(UserAuthEvent.OnForgotPasswordClick(state.email))
                 }
             }
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
@@ -115,7 +116,7 @@ fun UserAuthLoginScreen(
                         .fillMaxWidth()
                         .padding(16.dp, 8.dp)
                 ) {
-                    viewModel.onEvent(UserAuthEvent.OnLoginClick(state.email, state.password))
+                    viewModel.onEvent(UserAuthEvent.OnLoginClick(state.email, state.password, openAndPopUp))
                 }
             }
             Column(
