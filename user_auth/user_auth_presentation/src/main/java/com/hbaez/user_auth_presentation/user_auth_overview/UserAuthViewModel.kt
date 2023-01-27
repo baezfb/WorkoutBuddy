@@ -1,5 +1,6 @@
 package com.hbaez.user_auth_presentation.user_auth_overview
 
+import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
@@ -13,13 +14,19 @@ import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 import javax.inject.Inject
 import com.hbaez.core.R
+import com.hbaez.core.domain.model.UserInfo
+import com.hbaez.core.domain.preferences.Preferences
 import com.hbaez.user_auth_presentation.AuthViewModel
 import com.hbaez.user_auth_presentation.model.service.AccountService
 import com.hbaez.user_auth_presentation.model.service.LogService
+import com.hbaez.user_auth_presentation.model.service.StorageService
+import kotlinx.coroutines.flow.first
 
 @HiltViewModel
 class UserAuthViewModel @Inject constructor(
+    private val preferences: Preferences,
     private val accountService: AccountService,
+    private val storageService: StorageService,
     logService: LogService
 //    preferences: Preferences, // need user_auth_domain module
 ): AuthViewModel(logService) {
@@ -75,7 +82,8 @@ class UserAuthViewModel @Inject constructor(
                 }
                 launchCatching {
                     accountService.authenticate(event.email, event.password)
-                    event.openAndPopUp("app_settings", "user_auth_login")
+                    preferences.updateUserInfo(storageService.getUserInfo()!!)
+                    event.openAndPopUp("workout_overview", "user_auth_login")
                 }
             }
             is UserAuthEvent.OnSignupClick -> {
@@ -92,7 +100,6 @@ class UserAuthViewModel @Inject constructor(
                     }
                     return
                 }
-
                 if (!event.password.passwordMatches(event.passwordRetyped)) {
                     viewModelScope.launch {
                         _uiEvent.send(UiEvent.ShowSnackbar(UiText.StringResource(R.string.mismatched_password)))
@@ -101,7 +108,7 @@ class UserAuthViewModel @Inject constructor(
                 }
                 launchCatching {
                     accountService.linkAccount(event.email, event.password)
-                    event.openAndPopUp("app_settings", "user_auth_signup")
+                    event.openAndPopUp("welcome", "user_auth_signup")
                 }
             }
         }

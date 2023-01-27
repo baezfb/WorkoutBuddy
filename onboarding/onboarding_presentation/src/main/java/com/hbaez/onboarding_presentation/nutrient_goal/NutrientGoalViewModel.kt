@@ -17,6 +17,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import com.hbaez.core.domain.preferences.Preferences
+import com.hbaez.user_auth_presentation.model.service.AccountService
 import com.hbaez.user_auth_presentation.model.service.ConfigurationService
 import com.hbaez.user_auth_presentation.model.service.StorageService
 import javax.inject.Inject
@@ -27,6 +28,7 @@ class NutrientGoalViewModel @Inject constructor(
     private val filterOutDigits: FilterOutDigits,
     private val validateNutrients: ValidateNutrients,
     private val storageService: StorageService,
+    private val accountService: AccountService,
     private val configurationService: ConfigurationService
 ): ViewModel() {
 
@@ -64,10 +66,12 @@ class NutrientGoalViewModel @Inject constructor(
                         preferences.saveCarbRatio(result.carbsRatio)
                         preferences.saveProteinRatio(result.proteinRatio)
                         preferences.saveFatRatio(result.fatRatio)
-                        val userInfo = preferences.loadUserInfo()
+                        var userInfo = preferences.loadUserInfo()
+                        userInfo
 
                         viewModelScope.launch {
-                            storageService.saveUserInfo(userInfo)
+                            val docID = storageService.saveUserInfo(userInfo)
+                            preferences.saveFirebaseUserInfoId(docID)
                             _uiEvent.send(UiEvent.Success)
                         }
                     }

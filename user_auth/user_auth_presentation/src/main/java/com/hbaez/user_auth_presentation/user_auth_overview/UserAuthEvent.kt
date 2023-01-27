@@ -7,5 +7,6 @@ sealed class UserAuthEvent {
     data class OnForgotPasswordClick(val email: String): UserAuthEvent()
     data class OnLoginClick(val email: String, val password: String, val openAndPopUp: (String, String) -> Unit): UserAuthEvent()
     data class OnSignupClick(val email: String, val password: String, val passwordRetyped: String, val openAndPopUp: (String, String) -> Unit): UserAuthEvent()
+    object OnContinueAsGuestClick: UserAuthEvent()
 }
 

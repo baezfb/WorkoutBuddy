@@ -1,5 +1,7 @@
 package com.hbaez.user_auth_presentation.model.service
 
+import com.hbaez.core.domain.model.UserInfo
+import com.hbaez.core.domain.preferences.Preferences
 import com.hbaez.user_auth_presentation.model.User
 import kotlinx.coroutines.flow.Flow
 

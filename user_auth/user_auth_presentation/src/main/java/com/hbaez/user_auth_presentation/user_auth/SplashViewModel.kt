@@ -36,7 +36,7 @@ class SplashViewModel @Inject constructor(
                 showError.value = true
                 throw ex
             }
-            openAndPopUp("welcome", "splash")
+            openAndPopUp("user_auth_welcome", "splash")
         }
     }
 }

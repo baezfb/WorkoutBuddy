@@ -33,6 +33,8 @@ import com.hbaez.user_auth_presentation.components.BasicButton
 fun AppSettingsOverviewScreen(
     onNavigateToSignUp: () -> Unit,
     onNavigateToLogin: () -> Unit,
+    onNavigateToWelcome: () -> Unit,
+    onNavigateToUserAuthWelcome: () -> Unit,
     deleteMyAccount: () -> Unit,
     viewModel: AppSettingsViewModel = hiltViewModel()
 ){
@@ -40,9 +42,8 @@ fun AppSettingsOverviewScreen(
     val context = LocalContext.current
     val uiState = viewModel.uiState
     val state by viewModel.state.collectAsState(
-        initial = AppSettingsState(false)
+        initial = AppSettingsState(false, "test")
     )
-
 
     if (state.isAnonymous){
         Column(
@@ -50,6 +51,7 @@ fun AppSettingsOverviewScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ){
+            Text(text = state.userId, textAlign = TextAlign.Center)
             Text(stringResource(id = R.string.signed_in_as_guest), textAlign = TextAlign.Center)
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
             BasicButton(
@@ -76,7 +78,16 @@ fun AppSettingsOverviewScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ){
+            Text(text = state.userId, textAlign = TextAlign.Center)
             Text("Settings placeholder", textAlign = TextAlign.Center)
+            BasicButton(
+                R.string.update_prefs,
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp, 8.dp)
+            ) {
+                onNavigateToWelcome()
+            }
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
             BasicButton(
                 R.string.logout,
@@ -98,14 +109,14 @@ fun AppSettingsOverviewScreen(
         }
     }
 
-    if(uiState.shouldShowLogoutCard) { LogoutCard(viewModel = viewModel) }
+    if(uiState.shouldShowLogoutCard) { LogoutCard(viewModel = viewModel, onNavigateToUserAuthWelcome) }
 
     if(uiState.shouldShowDeleteCard) { DeleteMyAccountCard(viewModel = viewModel, deleteMyAccount = deleteMyAccount) }
 }
 
 @ExperimentalMaterialApi
 @Composable
-private fun LogoutCard(viewModel: AppSettingsViewModel) {
+private fun LogoutCard(viewModel: AppSettingsViewModel, onNavigateToUserAuthWelcome: () -> Unit) {
     AlertDialog(
         title = { Text(stringResource(R.string.logout)) },
         text = { Text(stringResource(R.string.logout_description)) },
@@ -114,6 +125,7 @@ private fun LogoutCard(viewModel: AppSettingsViewModel) {
             DialogConfirmButton(R.string.logout) {
                 viewModel.onEvent(AppSettingsEvent.OnLogoutButtonClick)
                 viewModel.onEvent(AppSettingsEvent.OnSignOut)
+                onNavigateToUserAuthWelcome()
             }
         },
         onDismissRequest = { viewModel.onEvent(AppSettingsEvent.OnLogoutButtonClick) }

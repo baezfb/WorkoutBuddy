@@ -18,10 +18,12 @@ interface Preferences {
     fun saveCarbRatio(ratio: Float)
     fun saveProteinRatio(ratio: Float)
     fun saveFatRatio(ratio: Float)
+    fun saveFirebaseUserInfoId(id: String)
 
     fun saveLoginInfo(username: String, email: String)
     fun loadLoginInfo(): LoginInfo
     fun loadUserInfo(): UserInfo
+    fun updateUserInfo(userInfo: UserInfo)
 
     fun saveShouldShowOnboarding(shouldShow: Boolean)
     fun loadShouldShowOnboarding(): Boolean
@@ -53,6 +55,7 @@ interface Preferences {
         const val KEY_AUTH = "auth_key"
         const val KEY_SHOULD_CREATE_AUTH_KEY = "should_create_auth_key"
         const val KEY_AUTH_KEY_EXP = "auth_key_exp"
+        const val KEY_FIREBASE_USER_INFO_ID = "key_firebase_user_info_id"
 
         const val KEY_USERNAME="username"
         const val KEY_EMAIL="email"
@@ -72,7 +75,6 @@ interface Preferences {
         const val KEY_EXERCISE_IMAGE_URL_MAIN = "exercise_image_url_main"
         const val KEY_EXERCISE_IMAGE_URL_SECONDARY = "exercise_image_url_secondary"
         const val KEY_EXERCISE_MUSCLE_NAME_SECONDARY = "exercise_muscle_name_secondary"
-
 
 
     }

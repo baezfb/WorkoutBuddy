@@ -4,4 +4,5 @@ apply {
 
 dependencies {
 
+    "implementation"("com.google.firebase:firebase-firestore-ktx:24.4.2")
 }

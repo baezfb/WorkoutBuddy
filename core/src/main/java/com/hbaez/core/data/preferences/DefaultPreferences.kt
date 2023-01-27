@@ -67,6 +67,12 @@ class DefaultPreferences(
             .apply()
     }
 
+    override fun saveFirebaseUserInfoId(id: String) {
+        sharedPref.edit()
+            .putString(Preferences.KEY_FIREBASE_USER_INFO_ID, id)
+            .apply()
+    }
+
     override fun saveLoginInfo(username: String, email: String) {
         sharedPref.edit()
             .putString(Preferences.KEY_USERNAME, username)
@@ -95,8 +101,10 @@ class DefaultPreferences(
         val carbRatio = sharedPref.getFloat(Preferences.KEY_CARB_RATIO, -1f)
         val proteinRatio = sharedPref.getFloat(Preferences.KEY_PROTEIN_RATIO, -1f)
         val fatRatio = sharedPref.getFloat(Preferences.KEY_FAT_RATIO, -1f)
+        val firebaseUserInfoID = sharedPref.getString(Preferences.KEY_FIREBASE_USER_INFO_ID, "")
 
         return UserInfo(
+            id = firebaseUserInfoID!!,
             gender = Gender.fromString(genderString ?: "male"),
             age = age,
             weight = weight,
@@ -107,6 +115,22 @@ class DefaultPreferences(
             proteinRatio = proteinRatio,
             fatRatio = fatRatio
         )
+    }
+
+    override fun updateUserInfo(userInfo: UserInfo) {
+        sharedPref.edit()
+            .putString(Preferences.KEY_GENDER, userInfo.gender.name)
+            .putInt(Preferences.KEY_AGE, userInfo.age)
+            .putFloat(Preferences.KEY_WEIGHT, userInfo.weight)
+            .putInt(Preferences.KEY_HEIGHT, userInfo.height)
+            .putString(Preferences.KEY_ACTIVITY_LEVEL, userInfo.activityLevel.name)
+            .putString(Preferences.KEY_GOAL_TYPE, userInfo.goalType.name)
+            .putFloat(Preferences.KEY_CARB_RATIO, userInfo.carbRatio)
+            .putFloat(Preferences.KEY_PROTEIN_RATIO, userInfo.proteinRatio)
+            .putFloat(Preferences.KEY_FAT_RATIO, userInfo.fatRatio)
+            .putString(Preferences.KEY_FIREBASE_USER_INFO_ID, userInfo.id)
+            .apply()
+
     }
 
     override fun saveAuthKey(auth_key: String, auth_key_exp: Long) {

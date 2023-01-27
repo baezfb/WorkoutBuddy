@@ -11,6 +11,7 @@ interface StorageService {
     suspend fun getTask(taskId: String): Task?
 
     suspend fun saveUserInfo(userInfo: UserInfo): String
+    suspend fun getUserInfo(): UserInfo?
     suspend fun save(task: Task): String
     suspend fun update(task: Task)
     suspend fun delete(taskId: String)

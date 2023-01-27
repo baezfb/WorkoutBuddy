@@ -28,6 +28,7 @@ object Route {
 
     const val USER_AUTH_LOGIN = "user_auth_login"
     const val USER_AUTH_SIGNUP = "user_auth_signup"
+    const val USER_AUTH_WELCOME = "user_auth_welcome"
 
     const val SPLASH = "splash"
 }

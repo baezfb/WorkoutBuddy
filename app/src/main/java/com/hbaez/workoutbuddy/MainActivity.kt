@@ -52,6 +52,7 @@ import com.hbaez.workoutbuddy.navigation.Route
 import com.hbaez.workoutbuddy.ui.theme.BottomNavigationBar
 import com.hbaez.workoutbuddy.ui.theme.WorkoutBuddyTheme
 import com.hbaez.user_auth_presentation.user_auth.SplashScreen
+import com.hbaez.user_auth_presentation.user_auth_overview.UserAuthWelcomeScreen
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -331,6 +332,12 @@ class MainActivity : ComponentActivity() {
                                 onNavigateToLogin = {
                                     navController.navigate(Route.USER_AUTH_LOGIN)
                                 },
+                                onNavigateToWelcome = {
+                                    navController.navigate(Route.WELCOME)
+                                },
+                                onNavigateToUserAuthWelcome= {
+                                    navController.navigate(Route.USER_AUTH_WELCOME)
+                                },
                                 deleteMyAccount = {
                                     navController.navigate(Route.SPLASH) {
                                         launchSingleTop = true
@@ -365,7 +372,6 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             )
-                            /*TODO*/
                         }
                         composable(Route.USER_AUTH_SIGNUP) {
                             UserAuthSignupScreen(
@@ -378,6 +384,26 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
+                        composable(Route.USER_AUTH_WELCOME) {
+                            UserAuthWelcomeScreen(
+                                onNavigateToSignUp = {
+                                                     navController.navigate(Route.USER_AUTH_SIGNUP)
+                                                     },
+                                onNavigateToLogin = {
+                                                    navController.navigate(Route.USER_AUTH_LOGIN)
+                                                    },
+                                onNavigateToHome = {
+                                                   navController.navigate(Route.WELCOME)
+                                                   },
+                                openAndPopUp = { route, popup ->
+                                    navController.navigate(route) {
+                                        launchSingleTop = true
+                                        popUpTo(popup) { inclusive = true }
+                                    }
+                                }
+                            )
+                        }
+
                     }
                 }
             }

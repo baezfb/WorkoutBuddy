@@ -1,6 +1,9 @@
 package com.hbaez.core.domain.model
 
+import com.google.firebase.firestore.DocumentId
+
 data class UserInfo(
+    @DocumentId val id: String,
     val gender: Gender,
     val age: Int,
     val weight: Float,
