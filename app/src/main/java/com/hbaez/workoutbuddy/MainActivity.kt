@@ -82,8 +82,7 @@ class MainActivity : ComponentActivity() {
                     scaffoldState = scaffoldState,
                     bottomBar = {
                         if( currentRoute == Route.WORKOUT_OVERVIEW || currentRoute == Route.TRACKER_OVERVIEW
-                            || currentRoute == Route.APP_SETTINGS || currentRoute == Route.ANALYZER_OVERVIEW
-                            || currentRoute == Route.WEAR_OVERVIEW ){
+                            || currentRoute == Route.APP_SETTINGS || currentRoute == Route.ANALYZER_OVERVIEW ){
                             BottomNavigationBar(
                                 items = listOf(
                                     BottomNavItem(
@@ -100,13 +99,13 @@ class MainActivity : ComponentActivity() {
                                     BottomNavItem(
                                         name = "Analyze",
                                         route = Route.ANALYZER_OVERVIEW,
-                                        icon = Icons.Default.ShoppingCart
-                                    ),
-                                    BottomNavItem(
-                                        name = "Wear",
-                                        route = Route.WEAR_OVERVIEW,
                                         icon = Icons.Default.Person
                                     ),
+//                                    BottomNavItem(
+//                                        name = "Wear",
+//                                        route = Route.WEAR_OVERVIEW,
+//                                        icon = Icons.Default.Person
+//                                    ),
                                     BottomNavItem(
                                         name = "Settings",
                                         route = Route.APP_SETTINGS,
@@ -337,6 +336,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onNavigateToUserAuthWelcome= {
                                     navController.navigate(Route.USER_AUTH_WELCOME)
+                                },
+                                onNavigateToWear = {
+                                    navController.navigate(Route.WEAR_OVERVIEW)
                                 },
                                 deleteMyAccount = {
                                     navController.navigate(Route.SPLASH) {

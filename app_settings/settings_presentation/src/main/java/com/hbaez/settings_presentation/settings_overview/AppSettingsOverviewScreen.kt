@@ -35,6 +35,7 @@ fun AppSettingsOverviewScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToWelcome: () -> Unit,
     onNavigateToUserAuthWelcome: () -> Unit,
+    onNavigateToWear: () -> Unit,
     deleteMyAccount: () -> Unit,
     viewModel: AppSettingsViewModel = hiltViewModel()
 ){
@@ -87,6 +88,15 @@ fun AppSettingsOverviewScreen(
                     .padding(16.dp, 8.dp)
             ) {
                 onNavigateToWelcome()
+            }
+            Spacer(modifier = Modifier.height(spacing.spaceMedium))
+            BasicButton(
+                R.string.wear_companion,
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp, 8.dp)
+            ) {
+                onNavigateToWear()
             }
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
             BasicButton(
