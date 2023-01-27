@@ -67,11 +67,9 @@ class NutrientGoalViewModel @Inject constructor(
                         preferences.saveProteinRatio(result.proteinRatio)
                         preferences.saveFatRatio(result.fatRatio)
                         var userInfo = preferences.loadUserInfo()
-                        userInfo
 
                         viewModelScope.launch {
-                            val docID = storageService.saveUserInfo(userInfo)
-                            preferences.saveFirebaseUserInfoId(docID)
+                            storageService.saveUserInfo(userInfo)
                             _uiEvent.send(UiEvent.Success)
                         }
                     }

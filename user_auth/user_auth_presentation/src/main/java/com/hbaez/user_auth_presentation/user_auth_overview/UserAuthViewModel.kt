@@ -82,7 +82,8 @@ class UserAuthViewModel @Inject constructor(
                 }
                 launchCatching {
                     accountService.authenticate(event.email, event.password)
-                    preferences.updateUserInfo(storageService.getUserInfo()!!)
+                    preferences.updateUserInfo(storageService.getUserInfo()!!, accountService.currentUserId)
+
                     event.openAndPopUp("workout_overview", "user_auth_login")
                 }
             }

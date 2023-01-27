@@ -23,7 +23,7 @@ interface Preferences {
     fun saveLoginInfo(username: String, email: String)
     fun loadLoginInfo(): LoginInfo
     fun loadUserInfo(): UserInfo
-    fun updateUserInfo(userInfo: UserInfo)
+    fun updateUserInfo(userInfo: UserInfo, userID: String)
 
     fun saveShouldShowOnboarding(shouldShow: Boolean)
     fun loadShouldShowOnboarding(): Boolean

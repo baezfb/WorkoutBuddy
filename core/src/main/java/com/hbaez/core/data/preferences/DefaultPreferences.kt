@@ -117,7 +117,7 @@ class DefaultPreferences(
         )
     }
 
-    override fun updateUserInfo(userInfo: UserInfo) {
+    override fun updateUserInfo(userInfo: UserInfo, userID: String) {
         sharedPref.edit()
             .putString(Preferences.KEY_GENDER, userInfo.gender.name)
             .putInt(Preferences.KEY_AGE, userInfo.age)
@@ -128,7 +128,7 @@ class DefaultPreferences(
             .putFloat(Preferences.KEY_CARB_RATIO, userInfo.carbRatio)
             .putFloat(Preferences.KEY_PROTEIN_RATIO, userInfo.proteinRatio)
             .putFloat(Preferences.KEY_FAT_RATIO, userInfo.fatRatio)
-            .putString(Preferences.KEY_FIREBASE_USER_INFO_ID, userInfo.id)
+            .putString(Preferences.KEY_FIREBASE_USER_INFO_ID, userID)
             .apply()
 
     }
