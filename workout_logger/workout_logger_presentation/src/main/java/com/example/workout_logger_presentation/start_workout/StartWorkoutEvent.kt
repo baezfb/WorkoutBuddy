@@ -20,5 +20,5 @@ sealed class StartWorkoutEvent {
 
     data class ChangeCheckboxColor(val color: Color, val id: Int, val index: Int): StartWorkoutEvent()
 
-    data class OnSubmitWorkout(val workoutName: String, val trackableExercises: List<TrackableInProgressExerciseUi>, val dayOfMonth: Int, val month: Int, val year: Int): StartWorkoutEvent()
+    data class OnSubmitWorkout(val workoutName: String, val trackableExercises: List<LoggerListState>, val dayOfMonth: Int, val month: Int, val year: Int): StartWorkoutEvent()
 }

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.workout_logger_domain.model.TrackedExercise
@@ -15,13 +16,16 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import com.hbaez.core.domain.preferences.Preferences
 import com.hbaez.core.util.UiText
 import com.hbaez.core.R
+import com.hbaez.user_auth_presentation.model.WorkoutTemplate
+import com.hbaez.user_auth_presentation.model.service.StorageService
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CreateWorkoutViewModel @Inject constructor(
     val preferences: Preferences,
-    private val createWorkoutUseCases: CreateWorkoutUseCases
+    private val createWorkoutUseCases: CreateWorkoutUseCases,
+    private val storageService: StorageService
 ): ViewModel() {
 
     var state by mutableStateOf(CreateWorkoutState())
@@ -254,6 +258,24 @@ class CreateWorkoutViewModel @Inject constructor(
                     rowId = it.id,
                     lastUsedId = event.lastUsedId
                 )
+                storageService.saveWorkoutTemplate(WorkoutTemplate(
+                    name = event.workoutName,
+                    exerciseName = it.name,
+                    exerciseId = it.id,
+                    sets = it.sets.toInt(),
+                    rest = it.rest.toInt(),
+                    restList = List(it.sets.toInt()) { "" },
+                    reps = it.reps.toInt(),
+                    repsList = List(it.sets.toInt()) { "" },
+                    weight = it.weight.toInt(),
+                    weightList = List(it.sets.toInt()) { "" },
+                    rowId = it.id,
+                    lastUsedId = event.lastUsedId,
+                    isCompleted = List(it.sets.toInt()) { false }
+//                    isCompleted = List(it.sets.toInt()) { false },
+//                    timerStatus = "START",
+//                    checkedColor = List(it.sets.toInt()) { Color.DarkGray }
+                ))
             }
             _uiEvent.send(UiEvent.NavigateUp)
         }

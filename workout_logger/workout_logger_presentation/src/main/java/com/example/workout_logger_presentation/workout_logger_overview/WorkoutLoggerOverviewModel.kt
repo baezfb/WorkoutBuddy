@@ -9,6 +9,7 @@ import com.example.workout_logger_domain.model.CompletedWorkout
 import com.example.workout_logger_domain.use_case.ExerciseTrackerUseCases
 import com.hbaez.core.domain.preferences.Preferences
 import com.hbaez.core.util.UiEvent
+import com.hbaez.user_auth_presentation.model.service.StorageService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class WorkoutLoggerOverviewModel @Inject constructor(
     preferences: Preferences,
     private val exerciseTrackerUseCases: ExerciseTrackerUseCases,
+    private val storageService: StorageService
 ): ViewModel() {
 
     var state by mutableStateOf(WorkoutLoggerOverviewState())
@@ -31,6 +33,8 @@ class WorkoutLoggerOverviewModel @Inject constructor(
 
     private var getWorkoutsForDateJob: Job? = null
     private var getWorkoutNames: Job? = null
+
+    val workoutTemplates = storageService.workouts
 
     init {
         refreshWorkouts()

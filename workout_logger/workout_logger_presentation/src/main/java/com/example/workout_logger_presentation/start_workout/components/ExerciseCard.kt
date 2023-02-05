@@ -15,7 +15,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.Checkbox
-import androidx.compose.material.CheckboxColors
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
@@ -23,6 +22,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,15 +33,17 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import com.example.workout_logger_presentation.start_workout.TrackableInProgressExerciseUi
+import com.example.workout_logger_presentation.start_workout.LoggerListState
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
+import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 
 @ExperimentalCoilApi
 @Composable
 fun ExerciseCard(
     page: Int,
-    trackableInProgressExercise: TrackableInProgressExerciseUi,
+//    loggerListState: LoggerListState,
+    workoutTemplates: State<List<WorkoutTemplate>>,
     onRepsChange: (reps: String, index: Int, id: Int) -> Unit,
     onWeightChange: (weight: String, index: Int, id: Int) -> Unit,
     onCheckboxChange: (isCompleted: Boolean, index: Int, id: Int, page: Int) -> Unit
@@ -86,10 +88,11 @@ fun ExerciseCard(
                 )
             }
             LazyColumn{
-                itemsIndexed(List(trackableInProgressExercise.sets.toInt()) { it + 1 }){index, _ ->
+                itemsIndexed(List(workoutTemplates.value[page].sets) { it + 1 }){ index, _ ->
                     ExerciseCardRow(
                         index + 1,
-                        trackableInProgressExercise,
+//                        loggerListState,
+                        workoutTemplates.value[page],
                         index,
                         onRepsChange,
                         onWeightChange,
@@ -105,7 +108,8 @@ fun ExerciseCard(
 @Composable
 fun ExerciseCardRow(
     set: Int,
-    trackableInProgressExercise: TrackableInProgressExerciseUi,
+//    loggerListState: LoggerListState,
+    workoutTemplate: WorkoutTemplate,
     index: Int,
     onRepsChange: (reps: String, index: Int, id: Int) -> Unit,
     onWeightChange: (weight: String, index: Int, id: Int) -> Unit,
@@ -125,11 +129,11 @@ fun ExerciseCardRow(
         )
         TextField(
             modifier = Modifier.weight(1f),
-            placeholder = { Text(text = trackableInProgressExercise.origWeight) },
-            value = trackableInProgressExercise.weight[index],
+            placeholder = { Text(text = workoutTemplate.weight.toString()) },
+            value = workoutTemplate.weightList[index],
             textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
             singleLine = true,
-            onValueChange = { onWeightChange(it, index, trackableInProgressExercise.id) },
+            onValueChange = { onWeightChange(it, index, workoutTemplate.rowId) },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
                 onDone = {
@@ -144,11 +148,11 @@ fun ExerciseCardRow(
         )
         TextField(
             modifier = Modifier.weight(1f),
-            placeholder = { Text(text = trackableInProgressExercise.origReps) },
-            value = trackableInProgressExercise.reps[index],
+            placeholder = { Text(text = workoutTemplate.reps.toString()) },
+            value = workoutTemplate.repsList[index],
             textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
             singleLine = true,
-            onValueChange = { onRepsChange(it, index, trackableInProgressExercise.id) },
+            onValueChange = { onRepsChange(it, index, workoutTemplate.rowId) },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
                 onDone = {
@@ -163,12 +167,12 @@ fun ExerciseCardRow(
         )
         Checkbox(
             modifier = Modifier.weight(1f),
-            checked = trackableInProgressExercise.isCompleted[index],
+            checked = workoutTemplate.isCompleted[index],
             onCheckedChange = {
-                onCheckboxChange(it, index, trackableInProgressExercise.id, page)
+                onCheckboxChange(it, index, workoutTemplate.rowId, page)
             },
             colors = CheckboxDefaults.colors(
-                checkedColor = trackableInProgressExercise.checkedColor[index]
+                checkedColor = Color.DarkGray /* TODO */
             )
         )
 

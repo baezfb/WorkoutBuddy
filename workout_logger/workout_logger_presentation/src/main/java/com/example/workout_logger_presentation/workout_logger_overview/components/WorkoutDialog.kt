@@ -1,5 +1,6 @@
 package com.example.workout_logger_presentation.workout_logger_overview.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,6 +20,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,14 +32,16 @@ import coil.annotation.ExperimentalCoilApi
 import com.example.workout_logger_presentation.components.AddButton
 import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
+import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 
 @ExperimentalCoilApi
 @Composable
 fun WorkoutDialog(
     onDismiss: () -> Unit,
-    onChooseWorkout: (workoutName: String, workoutId: Int) -> Unit,
+    onChooseWorkout: (workoutName: String) -> Unit,
     modifier: Modifier = Modifier,
     workoutNames: List<String>,
+    workoutTemplates: State<List<WorkoutTemplate>>,
     workoutId: List<Int>
 ) {
     val spacing = LocalSpacing.current
@@ -76,16 +80,26 @@ fun WorkoutDialog(
                         contentPadding = PaddingValues(vertical = spacing.spaceMedium),
                         modifier = Modifier.heightIn(250.dp)
                     ){
-                        items(workoutNames.size){
+                        items(workoutTemplates.value.size){
                             AddButton(
-                                text = workoutNames[it],
-                                onClick = { onChooseWorkout(workoutNames[it], workoutId[it]) },
+                                text = workoutTemplates.value[it].name,
+                                onClick = { onChooseWorkout(workoutTemplates.value[it].name) },
                                 icon = Icons.Default.List,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(spacing.spaceSmall)
                             )
                         }
+//                        items(workoutNames.size){
+//                            AddButton(
+//                                text = workoutNames[it],
+//                                onClick = { onChooseWorkout(workoutNames[it], workoutId[it]) },
+//                                icon = Icons.Default.List,
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .padding(spacing.spaceSmall)
+//                            )
+//                        }
                     }
                 }
             )

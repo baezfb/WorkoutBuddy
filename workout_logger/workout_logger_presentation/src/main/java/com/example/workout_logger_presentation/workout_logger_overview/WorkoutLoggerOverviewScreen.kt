@@ -28,6 +28,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.annotation.ExperimentalCoilApi
 import com.example.workout_logger_presentation.components.AddButton
 import com.example.workout_logger_presentation.components.DaySelector
@@ -38,15 +40,17 @@ import com.example.workout_logger_presentation.workout_logger_overview.component
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
 
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @ExperimentalCoilApi
 @Composable
 fun WorkoutLoggerOverviewScreen(
     onNavigateToCreate: () -> Unit,
-    onNavigateToWorkout: (workoutName: String, workoutId: Int, day: Int, month: Int, year: Int) -> Unit,
+    onNavigateToWorkout: (workoutName: String, day: Int, month: Int, year: Int) -> Unit,
     viewModel: WorkoutLoggerOverviewModel = hiltViewModel()
 ) {
     val spacing = LocalSpacing.current
     val state = viewModel.state
+    val workoutTemplates = viewModel.workoutTemplates.collectAsStateWithLifecycle(emptyList())
     val context = LocalContext.current
     val showDialog = remember { mutableStateOf(false) }
 
@@ -82,16 +86,16 @@ fun WorkoutLoggerOverviewScreen(
             if(showDialog.value){
                 WorkoutDialog(
                     onDismiss = { showDialog.value = false },
-                    onChooseWorkout = { workoutName, workoutId ->
+                    onChooseWorkout = { workoutName ->
                                         onNavigateToWorkout(
                                             workoutName,
-                                            workoutId,
                                             state.date.dayOfMonth,
                                             state.date.monthValue,
                                             state.date.year
                                         )
                                       },
                     workoutNames = state.workoutNames,
+                    workoutTemplates = workoutTemplates,
                     workoutId = state.workoutId
                 )
             }

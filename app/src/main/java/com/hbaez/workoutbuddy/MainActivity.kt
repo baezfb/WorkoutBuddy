@@ -238,11 +238,10 @@ class MainActivity : ComponentActivity() {
                                             Route.WORKOUT_CREATE
                                         )
                                     },
-                                    onNavigateToWorkout = { workoutName, workoutId, day, month, year ->
+                                    onNavigateToWorkout = { workoutName, day, month, year ->
                                         navController.navigate(
                                             Route.WORKOUT_START +
                                                     "/$workoutName" +
-                                                    "/$workoutId" +
                                                     "/$day" +
                                                     "/$month" +
                                                     "/$year"
@@ -254,16 +253,12 @@ class MainActivity : ComponentActivity() {
                         composable(
                             route = Route.WORKOUT_START +
                                     "/{workoutName}" +
-                                    "/{workoutId}" +
                                     "/{dayOfMonth}" +
                                     "/{month}" +
                                     "/{year}",
                             arguments = listOf(
                                 navArgument("workoutName") {
                                     type = NavType.StringType
-                                },
-                                navArgument("workoutId") {
-                                    type = NavType.IntType
                                 },
                                 navArgument("dayOfMonth") {
                                     type = NavType.IntType
@@ -277,13 +272,11 @@ class MainActivity : ComponentActivity() {
                             )
                         ) {
                             val workoutName = it.arguments?.getString("workoutName") ?: ""
-                            val workoutId = it.arguments?.getInt("workoutId") ?: -1
                             val dayOfMonth = it.arguments?.getInt("dayOfMonth")!!
                             val month = it.arguments?.getInt("month")!!
                             val year = it.arguments?.getInt("year")!!
                             StartWorkoutScreen(
                                 workoutName = workoutName,
-                                workoutId = workoutId,
                                 dayOfMonth = dayOfMonth,
                                 month = month,
                                 year = year,

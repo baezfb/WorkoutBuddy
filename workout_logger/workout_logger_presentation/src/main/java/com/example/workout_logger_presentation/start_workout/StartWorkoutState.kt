@@ -6,7 +6,7 @@ import java.util.Date
 data class StartWorkoutState(
     val workoutName: String = "",
     val pagerIndex: Int = 0,
-    val trackableInProgressExercise: MutableList<TrackableInProgressExerciseUi> = mutableListOf(),
+    val loggerListStates: MutableList<LoggerListState> = mutableListOf(),
     val timerStatus: TimerStatus = TimerStatus.START,
     val timeDuration: Duration = Duration.ofSeconds(30),
     val remainingTime: Long = timeDuration.toMillis(),
