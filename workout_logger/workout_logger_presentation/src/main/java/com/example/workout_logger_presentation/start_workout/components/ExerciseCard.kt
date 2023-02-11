@@ -42,7 +42,7 @@ import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 @Composable
 fun ExerciseCard(
     page: Int,
-//    loggerListState: LoggerListState,
+    loggerListState: LoggerListState,
     workoutTemplates: State<List<WorkoutTemplate>>,
     onRepsChange: (reps: String, index: Int, id: Int) -> Unit,
     onWeightChange: (weight: String, index: Int, id: Int) -> Unit,
@@ -91,7 +91,7 @@ fun ExerciseCard(
                 itemsIndexed(List(workoutTemplates.value[page].sets) { it + 1 }){ index, _ ->
                     ExerciseCardRow(
                         index + 1,
-//                        loggerListState,
+                        loggerListState,
                         workoutTemplates.value[page],
                         index,
                         onRepsChange,
@@ -108,7 +108,7 @@ fun ExerciseCard(
 @Composable
 fun ExerciseCardRow(
     set: Int,
-//    loggerListState: LoggerListState,
+    loggerListState: LoggerListState,
     workoutTemplate: WorkoutTemplate,
     index: Int,
     onRepsChange: (reps: String, index: Int, id: Int) -> Unit,
@@ -130,7 +130,7 @@ fun ExerciseCardRow(
         TextField(
             modifier = Modifier.weight(1f),
             placeholder = { Text(text = workoutTemplate.weight.toString()) },
-            value = workoutTemplate.weightList[index],
+            value = loggerListState.weightList[index],
             textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
             singleLine = true,
             onValueChange = { onWeightChange(it, index, workoutTemplate.rowId) },
@@ -149,7 +149,7 @@ fun ExerciseCardRow(
         TextField(
             modifier = Modifier.weight(1f),
             placeholder = { Text(text = workoutTemplate.reps.toString()) },
-            value = workoutTemplate.repsList[index],
+            value = loggerListState.repsList[index],
             textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
             singleLine = true,
             onValueChange = { onRepsChange(it, index, workoutTemplate.rowId) },
@@ -167,7 +167,7 @@ fun ExerciseCardRow(
         )
         Checkbox(
             modifier = Modifier.weight(1f),
-            checked = workoutTemplate.isCompleted[index],
+            checked = loggerListState.isCompleted[index],
             onCheckedChange = {
                 onCheckboxChange(it, index, workoutTemplate.rowId, page)
             },

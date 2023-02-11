@@ -16,6 +16,8 @@ import com.example.workout_logger_presentation.start_workout.components.TimerExp
 import com.hbaez.core.domain.preferences.Preferences
 import com.hbaez.core.util.UiEvent
 import com.hbaez.user_auth_presentation.AuthViewModel
+import com.hbaez.user_auth_presentation.model.CompletedWorkout
+import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 import com.hbaez.user_auth_presentation.model.service.LogService
 import com.hbaez.user_auth_presentation.model.service.StorageService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,7 +47,7 @@ class StartWorkoutViewModel @Inject constructor(
         private set
 
     private var workoutName: String = ""
-    private var workoutId: Int
+    var workoutIds: List<String>
 
     val workoutTemplates = storageService.workouts
 
@@ -53,155 +55,170 @@ class StartWorkoutViewModel @Inject constructor(
     val uiEvent = _uiEvent.receiveAsFlow()
 
     private var getExerciseJob: Job? = null
+    private val workoutId: Int
 
     init {
-//        workoutName = savedStateHandle.get("workoutName") ?: ""
         workoutId = savedStateHandle["workoutId"] ?: -1
-        workoutTemplates.onEach { exercises ->
-            state = state.copy(
-                loggerListStates = exercises.map {
-                    LoggerListState(
-                        id = it.rowId,
-                        exerciseName = it.exerciseName,
-                        exerciseId = it.exerciseId,
-                        timerStatus = TimerStatus.START,
-                        checkedColor = List(exercises.size) { _ -> List(it.sets) { Color.DarkGray } }
-                    )
-                }.toMutableList()
-            )
-        }
+        workoutIds = (savedStateHandle["workoutIds"] ?: "").trim('[').trim(']').replace(" ","").split(',').toList()
+        Log.println(Log.DEBUG, "workoutids viewmodel", workoutIds.toString())
         launchCatching {
             workoutName = workoutTemplates.first()[0].name
         }
     }
 
-//    fun onEvent(event: StartWorkoutEvent) {
-//        when(event) {
-//            is StartWorkoutEvent.OnRepsChange -> {
-//                state = state.copy(
-//                    loggerListStates = state.loggerListStates.toList().map {
-//                        if(it.id == event.id){
-//                            val tmp = it.reps.toMutableList()
-//                            tmp[event.index]=event.reps
-//                            it.copy(reps = tmp.toList())
-//                        }else it
-//                    }.toMutableList()
-//                )
-//            }
-//            is StartWorkoutEvent.OnWeightChange -> {
-//                state = state.copy(
-//                    loggerListStates = state.loggerListStates.toList().map {
-//                        if(it.id == event.id){
-//                            val tmp = it.weight.toMutableList()
-//                            tmp[event.index]=event.weight
-//                            it.copy(weight = tmp.toList())
-//                        }else it
-//                    }.toMutableList()
-//                )
-//            }
-//            is StartWorkoutEvent.OnCheckboxChange -> {
-//                if(state.currRunningIndex != event.currRunningIndex){
-//                    state = state.copy(
-//                        startTime = Date()
-//                    )
-//                }
-//                Log.println(Log.DEBUG, "loggerliststates size", state.loggerListStates.size.toString())
-//                state = state.copy(
-//                    loggerListStates = state.loggerListStates.toList().map {
-//                        if(it.id == event.id){
-//                            val tmp = it.isCompleted.toMutableList()
-//                            tmp[event.index] = event.isChecked
-//                            it.copy(isCompleted = tmp, timerStatus = TimerStatus.RUNNING)
-//                        } else it
-//                    }.toMutableList(),
-//                    timerStatus = event.timerStatus,
-//                    pagerIndex = event.page,
-//                    timeDuration = Duration.ofSeconds(state.loggerListStates[event.page].origRest.toLong()),
-//                    currRunningIndex = event.currRunningIndex,
-//                    currRunningId = event.id
-//                )
-//                currentTime = if(event.isChecked && event.timerStatus == TimerStatus.RUNNING) { state.timeDuration.seconds * 1000L } else currentTime
-//            }
-//            is StartWorkoutEvent.ChangeRemainingTime -> {
-//                val diff = Date().time - state.startTime.time
-//                currentTime = state.timeDuration.toMillis() - diff
-//            }
-//            is StartWorkoutEvent.UpdateRemainingTime -> {
-//                currentTime = currentTime
-//            }
-//            is StartWorkoutEvent.OnChangePage -> {
-//                state = state.copy(
-//                    remainingTime = state.loggerListStates[event.currentPage].origRest.toLong(),
-//                    timeDuration = Duration.ofSeconds(state.loggerListStates[event.currentPage].origRest.toLong()),
-//                    pagerIndex = event.currentPage
-//                )
-//            }
-//            is StartWorkoutEvent.TimerFinished -> {
-//                Log.println(Log.DEBUG, "!!!! current page", state.pagerIndex.toString())
-//                state = state.copy(
-//                    timerStatus = TimerStatus.FINISHED,
-//                    currRunningIndex = -1,
-//                    currRunningId = -1
-//                )
-//            }
-//            is StartWorkoutEvent.ChangeCheckboxColor -> {
-//                state = state.copy(
-//                    loggerListStates = state.loggerListStates.toList().map {
-//                        if(it.id == event.id){
-//                            val tmp = it.checkedColor.toMutableList()
-//                            tmp[event.index] = event.color
-//                            it.copy(checkedColor = tmp)
-//                        } else it
-//                    }.toMutableList()
-//                )
-//            }
-//            is StartWorkoutEvent.OnSubmitWorkout -> {
-//                run breaking@{
-//                    if(state.timerStatus == TimerStatus.RUNNING){
-//                        return@breaking
-//                    }
-//                    event.trackableExercises.forEach{// for each exercise
-//                        val repsList = mutableListOf<Int>()
-//                        val weightList = mutableListOf<Int>()
-//                        it.isCompleted.forEachIndexed { index, b ->  // for each set in exercise
-//                            if(b){
-//                                if(it.reps[index].isEmpty()){
-//                                    repsList.add(it.origReps)
-//                                } else repsList.add(it.reps[index].toInt())
-//                                if(it.weight[index].isEmpty()){
-//                                    weightList.add(it.origWeight)
-//                                } else weightList.add(it.weight[index].toInt())
-//                            }
-//                        }
-//                        if(repsList.isNotEmpty() && weightList.isNotEmpty()){
-//                            trackCompletedWorkout(it, repsList, weightList, event.dayOfMonth, event.month, event.year)
-//                        }
-//                    }
-//                }
-//                viewModelScope.launch {
-//                    _uiEvent.send(UiEvent.NavigateUp)
-//                }
-//            }
-//        }
-//    }
+    fun onEvent(event: StartWorkoutEvent) {
+        when(event) {
+            is StartWorkoutEvent.OnRepsChange -> {
+                Log.println(Log.DEBUG, "on reps change", event.reps)
+                state = state.copy(
+                    loggerListStates = state.loggerListStates.toList().map {
+                        if(event.rowId == it.id){
+                            val tmp = it.repsList.toMutableList()
+                            tmp[event.index] = event.reps
+                            it.copy(repsList = tmp)
+                        } else it
+                    }.toMutableList()
+                )
+            }
+            is StartWorkoutEvent.AddLoggerList -> {
+                val tmp = state.loggerListStates
+                tmp.add(event.loggerListState)
+                state = state.copy(
+                    loggerListStates = tmp
+                )
+                Log.println(Log.DEBUG, "loggerlist add item vm", state.loggerListStates.size.toString())
+            }
+            is StartWorkoutEvent.OnWeightChange -> {
+                state = state.copy(
+                    loggerListStates = state.loggerListStates.toList().map {
+                        if(it.id == event.rowId){
+                            val tmp = it.weightList.toMutableList()
+                            tmp[event.index]=event.weight
+                            it.copy(weightList = tmp.toList())
+                        }else it
+                    }.toMutableList()
+                )
+            }
+            is StartWorkoutEvent.OnCheckboxChange -> {
+                if(state.currRunningIndex != event.currRunningIndex){
+                    state = state.copy(
+                        startTime = Date()
+                    )
+                }
+                Log.println(Log.DEBUG, "loggerliststates size", state.loggerListStates.size.toString())
+                state = state.copy(
+                    loggerListStates = state.loggerListStates.toList().map {
+                        if(it.id == event.rowId){
+                            val tmp = it.isCompleted.toMutableList()
+                            tmp[event.index] = event.isChecked
+                            it.copy(isCompleted = tmp, timerStatus = TimerStatus.RUNNING)
+                        } else it
+                    }.toMutableList(),
+                    timerStatus = event.timerStatus,
+                    pagerIndex = event.page,
+                    timeDuration = Duration.ofSeconds(state.loggerListStates[event.page].rest.toLong()),
+                    currRunningIndex = event.currRunningIndex,
+                    currRunningId = event.rowId
+                )
+                currentTime = if(event.isChecked && event.timerStatus == TimerStatus.RUNNING) { state.timeDuration.seconds * 1000L } else currentTime
+            }
+            is StartWorkoutEvent.ChangeRemainingTime -> {
+                val diff = Date().time - state.startTime.time
+                currentTime = state.timeDuration.toMillis() - diff
+            }
+            is StartWorkoutEvent.UpdateRemainingTime -> {
+                currentTime = currentTime
+            }
+            is StartWorkoutEvent.OnChangePage -> {
+                state = state.copy(
+                    remainingTime = state.loggerListStates[event.currentPage].rest.toLong(),
+                    timeDuration = Duration.ofSeconds(state.loggerListStates[event.currentPage].rest.toLong()),
+                    pagerIndex = event.currentPage
+                )
+            }
+            is StartWorkoutEvent.TimerFinished -> {
+                Log.println(Log.DEBUG, "!!!! current page", state.pagerIndex.toString())
+                state = state.copy(
+                    timerStatus = TimerStatus.FINISHED,
+                    currRunningIndex = -1,
+                    currRunningId = -1
+                )
+            }
+            is StartWorkoutEvent.ChangeCheckboxColor -> {
+                state = state.copy(
+                    loggerListStates = state.loggerListStates.toList().map {
+                        if(it.id == event.id){
+                            val tmp = it.checkedColor.toMutableList()
+                            tmp[event.index] = event.color
+                            it.copy(checkedColor = tmp)
+                        } else it
+                    }.toMutableList()
+                )
+            }
+            is StartWorkoutEvent.OnSubmitWorkout -> {
+                run breaking@{
+                    if(state.timerStatus == TimerStatus.RUNNING){
+                        return@breaking
+                    }
+                    event.trackableExercises.forEach{// for each exercise
+                        val repsList = mutableListOf<Int>()
+                        val weightList = mutableListOf<Int>()
+                        it.isCompleted.forEachIndexed { index, b ->  // for each set in exercise
+                            if(b){
+                                if(it.repsList[index].isEmpty()){
+                                    repsList.add(it.origReps.toInt())
+                                } else repsList.add(it.repsList[index].toInt())
+                                if(it.weightList[index].isEmpty()){
+                                    weightList.add(it.origWeight.toInt())
+                                } else weightList.add(it.weightList[index].toInt())
+                            }
+                        }
+                        if(repsList.isNotEmpty() && weightList.isNotEmpty()){
+                            trackCompletedWorkout(it, repsList, weightList, event.dayOfMonth, event.month, event.year)
+                        }
+                    }
+                    viewModelScope.launch {
+                        _uiEvent.send(UiEvent.NavigateUp)
+                    }
+                }
+            }
+        }
+    }
 
-//    private fun trackCompletedWorkout(loggerListState: LoggerListState, repsList: List<Int>, weightList: List<Int>, dayOfMonth: Int, month: Int, year: Int){
-//        viewModelScope.launch {
-//            startWorkoutUseCases.addCompletedWorkout(
-//                workoutName = workoutName,
-//                workoutId = workoutId,
-//                exerciseName = loggerListState.exerciseName,
-//                exerciseId = loggerListState.exerciseId,
-//                sets = loggerListState.sets,
-//                rest = loggerListState.origRest,
-//                reps = repsList.toString(),
-//                weight = weightList.toString(),
-//                dayOfMonth = dayOfMonth,
-//                month = month,
-//                year = year
-//            )
-//        }
-//    }
+    private fun trackCompletedWorkout(loggerListState: LoggerListState, repsList: List<Int>, weightList: List<Int>, dayOfMonth: Int, month: Int, year: Int){
+        viewModelScope.launch {
+            startWorkoutUseCases.addCompletedWorkout(
+                workoutName = workoutName,
+                workoutId = workoutId,
+                exerciseName = loggerListState.exerciseName,
+                exerciseId = loggerListState.exerciseId,
+                sets = loggerListState.sets.toInt(),
+                rest = loggerListState.origRest.toInt(),
+                reps = repsList.toString(),
+                weight = weightList.toString(),
+                dayOfMonth = dayOfMonth,
+                month = month,
+                year = year
+            )
+            val date = "${year}-${month}-${dayOfMonth}"
+            storageService.saveCompletedWorkout(
+                CompletedWorkout(
+                    workoutName = workoutName,
+                    workoutId = workoutId,
+                    exerciseName = loggerListState.exerciseName,
+                    exerciseId = loggerListState.exerciseId,
+                    sets = loggerListState.sets.toInt(),
+                    rest = loggerListState.origRest.toInt(),
+                    reps = repsList.toString(),
+                    weight = weightList.toString(),
+                    dayOfMonth = dayOfMonth,
+                    month = month,
+                    year = year
+                ),
+                date = date
+            )
+        }
+    }
 
     companion object {
         private var isRunning: Boolean = false

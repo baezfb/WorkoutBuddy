@@ -1,6 +1,5 @@
 package com.example.workout_logger_presentation.start_workout
 
-import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +44,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.hbaez.core.util.UiEvent
 import com.hbaez.core_ui.LocalSpacing
+import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 import java.time.Duration
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -62,6 +62,7 @@ fun StartWorkoutScreen(
 ){
     val spacing = LocalSpacing.current
     val state = viewModel.state
+    val workoutIds = viewModel.workoutIds
     val context = LocalContext.current
     val pagerState = rememberPagerState(initialPage = 0)
     val workoutTemplates = viewModel.workoutTemplates.collectAsStateWithLifecycle(emptyList())
@@ -95,8 +96,7 @@ fun StartWorkoutScreen(
                     modifier = Modifier
                         .padding(top = spacing.spaceMedium, end = spacing.spaceMedium),
                     onClick = {
-                        //TODO
-//                              viewModel.onEvent(StartWorkoutEvent.OnSubmitWorkout(state.workoutName, state.loggerListStates, dayOfMonth, month, year))
+                                viewModel.onEvent(StartWorkoutEvent.OnSubmitWorkout(state.workoutName, state.loggerListStates, dayOfMonth, month, year))
                               },
                     icon = Icons.Default.Done
                 )
@@ -113,14 +113,58 @@ fun StartWorkoutScreen(
                 count = workoutTemplates.value.size,
                 contentPadding = PaddingValues(spacing.spaceSmall)
             ) {page ->
+                var currExercise: WorkoutTemplate
+                var loggerListState: LoggerListState
+                workoutTemplates.value.forEach {
+                    if (it.rowId == workoutIds[page].toInt()){
+                        currExercise = it
+                        if(state.loggerListStates.size > page && state.loggerListStates[page].id != it.rowId){
+                            loggerListState = LoggerListState(
+                                id = it.rowId,
+                                exerciseName = it.exerciseName,
+                                exerciseId = it.exerciseId,
+                                timerStatus = TimerStatus.START,
+                                sets = it.sets.toString(),
+                                rest = it.rest.toString(),
+                                repsList = List(it.sets) { _ -> it.reps.toString() },
+                                weightList = List(it.sets) { _ -> it.weight.toString() },
+                                isCompleted = List(it.sets) { false },
+                                checkedColor = List(it.sets) { Color.DarkGray },
+                                origRest = it.rest.toString(),
+                                origReps = it.reps.toString(),
+                                origWeight = it.weight.toString()
+                            )
+                            viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
+                        }
+                        else if (state.loggerListStates.size == page) {
+                            loggerListState = LoggerListState(
+                                id = it.rowId,
+                                exerciseName = it.exerciseName,
+                                exerciseId = it.exerciseId,
+                                timerStatus = TimerStatus.START,
+                                sets = it.sets.toString(),
+                                rest = it.rest.toString(),
+                                repsList = List(it.sets) { "" },
+                                weightList = List(it.sets) { "" },
+                                isCompleted = List(it.sets) { false },
+                                checkedColor = List(it.sets) { Color.DarkGray },
+                                origRest = it.rest.toString(),
+                                origReps = it.reps.toString(),
+                                origWeight = it.weight.toString()
+                            )
+                            viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
+                        }
+                        return@forEach
+                    }
+                }
+
                 if(pagerState.targetPage != pagerState.currentPage){
-                    //TODO
-//                    viewModel.onEvent(StartWorkoutEvent.OnChangePage(pagerState.targetPage))
+                    viewModel.onEvent(StartWorkoutEvent.OnChangePage(pagerState.targetPage))
                 }
                 Column{
                     Row{
                         Text(
-                            text = workoutTemplates.value[page].exerciseName,//state.trackableInProgressExercise[page].name,
+                            text = workoutTemplates.value[page].exerciseName,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
                             style = MaterialTheme.typography.h3,
@@ -136,52 +180,32 @@ fun StartWorkoutScreen(
                     Spacer(modifier = Modifier.height(spacing.spaceMedium))
                     ExerciseCard(
                         page = page,
-//                        loggerListState = LoggerListState(
-//                            id = workoutTemplates.value[page].rowId,
-//                            exerciseName = workoutTemplates.value[page].exerciseName,
-//                            exerciseId = workoutTemplates.value[page].exerciseId,
-//                            sets = workoutTemplates.value[page].sets,
-//                            origReps = workoutTemplates.value[page].reps,
-//                            reps = List(workoutTemplates.value[page].sets) { "" },
-//                            origRest = workoutTemplates.value[page].rest,
-//                            rest = List(workoutTemplates.value[page].sets) { _ -> workoutTemplates.value[page].rest.toString() },
-//                            origWeight = workoutTemplates.value[page].weight,
-//                            weight = List(workoutTemplates.value[page].sets) { "" },
-//                            isCompleted = List(workoutTemplates.value[page].sets) { false },
-//                            timerStatus = TimerStatus.START
-//                        ),
-//                        loggerListState = state.loggerListStates[page],
+                        loggerListState = state.loggerListStates[page],
                         workoutTemplates = workoutTemplates,
                         onRepsChange = { reps, index, id ->
-                            //TODO
-//                            viewModel.onEvent(StartWorkoutEvent.OnRepsChange(reps = reps, index = index, id = id))
+                            viewModel.onEvent(StartWorkoutEvent.OnRepsChange(reps = reps, index = index, rowId = id))
                         },
                         onWeightChange = { weight, index, id ->
-                            //TODO
-//                            viewModel.onEvent(StartWorkoutEvent.OnWeightChange(weight = weight, index = index, id = id))
+                            viewModel.onEvent(StartWorkoutEvent.OnWeightChange(weight = weight, index = index, rowId = id))
                         },
                         onCheckboxChange = { isChecked, index, id, page ->
                             if(isChecked && state.currRunningIndex != index && state.timerStatus == TimerStatus.RUNNING){ // non checked clicked while timer already running
-                                //TODO
-//                                viewModel.onEvent(StartWorkoutEvent.OnCheckboxChange(isChecked= false, timerStatus = TimerStatus.RUNNING, currRunningIndex = state.currRunningIndex, index = index, id = id, page = page))
+                                viewModel.onEvent(StartWorkoutEvent.OnCheckboxChange(isChecked= false, timerStatus = TimerStatus.RUNNING, currRunningIndex = state.currRunningIndex, index = index, rowId = id, page = page))
                             }
                             if(isChecked && (state.timerStatus == TimerStatus.START || state.timerStatus == TimerStatus.FINISHED)){ // non checked clicked while timer not running
-                                //TODO
-//                                viewModel.onEvent(StartWorkoutEvent.OnCheckboxChange(isChecked= true, timerStatus = TimerStatus.RUNNING, currRunningIndex = index, index = index, id = id, page = page))
-//                                val wakeupTime = StartWorkoutViewModel.setAlarm(context = context, timeDuration = Duration.ofSeconds(workoutTemplates.value[page].rest.toLong()))
-//                                NotificationUtil.showTimerRunning(context, wakeupTime)
-//                                viewModel.onEvent(StartWorkoutEvent.ChangeCheckboxColor(color = Color(255,153,51), id = id, index = index))
+                                viewModel.onEvent(StartWorkoutEvent.OnCheckboxChange(isChecked= true, timerStatus = TimerStatus.RUNNING, currRunningIndex = index, index = index, rowId = id, page = page))
+                                val wakeupTime = StartWorkoutViewModel.setAlarm(context = context, timeDuration = Duration.ofSeconds(workoutTemplates.value[page].rest.toLong()))
+                                NotificationUtil.showTimerRunning(context, wakeupTime)
+                                viewModel.onEvent(StartWorkoutEvent.ChangeCheckboxColor(color = Color(255,153,51), id = id, index = index))
                             }
                             else if(!isChecked && state.currRunningIndex == index && state.timerStatus == TimerStatus.RUNNING){ // checked clicked while that row has timer running
-                                //TODO
-//                                viewModel.onEvent(StartWorkoutEvent.OnCheckboxChange(isChecked= true, timerStatus = TimerStatus.FINISHED, currRunningIndex = -1, index = index, id = id, page = page))
-//                                StartWorkoutViewModel.removeAlarm(context)
-//                                NotificationUtil.hideTimerNotification(context)
-//                                viewModel.onEvent(StartWorkoutEvent.ChangeCheckboxColor(color = Color.DarkGray, id = id, index = index))
+                                viewModel.onEvent(StartWorkoutEvent.OnCheckboxChange(isChecked= true, timerStatus = TimerStatus.FINISHED, currRunningIndex = -1, index = index, rowId = id, page = page))
+                                StartWorkoutViewModel.removeAlarm(context)
+                                NotificationUtil.hideTimerNotification(context)
+                                viewModel.onEvent(StartWorkoutEvent.ChangeCheckboxColor(color = Color.DarkGray, id = id, index = index))
                             }
                             else if(!isChecked && state.currRunningIndex != index){ // checked clicked while that row does not have timer running
-                                //TODO
-//                                viewModel.onEvent(StartWorkoutEvent.OnCheckboxChange(isChecked= false, timerStatus = state.timerStatus, currRunningIndex = state.currRunningIndex, index = index, id = id, page = page))
+                                viewModel.onEvent(StartWorkoutEvent.OnCheckboxChange(isChecked= false, timerStatus = state.timerStatus, currRunningIndex = state.currRunningIndex, index = index, rowId = id, page = page))
                             }
                         }
                     )

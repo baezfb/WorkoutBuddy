@@ -38,11 +38,10 @@ import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 @Composable
 fun WorkoutDialog(
     onDismiss: () -> Unit,
-    onChooseWorkout: (workoutName: String) -> Unit,
+    onChooseWorkout: (workoutName: String, workoutIds: String) -> Unit,
     modifier: Modifier = Modifier,
     workoutNames: List<String>,
-    workoutTemplates: State<List<WorkoutTemplate>>,
-    workoutId: List<Int>
+    workoutTemplates: State<List<WorkoutTemplate>>
 ) {
     val spacing = LocalSpacing.current
     AlertDialog(
@@ -80,10 +79,25 @@ fun WorkoutDialog(
                         contentPadding = PaddingValues(vertical = spacing.spaceMedium),
                         modifier = Modifier.heightIn(250.dp)
                     ){
-                        items(workoutTemplates.value.size){
+                        val uniqueNames = mutableListOf<String>()
+                        val workoutId = hashMapOf<String, List<Int>>()
+                        workoutTemplates.value.forEach {
+                            if(uniqueNames.contains(it.name)) {
+                                val tmp = workoutId[it.name]!!.toMutableList()
+                                tmp.add(it.rowId)
+                                workoutId[it.name] = tmp.toList()
+                                return@forEach
+                            }
+                            uniqueNames.add(it.name)
+                            val tmp = listOf(it.rowId)
+                            workoutId[it.name] = tmp
+                        }
+                        Log.println(Log.DEBUG, "workout names", uniqueNames.toString())
+                        Log.println(Log.DEBUG, "workout ids", workoutId.toString())
+                        items(uniqueNames.size){
                             AddButton(
-                                text = workoutTemplates.value[it].name,
-                                onClick = { onChooseWorkout(workoutTemplates.value[it].name) },
+                                text = uniqueNames[it],
+                                onClick = { onChooseWorkout(uniqueNames[it], workoutId[uniqueNames[it]]!!.toString()) },
                                 icon = Icons.Default.List,
                                 modifier = Modifier
                                     .fillMaxWidth()

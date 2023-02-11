@@ -20,6 +20,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,13 +40,14 @@ import com.example.workout_logger_presentation.workout_logger_overview.component
 import com.example.workout_logger_presentation.workout_logger_overview.components.WorkoutDialog
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
+import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @ExperimentalCoilApi
 @Composable
 fun WorkoutLoggerOverviewScreen(
     onNavigateToCreate: () -> Unit,
-    onNavigateToWorkout: (workoutName: String, day: Int, month: Int, year: Int) -> Unit,
+    onNavigateToWorkout: (workoutName: String, day: Int, month: Int, year: Int, workoutIds: String) -> Unit,
     viewModel: WorkoutLoggerOverviewModel = hiltViewModel()
 ) {
     val spacing = LocalSpacing.current
@@ -86,17 +88,17 @@ fun WorkoutLoggerOverviewScreen(
             if(showDialog.value){
                 WorkoutDialog(
                     onDismiss = { showDialog.value = false },
-                    onChooseWorkout = { workoutName ->
+                    onChooseWorkout = { workoutName, workoutIds ->
                                         onNavigateToWorkout(
                                             workoutName,
                                             state.date.dayOfMonth,
                                             state.date.monthValue,
-                                            state.date.year
+                                            state.date.year,
+                                            workoutIds
                                         )
                                       },
                     workoutNames = state.workoutNames,
-                    workoutTemplates = workoutTemplates,
-                    workoutId = state.workoutId
+                    workoutTemplates = workoutTemplates
                 )
             }
         }
@@ -191,4 +193,15 @@ fun WorkoutLoggerOverviewScreen(
             }
         }
     }
+}
+
+fun exercises(workoutName: String, workoutTemplates: State<List<WorkoutTemplate>>): List<WorkoutTemplate>{
+    // return list of exercises given workout name
+    val currExercises = mutableListOf<WorkoutTemplate>()
+    workoutTemplates.value.onEach {
+        if(it.name == workoutName){
+            currExercises.add(it)
+        }
+    }
+    return currExercises.toList()
 }

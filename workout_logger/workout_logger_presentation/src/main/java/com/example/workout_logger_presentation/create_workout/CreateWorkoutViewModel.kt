@@ -264,17 +264,10 @@ class CreateWorkoutViewModel @Inject constructor(
                     exerciseId = it.id,
                     sets = it.sets.toInt(),
                     rest = it.rest.toInt(),
-                    restList = List(it.sets.toInt()) { "" },
                     reps = it.reps.toInt(),
-                    repsList = List(it.sets.toInt()) { "" },
                     weight = it.weight.toInt(),
-                    weightList = List(it.sets.toInt()) { "" },
                     rowId = it.id,
                     lastUsedId = event.lastUsedId,
-                    isCompleted = List(it.sets.toInt()) { false }
-//                    isCompleted = List(it.sets.toInt()) { false },
-//                    timerStatus = "START",
-//                    checkedColor = List(it.sets.toInt()) { Color.DarkGray }
                 ))
             }
             _uiEvent.send(UiEvent.NavigateUp)

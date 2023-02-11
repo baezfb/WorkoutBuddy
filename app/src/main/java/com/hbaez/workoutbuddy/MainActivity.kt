@@ -238,13 +238,14 @@ class MainActivity : ComponentActivity() {
                                             Route.WORKOUT_CREATE
                                         )
                                     },
-                                    onNavigateToWorkout = { workoutName, day, month, year ->
+                                    onNavigateToWorkout = { workoutName, day, month, year, workoutIds ->
                                         navController.navigate(
                                             Route.WORKOUT_START +
                                                     "/$workoutName" +
                                                     "/$day" +
                                                     "/$month" +
-                                                    "/$year"
+                                                    "/$year" +
+                                                    "/$workoutIds"
                                         )
                                     }
                                 )
@@ -255,7 +256,8 @@ class MainActivity : ComponentActivity() {
                                     "/{workoutName}" +
                                     "/{dayOfMonth}" +
                                     "/{month}" +
-                                    "/{year}",
+                                    "/{year}" +
+                                    "/{workoutIds}",
                             arguments = listOf(
                                 navArgument("workoutName") {
                                     type = NavType.StringType
@@ -268,6 +270,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 navArgument("year") {
                                     type = NavType.IntType
+                                },
+                                navArgument("workoutIds") {
+                                    type = NavType.StringType
                                 }
                             )
                         ) {
@@ -275,6 +280,7 @@ class MainActivity : ComponentActivity() {
                             val dayOfMonth = it.arguments?.getInt("dayOfMonth")!!
                             val month = it.arguments?.getInt("month")!!
                             val year = it.arguments?.getInt("year")!!
+//                            val workoutIds = it.arguments?.getString("workoutIds")!!
                             StartWorkoutScreen(
                                 workoutName = workoutName,
                                 dayOfMonth = dayOfMonth,

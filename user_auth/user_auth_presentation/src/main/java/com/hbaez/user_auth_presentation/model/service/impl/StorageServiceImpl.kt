@@ -13,6 +13,7 @@ import com.hbaez.core.domain.model.ActivityLevel
 import com.hbaez.core.domain.model.Gender
 import com.hbaez.core.domain.model.GoalType
 import com.hbaez.core.domain.model.UserInfo
+import com.hbaez.user_auth_presentation.model.CompletedWorkout
 import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
@@ -47,23 +48,19 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                             Log.println(Log.DEBUG, "weightlist", it.get("weightList").toString())
                             Log.println(Log.DEBUG, "completed", it.get("completed").toString())
 
-                        WorkoutTemplate(
-                            id = it.get("id").toString(),
-                            name = it.get("name").toString(),
-                            exerciseName = it.get("exerciseName").toString(),
-                            exerciseId = it.get("exerciseId").toString().toInt(),
-                            sets = it.get("sets").toString().toInt(),
-                            rest = it.get("rest").toString().toInt(),
-                            restList = it.get("restList").toString().replace("[","").replace("]","").split(",").map { elem -> elem.trim() },
-                            reps = it.get("reps").toString().toInt(),
-                            repsList = it.get("repsList").toString().replace("[","").replace("]","").split(",").map { elem -> elem.trim() },
-                            weight = it.get("weight").toString().toInt(),
-                            weightList = it.get("weightList").toString().replace("[","").replace("]","").split(",").map { elem -> elem.trim() },
-                            rowId = it.get("rowId").toString().toInt(),
-                            lastUsedId = it.get("lastUsedId").toString().toInt(),
-                            isCompleted = it.get("completed").toString().replace("[","").replace("]","").split(",").map { elem -> elem.trim().toBoolean() }
-                        )
-                    }
+                            WorkoutTemplate(
+                                id = it.get("id").toString(),
+                                name = it.get("name").toString(),
+                                exerciseName = it.get("exerciseName").toString(),
+                                exerciseId = it.get("exerciseId").toString().toInt(),
+                                sets = it.get("sets").toString().toInt(),
+                                rest = it.get("rest").toString().toInt(),
+                                reps = it.get("reps").toString().toInt(),
+                                weight = it.get("weight").toString().toInt(),
+                                rowId = it.get("rowId").toString().toInt(),
+                                lastUsedId = it.get("lastUsedId").toString().toInt(),
+                            )
+                        }
                     }
             }
 
@@ -102,6 +99,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     override suspend fun saveWorkoutTemplate(workoutTemplate: WorkoutTemplate): String =
         trace(SAVE_WORKOUT_TEMPLATE) { workoutTemplateCollection(auth.currentUserId).add(workoutTemplate).await().id }
 
+    override suspend fun saveCompletedWorkout(completedWorkout: CompletedWorkout, date: String): String =
+        trace(SAVE_COMPLETED_WORKOUT) { completedWorkoutCollection(auth.currentUserId, date).add(completedWorkout).await().id }
+
     override suspend fun save(task: Task): String =
         trace(SAVE_TASK_TRACE) { userInfoCollection(auth.currentUserId).add(task).await().id }
 
@@ -127,6 +127,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     private fun workoutTemplateCollection(uid: String): CollectionReference =
         firestore.collection(USER_COLLECTION).document(uid).collection(WORKOUT_TEMPLATE)
 
+    private fun completedWorkoutCollection(uid: String, date: String): CollectionReference =
+        firestore.collection(USER_COLLECTION).document(uid).collection(COMPLETED_WORKOUT).document(date).collection(COMPLETED_WORKOUT)
+
     companion object {
         private const val USER_COLLECTION = "users"
         private const val TASK_COLLECTION = "tasks"
@@ -134,7 +137,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         private const val SAVE_USER_INFO_TRACE = "saveUserInfo"
         private const val SAVE_TASK_TRACE = "saveTask"
         private const val SAVE_WORKOUT_TEMPLATE = "saveWorkoutTemplate"
+        private const val SAVE_COMPLETED_WORKOUT = "saveCompletedWorkout"
         private const val UPDATE_TASK_TRACE = "updateTask"
         private const val WORKOUT_TEMPLATE = "workouts"
+        private const val COMPLETED_WORKOUT = "completed_workouts"
     }
 }

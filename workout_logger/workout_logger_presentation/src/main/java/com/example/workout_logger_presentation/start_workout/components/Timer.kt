@@ -92,15 +92,13 @@ fun Timer(
     LaunchedEffect(key1 = currentTime, key2 = state.timerStatus, block = {
         CoroutineScope(Dispatchers.IO).launch {
             if(state.timerStatus == TimerStatus.RUNNING && currentTime > 0){
-                //TODO
                 delay(100)
-//                viewModel.onEvent(StartWorkoutEvent.ChangeRemainingTime)
+                viewModel.onEvent(StartWorkoutEvent.ChangeRemainingTime)
             }
             if(currentTime <= 0L){
-                //TODO
-//                viewModel.onEvent(StartWorkoutEvent.ChangeCheckboxColor(Color.DarkGray, state.currRunningId, state.currRunningIndex))
-//                viewModel.onEvent(StartWorkoutEvent.TimerFinished)
-//                NotificationUtil.hideTimerNotification(context)
+                viewModel.onEvent(StartWorkoutEvent.ChangeCheckboxColor(Color.DarkGray, state.currRunningId, state.currRunningIndex))
+                viewModel.onEvent(StartWorkoutEvent.TimerFinished)
+                NotificationUtil.hideTimerNotification(context)
             }
         }
     })
