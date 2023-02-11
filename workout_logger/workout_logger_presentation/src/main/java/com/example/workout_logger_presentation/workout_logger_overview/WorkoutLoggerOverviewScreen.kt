@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -102,12 +103,13 @@ fun WorkoutLoggerOverviewScreen(
                 )
             }
         }
-        items(state.completedWorkouts){ completedWorkout ->
+        itemsIndexed(viewModel.completedWorkouts){ index, completedWorkout -> //items(state.completedWorkouts){ completedWorkout ->
             CompletedWorkoutItem(
                 workout = completedWorkout,
+                isExpanded = state.completedWorkoutIsExpanded[index],
                 modifier = Modifier,
                 onClick = {
-                    viewModel.onEvent(WorkoutLoggerOverviewEvent.OnCompletedWorkoutClick(completedWorkout))
+                    viewModel.onEvent(WorkoutLoggerOverviewEvent.OnCompletedWorkoutClick(index))
                 },
                 content = {
                     Column(
@@ -193,15 +195,4 @@ fun WorkoutLoggerOverviewScreen(
             }
         }
     }
-}
-
-fun exercises(workoutName: String, workoutTemplates: State<List<WorkoutTemplate>>): List<WorkoutTemplate>{
-    // return list of exercises given workout name
-    val currExercises = mutableListOf<WorkoutTemplate>()
-    workoutTemplates.value.onEach {
-        if(it.name == workoutName){
-            currExercises.add(it)
-        }
-    }
-    return currExercises.toList()
 }

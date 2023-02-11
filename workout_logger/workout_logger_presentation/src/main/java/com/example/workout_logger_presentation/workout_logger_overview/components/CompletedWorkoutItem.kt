@@ -2,7 +2,6 @@ package com.example.workout_logger_presentation.workout_logger_overview.componen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -28,16 +26,15 @@ import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.workout_logger_domain.model.CompletedWorkout
-import com.example.workout_logger_presentation.start_workout.components.ExerciseCardRow
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
+import com.hbaez.user_auth_presentation.model.CompletedWorkout
 
 @Composable
 fun CompletedWorkoutItem(
     workout: CompletedWorkout,
+    isExpanded: Boolean,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     content: @Composable () -> Unit,
@@ -68,10 +65,10 @@ fun CompletedWorkoutItem(
                 style = MaterialTheme.typography.h3
             )
             Icon(
-                imageVector = if (workout.isExpanded) {
+                imageVector = if (isExpanded) {
                     Icons.Default.KeyboardArrowUp
                 } else Icons.Default.KeyboardArrowDown,
-                contentDescription = if(workout.isExpanded) {
+                contentDescription = if(isExpanded) {
                     stringResource(id = com.hbaez.core.R.string.collapse)
                 } else stringResource(id = com.hbaez.core.R.string.extend)
             )
@@ -134,7 +131,7 @@ fun CompletedWorkoutItem(
                 )
             }
         }
-        AnimatedVisibility(visible = workout.isExpanded) {
+        AnimatedVisibility(visible = isExpanded) {
             content()
         }
     }

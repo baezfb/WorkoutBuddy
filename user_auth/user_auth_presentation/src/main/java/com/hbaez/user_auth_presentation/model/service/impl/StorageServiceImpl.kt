@@ -20,6 +20,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.asDeferred
@@ -43,11 +44,6 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                     .snapshots()
                     .map { snapshot -> //snapshot.toObjects(WorkoutTemplate::class.java)
                         snapshot.documents.map {
-                            Log.println(Log.DEBUG, "restlist", it.get("restList").toString())
-                            Log.println(Log.DEBUG, "repslist", it.get("repsList").toString())
-                            Log.println(Log.DEBUG, "weightlist", it.get("weightList").toString())
-                            Log.println(Log.DEBUG, "completed", it.get("completed").toString())
-
                             WorkoutTemplate(
                                 id = it.get("id").toString(),
                                 name = it.get("name").toString(),
@@ -67,6 +63,26 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     override suspend fun getTask(taskId: String): Task? =
         userInfoCollection(auth.currentUserId).document(taskId).get().await().toObject()
 
+    override suspend fun getCompletedWorkoutByDate(date: String): List<CompletedWorkout> {
+        val completedWorkouts = completedWorkoutCollection(auth.currentUserId, date).snapshots().map { snapshot ->
+            return@map snapshot.documents.map {
+                CompletedWorkout(
+                    workoutName = it.get("workoutName").toString(),
+                    workoutId = it.get("workoutId").toString().toInt(),
+                    exerciseName = it.get("exerciseName").toString(),
+                    exerciseId = it.get("exerciseId").toString().toInt(),
+                    sets = it.get("sets").toString().toInt(),
+                    rest = it.get("rest").toString().toInt(),
+                    reps = it.get("reps").toString(),
+                    weight = it.get("weight").toString(),
+                    dayOfMonth = it.get("dayOfMonth").toString().toInt(),
+                    month = it.get("month").toString().toInt(),
+                    year = it.get("year").toString().toInt()
+                )
+            }
+        }
+        return completedWorkouts.first()
+    }
     override suspend fun saveUserInfo(userInfo: UserInfo): String =
         trace(SAVE_USER_INFO_TRACE) {
             Log.println(Log.DEBUG, "auth.currentUserId", auth.currentUserId)

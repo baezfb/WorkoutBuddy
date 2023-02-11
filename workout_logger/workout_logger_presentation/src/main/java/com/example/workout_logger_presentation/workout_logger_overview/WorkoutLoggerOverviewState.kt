@@ -8,5 +8,6 @@ data class WorkoutLoggerOverviewState(
     val workoutNames: MutableList<String> = mutableListOf(),
     val workoutId: MutableList<Int> = mutableListOf(),
     val showWorkoutDialog: Boolean = false,
-    val completedWorkouts: List<CompletedWorkout> = listOf()
+    val completedWorkouts: List<CompletedWorkout> = listOf(),
+    val completedWorkoutIsExpanded: List<Boolean> = mutableListOf<Boolean>()
 )

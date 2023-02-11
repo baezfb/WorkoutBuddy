@@ -12,7 +12,7 @@ interface StorageService {
     val workouts: Flow<List<WorkoutTemplate>>
 
     suspend fun getTask(taskId: String): Task?
-
+    suspend fun getCompletedWorkoutByDate(date: String): List<CompletedWorkout>
     suspend fun saveUserInfo(userInfo: UserInfo): String
     suspend fun getUserInfo(): UserInfo?
     suspend fun saveWorkoutTemplate(workoutTemplate: WorkoutTemplate): String
