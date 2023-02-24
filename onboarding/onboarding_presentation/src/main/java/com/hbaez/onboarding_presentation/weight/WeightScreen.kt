@@ -101,7 +101,7 @@ fun WeightScreen(
 ) {
     val spacing = LocalSpacing.current
     val context = LocalContext.current
-    
+
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
             when (event) {
@@ -160,7 +160,6 @@ fun WeightScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp),
-                viewModel = viewModel
             ) {
                 viewModel.onWeightChange(it.toString())
             }
@@ -177,7 +176,6 @@ fun WeightScreen(
 fun Scale(
     modifier: Modifier = Modifier,
     style: ScaleStyle = ScaleStyle(),
-    viewModel: WeightViewModel,
     onWeightChange: (Int) -> Unit,
 ) {
     val radius = style.radius
