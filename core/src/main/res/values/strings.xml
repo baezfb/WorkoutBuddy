@@ -9,7 +9,7 @@
     <string name="whats_your_age">What\'s your age?</string>
     <string name="next">Next</string>
     <string name="whats_your_height">What\'s your height?</string>
-    <string name="kg">kg</string>
+    <string name="lbs">lbs</string>
     <string name="cm">cm</string>
     <string name="error_age_cant_be_empty">The age can\'t be empty</string>
     <string name="error_height_cant_be_empty">The height can\'t be empty</string>
@@ -84,6 +84,7 @@
     <string name="create_workout">Create Workout</string>
     <string name="start_workout">Start Workout</string>
     <string name="edit_workout">Edit Workout</string>
+    <string name="create_edit_workout">Create / Edit Workout</string>
     <string name="create_edit_exercise">Create / Edit Exercise</string>
     <string name="start_exercise">Start Exercise</string>
     <string name="login_header">Log in to your account</string>

@@ -3,6 +3,7 @@ package com.example.workout_logger_presentation.workout_logger_overview.componen
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -20,7 +21,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,16 +32,15 @@ import coil.annotation.ExperimentalCoilApi
 import com.example.workout_logger_presentation.components.AddButton
 import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
-import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 
 @ExperimentalCoilApi
 @Composable
-fun WorkoutDialog(
+fun OptionsHeaderDialog(
     onDismiss: () -> Unit,
-    onChooseWorkout: (workoutName: String, workoutIds: String) -> Unit,
-    modifier: Modifier = Modifier,
-    workoutNames: List<String>,
-    workoutTemplates: State<List<WorkoutTemplate>>
+    onClickCreate: () -> Unit,
+    onClickEdit: () -> Unit,
+    title: Int,
+    modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
     AlertDialog(
@@ -49,7 +48,7 @@ fun WorkoutDialog(
             .fillMaxWidth()
             .heightIn(max = 250.dp)
             .wrapContentHeight(align = Alignment.CenterVertically)
-            .clip( RoundedCornerShape(50.dp) ),
+            .clip(RoundedCornerShape(50.dp)),
         onDismissRequest = { onDismiss() },
         title = {},
         text = {
@@ -62,7 +61,7 @@ fun WorkoutDialog(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            stringResource(id = R.string.choose_workout),
+                            stringResource(id = title),
                             textAlign = TextAlign.Center,
                             fontSize = 32.sp,
                             modifier = Modifier
@@ -73,41 +72,32 @@ fun WorkoutDialog(
                     }
                 },
                 content = {
-                    LazyColumn(
+                    Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
-                        contentPadding = PaddingValues(vertical = spacing.spaceMedium),
+//                        contentPadding = PaddingValues(vertical = spacing.spaceMedium),
                         modifier = Modifier.heightIn(250.dp)
-                    ){
-                        val uniqueNames = mutableListOf<String>()
-                        val workoutId = hashMapOf<String, List<Int>>()
-                        workoutTemplates.value.forEach {
-                            if(uniqueNames.contains(it.name)) {
-                                val tmp = workoutId[it.name]!!.toMutableList()
-                                tmp.add(it.rowId)
-                                workoutId[it.name] = tmp.toList()
-                                return@forEach
-                            }
-                            uniqueNames.add(it.name)
-                            val tmp = listOf(it.rowId)
-                            workoutId[it.name] = tmp
-                        }
-                        Log.println(Log.DEBUG, "workout names", uniqueNames.toString())
-                        Log.println(Log.DEBUG, "workout ids", workoutId.toString())
-                        items(uniqueNames.size){
-                            AddButton(
-                                text = uniqueNames[it],
-                                onClick = { onChooseWorkout(uniqueNames[it], workoutId[uniqueNames[it]]!!.toString()) },
-                                icon = Icons.Default.List,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(spacing.spaceSmall)
-                            )
-                        }
+                    ) {
+                        AddButton(
+                            text = stringResource(id = R.string.create_workout),
+                            onClick = { onClickCreate() },
+                            icon = Icons.Default.List,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(spacing.spaceSmall)
+                        )
+                        AddButton(
+                            text = stringResource(id = R.string.edit_workout),
+                            onClick = { onClickEdit() },
+                            icon = Icons.Default.List,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(spacing.spaceSmall)
+                        )
                     }
                 }
             )
-               },
+        },
         buttons = {}
     )
 }

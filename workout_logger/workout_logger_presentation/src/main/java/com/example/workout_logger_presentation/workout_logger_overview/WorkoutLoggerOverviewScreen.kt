@@ -38,6 +38,7 @@ import com.example.workout_logger_presentation.components.DaySelector
 import com.example.workout_logger_presentation.components.OptionsHeader
 import com.example.workout_logger_presentation.workout_logger_overview.components.CompletedWorkoutItem
 import com.example.workout_logger_presentation.workout_logger_overview.components.ExerciseRow
+import com.example.workout_logger_presentation.workout_logger_overview.components.OptionsHeaderDialog
 import com.example.workout_logger_presentation.workout_logger_overview.components.WorkoutDialog
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
@@ -56,6 +57,8 @@ fun WorkoutLoggerOverviewScreen(
     val workoutTemplates = viewModel.workoutTemplates.collectAsStateWithLifecycle(emptyList())
     val context = LocalContext.current
     val showDialog = remember { mutableStateOf(false) }
+    val showOptionsHeaderDialog = remember { mutableStateOf(false) }
+    val optionsHeaderType = remember { mutableStateOf("") }
 
     LazyColumn(
         modifier = Modifier
@@ -65,7 +68,15 @@ fun WorkoutLoggerOverviewScreen(
         item {
             Log.println(Log.DEBUG, "showWorkoutDialog", state.showWorkoutDialog.toString())
             OptionsHeader(
-                onNavigateToCreate,
+                optionsHeaderDialog = { type ->
+                    if(type == "workout"){
+                        showOptionsHeaderDialog.value = true
+                        optionsHeaderType.value = type
+                    } else {
+                        showOptionsHeaderDialog.value = true
+                        optionsHeaderType.value = type
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
                 displayWorkouts = {
 
@@ -100,6 +111,18 @@ fun WorkoutLoggerOverviewScreen(
                                       },
                     workoutNames = state.workoutNames,
                     workoutTemplates = workoutTemplates
+                )
+            }
+            if(showOptionsHeaderDialog.value){
+                OptionsHeaderDialog(
+                    onDismiss = { showOptionsHeaderDialog.value = false },
+                    onClickCreate = {
+                        onNavigateToCreate()
+                    },
+                    onClickEdit = {
+
+                    },
+                    title = R.string.create_edit_workout
                 )
             }
         }

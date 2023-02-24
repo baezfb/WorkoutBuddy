@@ -24,7 +24,7 @@ import com.hbaez.core.R
 
 @Composable
 fun OptionsHeader(
-    onNavigateToCreate: () -> Unit,
+    optionsHeaderDialog: (type: String) -> Unit,
     modifier: Modifier = Modifier,
     displayWorkouts: () -> Unit
 ){
@@ -46,18 +46,16 @@ fun OptionsHeader(
     ) {
         Spacer(modifier = Modifier.height(spacing.spaceMedium))
         AddButton(
-            text = stringResource(id = R.string.create_workout),
+            text = stringResource(id = R.string.create_edit_workout),
             onClick = {
-                onNavigateToCreate(
-
-                )
+                optionsHeaderDialog("workout")
             },
             modifier = Modifier.fillMaxWidth(),
             icon = Icons.Default.Build
         )
         Spacer(modifier = Modifier.height(spacing.spaceMedium))
-        AddButton(text = stringResource(id = R.string.edit_workout), onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth(), icon = Icons.Default.Edit)
-        Spacer(modifier = Modifier.height(spacing.spaceMedium))
+//        AddButton(text = stringResource(id = R.string.edit_workout), onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth(), icon = Icons.Default.Edit)
+//        Spacer(modifier = Modifier.height(spacing.spaceMedium))
         AddButton(text = stringResource(id = R.string.create_edit_exercise), onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth(), icon = Icons.Default.Edit)
         Spacer(modifier = Modifier.height(spacing.spaceLarge))
     }

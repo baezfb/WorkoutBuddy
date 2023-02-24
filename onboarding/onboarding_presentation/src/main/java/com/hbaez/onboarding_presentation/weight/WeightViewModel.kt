@@ -20,18 +20,15 @@ class WeightViewModel @Inject constructor(
     private val preferences: Preferences,
 ): ViewModel() {
 
-    var weight by mutableStateOf("80.0")
+    var weight by mutableStateOf("180")
         private set
 
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    fun onWeightEnter(weight: String) {
-        if(weight.length <= 5) {
-            this.weight = weight
-        }
+    fun onWeightChange(weight: String) {
+        this.weight = weight
     }
-
     fun onNextClick() {
         viewModelScope.launch {
             val weightNumber = weight.toFloatOrNull() ?: kotlin.run {
