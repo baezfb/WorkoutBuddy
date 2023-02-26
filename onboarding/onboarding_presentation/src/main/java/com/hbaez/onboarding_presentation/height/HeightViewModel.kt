@@ -28,10 +28,8 @@ class HeightViewModel @Inject constructor(
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    fun onHeightEnter(height: String) {
-        if(height.length <= 3) {
-            this.height = filterOutDigits(height)
-        }
+    fun onHeightChange(height: String) {
+        this.height = filterOutDigits(height)
     }
 
     fun onNextClick() {

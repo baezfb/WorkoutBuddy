@@ -43,56 +43,6 @@ import com.hbaez.core.R
 import com.hbaez.core.util.UiEvent
 import com.hbaez.onboarding_presentation.components.ActionButton
 
-//@Composable
-//fun WeightScreen(
-//    scaffoldState: ScaffoldState,
-//    onNextClick: () -> Unit,
-//    viewModel: WeightViewModel = hiltViewModel()
-//) {
-//    val spacing = LocalSpacing.current
-//    val context = LocalContext.current
-//    LaunchedEffect(key1 = true) {
-//        viewModel.uiEvent.collect { event ->
-//            when (event) {
-//                is UiEvent.Success -> onNextClick()
-//                is UiEvent.ShowSnackbar -> {
-//                    scaffoldState.snackbarHostState.showSnackbar(
-//                        message = event.message.asString(context)
-//                    )
-//                }
-//                else -> Unit
-//            }
-//        }
-//    }
-//    Box(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .padding(spacing.spaceLarge)
-//    ) {
-//        Column(
-//            modifier = Modifier.fillMaxSize(),
-//            verticalArrangement = Arrangement.Center,
-//            horizontalAlignment = Alignment.CenterHorizontally
-//        ) {
-//            Text(
-//                text = stringResource(id = R.string.whats_your_weight),
-//                style = MaterialTheme.typography.h3
-//            )
-//            Spacer(modifier = Modifier.height(spacing.spaceMedium))
-//            UnitTextField(
-//                value = viewModel.weight,
-//                onValueChange = viewModel::onWeightEnter,
-//                unit = stringResource(id = R.string.kg)
-//            )
-//        }
-//        ActionButton(
-//            text = stringResource(id = R.string.next),
-//            onClick = viewModel::onNextClick,
-//            modifier = Modifier.align(Alignment.BottomEnd)
-//        )
-//    }
-//}
-
 @Composable
 fun WeightScreen(
     scaffoldState: ScaffoldState,
@@ -138,7 +88,6 @@ fun WeightScreen(
                     style = MaterialTheme.typography.h1,
                     color = MaterialTheme.colors.primaryVariant,
                     modifier = Modifier
-                        .width(IntrinsicSize.Min)
                         .alignBy(LastBaseline)
                 )
                 Spacer(modifier = Modifier.width(spacing.spaceSmall))
@@ -240,7 +189,7 @@ fun Scale(
                         60f,
                         0f,
                         0f,
-                        ColorG.argb(50,0,0,0)
+                        ColorG.argb(50,250,0,0)
                     )
                 }
             )
