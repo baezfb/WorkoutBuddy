@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.LastBaseline
@@ -74,18 +75,14 @@ fun HeightScreen(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = viewModel.height,
+                    text = "${viewModel.height.toInt() / 12} ft ${viewModel.height.toInt() % 12} in",
                     style = MaterialTheme.typography.h1,
                     color = MaterialTheme.colors.primaryVariant,
                     modifier = Modifier
                         .alignBy(LastBaseline)
                 )
-                Spacer(modifier = Modifier.width(spacing.spaceSmall))
-                Text(
-                    text = stringResource(id = R.string.inches),
-                    modifier = Modifier.alignBy(LastBaseline)
-                )
             }
+            Spacer(modifier = Modifier.height(spacing.spaceExtraLarge))
             Ruler(
                 style = RulerStyle(
                     rulerHeight = 125.dp,
@@ -118,23 +115,20 @@ fun Ruler(
     onHeightChange: (Int) -> Unit,
 ) {
     val rulerHeight = style.rulerHeight
-    var width = 12500f
-    val rectTopLeft = Offset(x=0f, y=0f)
-    val spaceBetween = width / (style.maxHeight * 10 - style.minHeight * 10)
+    var width = 12480f
+    val spaceBetween = width / (style.maxHeight * 10 - style.minHeight * 10).toFloat()
+
     var center by remember {
         mutableStateOf(Offset.Zero)
     }
-    var rulerCenter by remember {
-        mutableStateOf(Offset.Zero)
-    }
-    var posX by remember {
-        mutableStateOf(0f) // canvas this.center
+    var rectTopLeft by remember {
+        mutableStateOf(Offset(width*width, 0f))
     }
     var dragStartedPosition by remember {
         mutableStateOf(0f)
     }
     var oldPosition by remember {
-        mutableStateOf(posX)
+        mutableStateOf(rectTopLeft.x)
     }
 
     Canvas(
@@ -142,30 +136,35 @@ fun Ruler(
             .pointerInput(true) {
                 detectDragGestures(
                     onDragStart = { offset ->
-                        dragStartedPosition = center.x - offset.x
+                        dragStartedPosition = center.x + offset.x
                     },
                     onDragEnd = {
-                        oldPosition = posX
+                        oldPosition = rectTopLeft.x
                     }
                 ) { change, _ ->
-                    val touchPosition = center.x - change.position.x
+                    val touchPosition = center.x + change.position.x
                     val newPosition = oldPosition + (touchPosition - dragStartedPosition)
 
-                    posX = newPosition.coerceIn(
-                        minimumValue = center.x + spaceBetween * 10 * (style.minHeight - style.initialHeight),
-                        maximumValue = center.x + spaceBetween * 10 * (style.maxHeight - style.initialHeight)
-                    )
+                    rectTopLeft = Offset(newPosition.coerceIn(
+                        minimumValue = center.x + spaceBetween * 10 * (style.initialHeight - style.maxHeight.toFloat()),
+                        maximumValue = center.x + spaceBetween * 10 * (style.initialHeight - style.minHeight.toFloat())
+                    ),
+                        rectTopLeft.y)
 
-                    onHeightChange(((posX - center.x) / (spaceBetween * 10) + style.initialHeight).roundToInt())
+                    onHeightChange(style.initialHeight + 3 - (rectTopLeft.x / (spaceBetween * 10)).roundToInt())
                 }
             }
     ) {
         center = this.center
-        rulerCenter = Offset(center.x, center.y)
+        if(rectTopLeft.x == width*width){
+            rectTopLeft = Offset(center.x, rectTopLeft.y)
+            oldPosition = center.x
+        }
+        val rect = Offset(center.x - spaceBetween * style.initialHeight * 10, center.y)
         drawContext.canvas.nativeCanvas.apply {
             drawRect(
-                rectTopLeft.x,
-                rectTopLeft.y,
+                rect.x,
+                rect.y,
                 width,
                 rulerHeight.toPx(),
                 Paint().apply {
@@ -183,7 +182,7 @@ fun Ruler(
 
         // draw lines
         for(i in (style.minHeight * 10)..(style.maxHeight * 10)){
-            val linePosX= center.x + spaceBetween * (i - style.initialHeight * 10)
+            val linePosX= rectTopLeft.x + spaceBetween * (i - style.initialHeight * 10)
             val lineType = when {
                 i % 10 == 0 -> LineType.TenStep
                 i % 5 == 0 -> LineType.FiveStep
@@ -228,6 +227,29 @@ fun Ruler(
                     )
                 }
             }
+
+            val middleTop = Offset(
+                x = center.x,
+                y = rectTopLeft.y + style.rulerHeight.toPx() - style.heightIndicatorLength.toPx()
+            )
+            val bottomLeft = Offset(
+                x = center.x - 4f,
+                y = rectTopLeft.y + style.rulerHeight.toPx()
+            )
+            val bottomRight = Offset(
+                x = center.x + 4f,
+                y = rectTopLeft.y + style.rulerHeight.toPx()
+            )
+            val indicator = Path().apply {
+                moveTo(middleTop.x, middleTop.y)
+                lineTo(bottomLeft.x, bottomLeft.y)
+                lineTo(bottomRight.x, bottomRight.y)
+                lineTo(middleTop.x, middleTop.y)
+            }
+            drawPath(
+                path = indicator,
+                color = style.heightIndicatorColor
+            )
         }
     }
 }
