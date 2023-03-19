@@ -114,4 +114,13 @@
     <string name="wear_companion">Wear OS Companion</string>
     <string name="female_path">M25.67,7.06a7.06,7.06 0,1 0,-7.06 7.05A7.06,7.06 0,0 0,25.67 7.06ZM2,43.19a2.8,2.8 0,0 0,3.45 -1.92l4.63,-16.22L11.5,25 3,53.59l8.53,0V75.46c0,2.05 1.26,3.72 2.8,3.72h0.06c1.55,0 2.81,-1.67 2.81,-3.72V53.64h2.09V75.46c0,2.05 1.25,3.72 2.8,3.72h0.06c1.55,0 2.8,-1.67 2.8,-3.72V53.66l8.24,0 -8,-28.64h1.26l4.63,16.22a2.79,2.79 0,1 0,5.37 -1.53l-4.94,-17.3c-0.81,-2.84 -3.41,-7.73 -9.23,-7.73 -0.42,0 -6.74,-0.1 -9,-0.1 -5.59,0 -7.45,5.16 -8.21,7.83L0.11,39.74A2.79,2.79 0,0 0,2 43.19Z</string>
     <string name="male_path">M22.05,7.08A7.08,7.08 0,1 0,15 14.16,7.08 7.08,0 0,0 22.05,7.08ZM0,25.2V43.25a2.8,2.8 0,0 0,5.6 0V25.67H6.71l0.06,21.16v29a3.73,3.73 0,0 0,3.73 3.74h0.08a3.73,3.73 0,0 0,3.73 -3.74v-29h1.33V75.69a3.73,3.73 0,0 0,3.73 3.73h0.08a3.73,3.73 0,0 0,3.73 -3.73v-50h1.17V43.25a2.8,2.8 0,0 0,5.6 0v-18c0,-2.95 -0.78,-9.64 -6.77,-9.64H6.69C0.77,15.62 0,22.26 0,25.2Z</string>
+    <string name="message_checking">Welcome to our Mobile app!\n\nChecking for Wear Devices for app…</string>
+    <string name="message_no_devices">Welcome to our Mobile app!\n\nYou have no Wear devices linked to your phone at this time.</string>
+    <string name="message_missing_all">Welcome to our Mobile app!\n\nYou are missing the Wear app on all your Wear Devices, please click on the button below to install it on those device(s).</string>
+    <string name="message_some_installed">Welcome to our Mobile app!\n\nWear app installed on some your device(s) (%1$s)!\n\nYou can now use the MessageClient, DataClient, etc.\n\nTo install the Wear app on the other devices, please click on the button below.</string>
+    <string name="message_all_installed">Welcome to our Mobile app!\n\nWear app installed on all your devices (%1$s)!\n\nYou can now use the MessageClient, DataClient, etc.</string>
+    <string name="install_app">Install App on Wear device(s)</string>
+    <string name="store_request_successful">Play Store Request to Wear device successful.</string>
+    <string name="store_request_unsuccessful">Play Store Request Failed. Wear device(s) may not support Play Store, that is, the Wear device may be version 1.0.</string>
+    <string name="workout_buddy_mobile_wear_screen">Wear Companion</string>
 </resources>
