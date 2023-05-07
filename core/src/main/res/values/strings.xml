@@ -123,4 +123,5 @@
     <string name="store_request_successful">Play Store Request to Wear device successful.</string>
     <string name="store_request_unsuccessful">Play Store Request Failed. Wear device(s) may not support Play Store, that is, the Wear device may be version 1.0.</string>
     <string name="workout_buddy_mobile_wear_screen">Wear Companion</string>
+    <string name="google_web_client_id">671045417709-ptmqk08pbpodn73km2qih085m8fs48i7.apps.googleusercontent.com</string>
 </resources>

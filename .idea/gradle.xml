@@ -7,6 +7,7 @@
         <option name="testRunner" value="GRADLE" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleJvm" value="jbr-17" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
@@ -31,6 +32,7 @@
             <option value="$PROJECT_DIR$/user_auth/user_auth_presentation" />
             <option value="$PROJECT_DIR$/wear" />
             <option value="$PROJECT_DIR$/wear/wear_presentation" />
+            <option value="$PROJECT_DIR$/wearable" />
             <option value="$PROJECT_DIR$/workout_logger" />
             <option value="$PROJECT_DIR$/workout_logger/workout_logger_data" />
             <option value="$PROJECT_DIR$/workout_logger/workout_logger_domain" />

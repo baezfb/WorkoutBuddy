@@ -1,6 +1,5 @@
 package com.hbaez.settings_presentation.settings_overview
 
-import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,7 +26,6 @@ import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.user_auth_presentation.common.composable.DialogCancelButton
 import com.hbaez.user_auth_presentation.common.composable.DialogConfirmButton
 import com.hbaez.user_auth_presentation.components.BasicButton
-import com.hbaez.wear_presentation.wear_overview.WearMobileActivity
 
 @OptIn(ExperimentalMaterialApi::class)
 @ExperimentalCoilApi
@@ -98,8 +96,8 @@ fun AppSettingsOverviewScreen(
                     .fillMaxWidth()
                     .padding(16.dp, 8.dp)
             ) {
-                context.startActivity(Intent(context, WearMobileActivity::class.java))
-//                onNavigateToWear()
+//                context.startActivity(Intent(context, WearMobileActivity::class.java))
+                onNavigateToWear()
             }
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
             BasicButton(

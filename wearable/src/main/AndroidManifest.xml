@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.hbaez.workoutbuddy">
 
+    <uses-feature android:name="android.hardware.type.watch" />
+
     <application
-        android:name="com.hbaez.workoutbuddy.WorkoutBuddyApp"
+        android:name="com.hbaez.workoutbuddy.WorkoutBuddyWearableApp"
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WorkoutBuddy">
-
-        <meta-data android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-
+        <meta-data
+            android:name="com.google.android.wearable.standalone"
+            android:value="true" />
         <activity
-            android:name="com.hbaez.workoutbuddy.MainActivity"
+            android:name="com.hbaez.workoutbuddy.MainWearableActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.WorkoutBuddy">
@@ -27,11 +25,11 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
         </activity>
-        <activity android:name="com.hbaez.wear_presentation.wear_overview.WearMobileActivity"
-            android:exported="true"
-            android:theme="@style/Theme.WorkoutBuddy"
-            />
     </application>
 
 </manifest>

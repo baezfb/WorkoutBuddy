@@ -97,6 +97,9 @@ dependencies {
     implementation("com.google.firebase:firebase-perf-ktx")
     implementation("com.google.firebase:firebase-config-ktx")
 
+    "implementation"("androidx.wear:wear-remote-interactions:1.0.0")
+    "implementation"("com.google.android.gms:play-services-wearable:18.0.0")
+
     implementation(AndroidX.coreKtx)
     implementation(AndroidX.appCompat)
 

@@ -1,7 +1,11 @@
 package com.hbaez.workoutbuddy
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -15,23 +19,33 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.wear.remote.interactions.RemoteActivityHelper
 import coil.annotation.ExperimentalCoilApi
 import com.example.workout_logger_presentation.create_workout.CreateWorkoutScreen
 import com.example.workout_logger_presentation.search_exercise.SearchExerciseScreen
 import com.example.workout_logger_presentation.start_workout.StartWorkoutScreen
 import com.example.workout_logger_presentation.workout_logger_overview.WorkoutLoggerOverviewScreen
+import com.google.android.gms.wearable.CapabilityClient
+import com.google.android.gms.wearable.CapabilityClient.OnCapabilityChangedListener
+import com.google.android.gms.wearable.CapabilityInfo
+import com.google.android.gms.wearable.Node
+import com.google.android.gms.wearable.NodeClient
+import com.google.android.gms.wearable.Wearable
 import com.hbaez.analyzer_presentation.analyzer_presentation.AnalyzerOverviewScreen
 import com.hbaez.core.domain.preferences.Preferences
 import com.hbaez.onboarding_presentation.activity.ActivityScreen
@@ -54,28 +68,59 @@ import com.hbaez.workoutbuddy.ui.theme.WorkoutBuddyTheme
 import com.hbaez.user_auth_presentation.user_auth.SplashScreen
 import com.hbaez.user_auth_presentation.user_auth_overview.UserAuthWelcomeScreen
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.guava.await
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import com.hbaez.core.R
 
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @ExperimentalCoilApi
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
 
     @Inject
     lateinit var preferences: Preferences
+    private lateinit var navController: NavHostController
+
+    private lateinit var capabilityClient: CapabilityClient
+    private lateinit var nodeClient: NodeClient
+    private lateinit var remoteActivityHelper: RemoteActivityHelper
+
+    private var wearNodesWithApp: Set<Node>? = null
+    private var allConnectedNodes: List<Node>? = null
 
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val shouldShowOnBoarding = preferences.loadShouldShowOnboarding()
+
+        capabilityClient = Wearable.getCapabilityClient(this)
+        nodeClient = Wearable.getNodeClient(this)
+        remoteActivityHelper = RemoteActivityHelper(this)
+
         setContent {
             WorkoutBuddyTheme {
-                val navController = rememberNavController()
+                navController = rememberNavController()
                 val scaffoldState = rememberScaffoldState()
 
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
+
+                lifecycleScope.launch {
+                    lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
+                        launch{
+                            findWearDevicesWithApp()
+                        }
+                        launch{
+                            findAllWearDevices()
+                        }
+                    }
+                }
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
@@ -354,7 +399,11 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Route.WEAR_OVERVIEW) {
                             WearOverviewScreen(
-                                /*TODO*/
+                                wearNodesWithApp = wearNodesWithApp,
+                                allConnectedNodes = allConnectedNodes,
+                                openPlayStore = {
+                                    openPlayStoreOnWearDevicesWithoutApp()
+                                }
                             )
                         }
                         composable(Route.USER_AUTH_LOGIN) {
@@ -409,5 +458,123 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onPause() {
+        Log.d(TAG, "onPause()")
+        super.onPause()
+        capabilityClient.removeListener(this, CAPABILITY_WEAR_APP)
+    }
+
+    override fun onResume() {
+        Log.d(TAG, "onResume()")
+        super.onResume()
+        capabilityClient.addListener(this, CAPABILITY_WEAR_APP)
+    }
+
+    private suspend fun findWearDevicesWithApp() {
+        Log.d(TAG, "findWearDevicesWithApp()")
+
+        try {
+            val capabilityInfo = capabilityClient
+                .getCapability(CAPABILITY_WEAR_APP, CapabilityClient.FILTER_ALL)
+                .await()
+
+            withContext(Dispatchers.Main) {
+                Log.d(TAG, "Capability request succeeded.")
+                wearNodesWithApp = capabilityInfo.nodes
+                Log.d(TAG, "Capable Nodes: $wearNodesWithApp")
+//                updateUI()
+            }
+        } catch (cancellationException: CancellationException) {
+            // Request was cancelled normally
+            throw cancellationException
+        } catch (throwable: Throwable) {
+            Log.d(TAG, "Capability request failed to return any results.")
+        }
+    }
+
+    private suspend fun findAllWearDevices() {
+        Log.d(TAG, "findAllWearDevices()")
+
+        try {
+            val connectedNodes = nodeClient.connectedNodes.await()
+
+            withContext(Dispatchers.Main) {
+                allConnectedNodes = connectedNodes
+//                updateUI()
+            }
+        } catch (cancellationException: CancellationException) {
+            // Request was cancelled normally
+        } catch (throwable: Throwable) {
+            Log.d(TAG, "Node request failed to return any results.")
+        }
+    }
+
+    private fun openPlayStoreOnWearDevicesWithoutApp() {
+        Log.d(TAG, "openPlayStoreOnWearDevicesWithoutApp()")
+
+        val wearNodesWithApp = wearNodesWithApp ?: return
+        val allConnectedNodes = allConnectedNodes ?: return
+
+        // Determine the list of nodes (wear devices) that don't have the app installed yet.
+        val nodesWithoutApp = allConnectedNodes - wearNodesWithApp
+
+        Log.d(TAG, "Number of nodes without app: " + nodesWithoutApp.size)
+        val intent = Intent(Intent.ACTION_VIEW)
+            .addCategory(Intent.CATEGORY_BROWSABLE)
+            .setData(Uri.parse(PLAY_STORE_APP_URI))
+
+        // In parallel, start remote activity requests for all wear devices that don't have the app installed yet.
+        nodesWithoutApp.forEach { node ->
+            lifecycleScope.launch {
+                try {
+                    remoteActivityHelper
+                        .startRemoteActivity(
+                            targetIntent = intent,
+                            targetNodeId = node.id
+                        )
+                        .await()
+
+                    Toast.makeText(
+                        this@MainActivity,
+                        getString(R.string.store_request_successful),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } catch (cancellationException: CancellationException) {
+                    // Request was cancelled normally
+                } catch (throwable: Throwable) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        getString(R.string.store_request_unsuccessful),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+    }
+
+    override fun onCapabilityChanged(capabilityInfo: CapabilityInfo) {
+        Log.d(TAG, "onCapabilityChanged(): $capabilityInfo")
+        wearNodesWithApp = capabilityInfo.nodes
+
+        lifecycleScope.launch {
+            // Because we have an updated list of devices with/without our app, we need to also update
+            // our list of active Wear devices.
+            findAllWearDevices()
+        }
+    }
+
+    companion object {
+        private const val TAG = "MainActivity"
+
+        // Name of capability listed in Wear app's wear.xml.
+        // IMPORTANT NOTE: This should be named differently than your Phone app's capability.
+        private const val CAPABILITY_WEAR_APP = "workout_buddy_wear_app"
+
+        // Links to Wear app (Play Store).
+        // TODO: Replace with your links/packages.
+        private const val PLAY_STORE_APP_URI =
+            "market://details?id=com.hbaez.wearable"
     }
 }
