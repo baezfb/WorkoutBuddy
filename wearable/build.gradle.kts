@@ -77,7 +77,10 @@ dependencies {
     implementation(DaggerHilt.hiltAndroid)
     kapt(DaggerHilt.hiltCompiler)
 
+    implementation(project(Modules.core))
     implementation(project(Modules.coreUi))
+    implementation(project(Modules.userAuthPresentation))
+    implementation(project(Modules.userAuthDomain))
 
     implementation(platform("com.google.firebase:firebase-bom:30.3.1"))
     implementation("com.google.firebase:firebase-auth-ktx")
@@ -111,6 +114,8 @@ dependencies {
     kapt(Room.roomCompiler)
     implementation(Room.roomKtx)
     implementation(Room.roomRuntime)
+
+    implementation(Coroutines.coroutines)
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.17.0")
 }

@@ -5,6 +5,7 @@ apply {
 dependencies {
     "implementation"(project(Modules.core))
     "implementation"(project(Modules.coreUi))
+    "implementation"(project(Modules.userAuthPresentation))
 //    "implementation"(project(Modules.workoutLoggerDomain))
 
     "implementation"(Coil.coilCompose)

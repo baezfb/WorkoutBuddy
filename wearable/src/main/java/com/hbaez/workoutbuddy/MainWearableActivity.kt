@@ -62,9 +62,12 @@ import com.google.android.gms.wearable.CapabilityClient.OnCapabilityChangedListe
 import com.google.android.gms.wearable.CapabilityInfo
 import com.google.android.gms.wearable.Node
 import com.google.android.gms.wearable.Wearable
+import com.hbaez.core.domain.preferences.Preferences
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.workoutbuddy.navigation.Route
 import com.hbaez.workoutbuddy.ui.theme.WorkoutBuddyWearableTheme
+import com.hbaez.workoutbuddy.user_auth.LoginScreen
+import com.hbaez.workoutbuddy.user_auth.SplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -72,12 +75,16 @@ import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @ExperimentalCoilApi
 @AndroidEntryPoint
 class MainWearableActivity : ComponentActivity(), OnCapabilityChangedListener {
+
+    @Inject
+    lateinit var preferences: Preferences
 
     private lateinit var capabilityClient: CapabilityClient
     private lateinit var remoteActivityHelper: RemoteActivityHelper
@@ -92,48 +99,32 @@ class MainWearableActivity : ComponentActivity(), OnCapabilityChangedListener {
 
         setContent {
             WorkoutBuddyWearableTheme {
-                val listState = rememberScalingLazyListState()
-                val focusRequester = remember { FocusRequester() }
-                val coroutineScope = rememberCoroutineScope()
+//                val listState = rememberScalingLazyListState()
+//                val focusRequester = remember { FocusRequester() }
+//                val coroutineScope = rememberCoroutineScope()
                 val navController = rememberNavController()
 
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
-
-                Scaffold(
-                    timeText = {
-                        TimeText(modifier = Modifier.scrollAway(listState))
-                    },
-                    vignette = {
-                        Vignette(vignettePosition = VignettePosition.TopAndBottom)
-                    },
-                    positionIndicator = {
-                        PositionIndicator(
-                            scalingLazyListState = listState
-                        )
-                    },
-                    modifier = Modifier
-                        .onRotaryScrollEvent {
-                            coroutineScope.launch {
-                                Log.println(
-                                    Log.DEBUG,
-                                    "verticalScrollPixels",
-                                    it.verticalScrollPixels.toString()
-                                )
-                                listState.scrollBy(it.verticalScrollPixels)
-                            }
-                            true
-                        }
-                        .focusRequester(focusRequester)
-                        .focusable()
+                NavHost(
+                    navController = navController,
+                    startDestination = Route.SPLASH
                 ) {
-                    NavHost(
-                        navController = navController,
-                        startDestination = Route.VERIFY_MOBILE_APP
-                    ) {
-                        composable(Route.VERIFY_MOBILE_APP){
-                            VerifyMobileApp()
-                        }
+                    composable(Route.SPLASH){
+                        SplashScreen(
+                            openAndPopUp = { route, popup ->
+                                navController.navigate(route) {
+                                    launchSingleTop = true
+                                    popUpTo(popup) { inclusive = true }
+                                }
+                            }
+                        )
+                    }
+                    composable(Route.LOGIN){
+                        LoginScreen()
+                    }
+                    composable(Route.VERIFY_MOBILE_APP){
+                        VerifyMobileApp()
                     }
                 }
             }
@@ -158,27 +149,27 @@ class MainWearableActivity : ComponentActivity(), OnCapabilityChangedListener {
     fun VerifyMobileApp(){
         val spacing = LocalSpacing.current
         val androidPhoneNodeWithApp = androidPhoneNodeWithApp
-        val textInfo: Pair<String, Boolean>
 
-        if (androidPhoneNodeWithApp != null) {
+        val textInfo: Pair<String, Boolean> = if (androidPhoneNodeWithApp != null) {
             // TODO: Add your code to communicate with the phone app via
             //       Wear APIs (MessageClient, DataClient, etc.)
             Log.d(TAG, "Installed")
-            textInfo = Pair(getString(R.string.message_installed, androidPhoneNodeWithApp.displayName), false)
-//            binding.informationTextView.text =
-//                getString(R.string.message_installed, androidPhoneNodeWithApp.displayName)
-//            binding.remoteOpenButton.isInvisible = true
+            Pair(getString(R.string.message_installed, androidPhoneNodeWithApp.displayName), false)
+    //            binding.informationTextView.text =
+    //                getString(R.string.message_installed, androidPhoneNodeWithApp.displayName)
+    //            binding.remoteOpenButton.isInvisible = true
         } else {
             Log.d(TAG, "Missing")
-            textInfo = Pair(getString(R.string.message_missing), true)
-//            binding.informationTextView.text = getString(R.string.message_missing)
-//            binding.remoteOpenButton.isVisible = true
+            Pair(getString(R.string.message_missing), true)
+    //            binding.informationTextView.text = getString(R.string.message_missing)
+    //            binding.remoteOpenButton.isVisible = true
         }
 
 
         Column(
             Modifier
                 .fillMaxSize()
+                .padding(10.dp)
                 .background(color = MaterialTheme.colors.background),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
