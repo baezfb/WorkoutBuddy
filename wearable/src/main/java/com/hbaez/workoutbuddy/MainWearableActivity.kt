@@ -121,7 +121,14 @@ class MainWearableActivity : ComponentActivity(), OnCapabilityChangedListener {
                         )
                     }
                     composable(Route.LOGIN){
-                        LoginScreen()
+                        LoginScreen(
+                            openAndPopUp = { route, popup ->
+                                navController.navigate(route) {
+                                    launchSingleTop = true
+                                    popUpTo(popup) { inclusive = true }
+                                }
+                            }
+                        )
                     }
                     composable(Route.VERIFY_MOBILE_APP){
                         VerifyMobileApp()

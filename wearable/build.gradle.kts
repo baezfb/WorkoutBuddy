@@ -98,6 +98,8 @@ dependencies {
     "implementation"("androidx.wear.compose:compose-foundation:1.1.2")
     "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.3.9")
 
+    implementation("androidx.wear:wear-input:1.2.0-alpha02")
+
     implementation(AndroidX.coreKtx)
     implementation(AndroidX.appCompat)
 
