@@ -74,62 +74,7 @@ fun LoginScreen(
 ){
     val spacing = LocalSpacing.current
     val state =  viewModel.state
-//    val listState = rememberScalingLazyListState()
-//    val focusRequester = remember { FocusRequester() }
-//    val coroutineScope = rememberCoroutineScope()
-//
-//    Scaffold(
-//        timeText = {
-//            TimeText(modifier = Modifier.scrollAway(listState))
-//        },
-//        vignette = {
-//            Vignette(vignettePosition = VignettePosition.TopAndBottom)
-//        },
-//        positionIndicator = {
-//            PositionIndicator(
-//                scalingLazyListState = listState
-//            )
-//        },
-//        modifier = Modifier
-//            .padding(8.dp)
-//            .fillMaxSize()
-////            .onRotaryScrollEvent {
-////                coroutineScope.launch {
-////                    Log.println(
-////                        Log.DEBUG,
-////                        "verticalScrollPixels",
-////                        it.verticalScrollPixels.toString()
-////                    )
-////                    listState.scrollBy(it.verticalScrollPixels)
-////                }
-////                true
-////            }
-////            .focusRequester(focusRequester)
-////            .focusable()
-//    ) {
-//        Column(
-//            modifier = Modifier.fillMaxSize(),
-//            verticalArrangement = Arrangement.Center,
-//            horizontalAlignment = Alignment.CenterHorizontally
-//        ) {
-//            Text(
-//                text = stringResource(R.string.login),
-//                style = MaterialTheme.typography.button,
-//                color = MaterialTheme.colors.primary
-//            )
-//
-//            BasicTextField(
-//                modifier = Modifier.weight(1f),
-//                value = state.email,
-//                placeholder = { Text(text = stringResource(id = R.string.email)) },
-//                singleLine = true,
-//                onValueChange = { viewModel.onEvent(LoginEvent.OnEmailFieldChange(it)) }
-//
-//            ) {
-//
-//            }
-//        }
-//    }
+
     val inputTextKey1 = "input_email"
     val inputTextKey2 = "input_password"
 

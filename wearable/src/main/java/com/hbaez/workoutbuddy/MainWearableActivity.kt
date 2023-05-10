@@ -68,6 +68,7 @@ import com.hbaez.workoutbuddy.navigation.Route
 import com.hbaez.workoutbuddy.ui.theme.WorkoutBuddyWearableTheme
 import com.hbaez.workoutbuddy.user_auth.LoginScreen
 import com.hbaez.workoutbuddy.user_auth.SplashScreen
+import com.hbaez.workoutbuddy.workout.WorkoutOverviewScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -127,6 +128,21 @@ class MainWearableActivity : ComponentActivity(), OnCapabilityChangedListener {
                                     launchSingleTop = true
                                     popUpTo(popup) { inclusive = true }
                                 }
+                            }
+                        )
+                    }
+                    composable(Route.HOME){
+                        WorkoutOverviewScreen(
+                            onNavigateToWorkout = { workoutName, day, month, year, workoutIds ->
+                                navController.navigate(
+                                    Route.VERIFY_MOBILE_APP
+//                                    Route.WORKOUT_START +
+//                                            "/$workoutName" +
+//                                            "/$day" +
+//                                            "/$month" +
+//                                            "/$year" +
+//                                            "/$workoutIds"
+                                )
                             }
                         )
                     }

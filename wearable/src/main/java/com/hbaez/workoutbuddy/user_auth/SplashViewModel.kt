@@ -18,7 +18,7 @@ class SplashViewModel @Inject constructor(
         launchCatching { configurationService.fetchConfiguration() }
     }
     fun onAppStart(openAndPopUp: (String, String) -> Unit) {
-        if (accountService.hasUser) openAndPopUp(Route.VERIFY_MOBILE_APP, Route.SPLASH)
+        if (accountService.hasUser) openAndPopUp(Route.HOME, Route.SPLASH)
         else openAndPopUp(Route.LOGIN, Route.SPLASH)
     }
 }

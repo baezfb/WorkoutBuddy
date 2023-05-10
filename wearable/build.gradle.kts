@@ -80,7 +80,6 @@ dependencies {
     implementation(project(Modules.core))
     implementation(project(Modules.coreUi))
     implementation(project(Modules.userAuthPresentation))
-    implementation(project(Modules.userAuthDomain))
 
     implementation(platform("com.google.firebase:firebase-bom:30.3.1"))
     implementation("com.google.firebase:firebase-auth-ktx")
@@ -120,4 +119,5 @@ dependencies {
     implementation(Coroutines.coroutines)
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.17.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha03")
 }

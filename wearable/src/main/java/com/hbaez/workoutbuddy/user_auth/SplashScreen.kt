@@ -60,19 +60,6 @@ fun SplashScreen(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxSize()
-//            .onRotaryScrollEvent {
-//                coroutineScope.launch {
-//                    Log.println(
-//                        Log.DEBUG,
-//                        "verticalScrollPixels",
-//                        it.verticalScrollPixels.toString()
-//                    )
-//                    listState.scrollBy(it.verticalScrollPixels)
-//                }
-//                true
-//            }
-//            .focusRequester(focusRequester)
-//            .focusable()
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),

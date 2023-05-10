@@ -47,7 +47,7 @@ fun WorkoutBuddyWearableTheme(darkTheme: Boolean = isSystemInDarkTheme(), conten
     val colors = if (darkTheme) {
         DarkColorPalette
     } else {
-        LightColorPalette
+        DarkColorPalette
     }
     val systemUiController = rememberSystemUiController()
     systemUiController.setSystemBarsColor(

@@ -51,7 +51,7 @@ class LoginViewModel @Inject constructor(
                     accountService.authenticate(event.email, event.password)
                     preferences.updateUserInfo(storageService.getUserInfo()!!, accountService.currentUserId)
 
-                    event.openAndPopUp(Route.VERIFY_MOBILE_APP, Route.LOGIN)
+                    event.openAndPopUp(Route.HOME, Route.LOGIN)
                 }
             }
         }
