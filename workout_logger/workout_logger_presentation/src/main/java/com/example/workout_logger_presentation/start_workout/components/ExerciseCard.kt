@@ -133,11 +133,11 @@ fun ExerciseCardRow(
         )
         TextField(
             modifier = Modifier.weight(1f),
-            placeholder = { Text(text = workoutTemplate.weight.toString()) },
+            placeholder = { Text(text = loggerListState.origWeight) },
             value = loggerListState.weightList[index],
             textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
             singleLine = true,
-            onValueChange = { onWeightChange(it, index, workoutTemplate.rowId) },
+            onValueChange = { onWeightChange(it, index, loggerListState.id) },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
                 onDone = {
@@ -152,11 +152,11 @@ fun ExerciseCardRow(
         )
         TextField(
             modifier = Modifier.weight(1f),
-            placeholder = { Text(text = workoutTemplate.reps.toString()) },
+            placeholder = { Text(text = loggerListState.origReps.toString()) },
             value = loggerListState.repsList[index],
             textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
             singleLine = true,
-            onValueChange = { onRepsChange(it, index, workoutTemplate.rowId) },
+            onValueChange = { onRepsChange(it, index, loggerListState.id) },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
                 onDone = {
@@ -173,7 +173,7 @@ fun ExerciseCardRow(
             modifier = Modifier.weight(1f),
             checked = loggerListState.isCompleted[index],
             onCheckedChange = {
-                onCheckboxChange(it, index, workoutTemplate.rowId, page)
+                onCheckboxChange(it, index, loggerListState.id, page)
             },
             colors = CheckboxDefaults.colors(
                 checkedColor = Color.DarkGray /* TODO */

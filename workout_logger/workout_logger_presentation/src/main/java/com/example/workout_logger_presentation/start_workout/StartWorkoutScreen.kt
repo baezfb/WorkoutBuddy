@@ -67,6 +67,12 @@ fun StartWorkoutScreen(
     val context = LocalContext.current
     val pagerState = rememberPagerState(initialPage = 0)
     val workoutTemplates = viewModel.workoutTemplates.collectAsStateWithLifecycle(emptyList())
+    var count = 0
+    workoutTemplates.value.forEach {
+        if(it.name == workoutName){
+            count += 1
+        }
+    }
 
     LaunchedEffect(Unit){
         viewModel.uiEvent.collect{ event ->
@@ -111,11 +117,14 @@ fun StartWorkoutScreen(
                     .padding(padding)
                     .scrollEnabled(state.timerStatus != TimerStatus.RUNNING),
                 verticalAlignment = Alignment.CenterVertically,
-                count = workoutTemplates.value.size,
+                count = count,
                 contentPadding = PaddingValues(spacing.spaceSmall)
             ) {page ->
                 var currExercise: WorkoutTemplate
                 var loggerListState: LoggerListState
+                Log.println(Log.DEBUG, "startworkoutscreen workoutIds", workoutIds.toString())
+                Log.println(Log.DEBUG, "startworkoutscreen rowID at page", workoutIds[page])
+                Log.println(Log.DEBUG, "startworkoutscreen page", page.toString())
                 workoutTemplates.value.forEach {
                     if(it.name == workoutName){
                         if (it.rowId == workoutIds[page].toInt()){
