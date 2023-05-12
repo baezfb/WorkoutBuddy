@@ -1,6 +1,7 @@
 package com.example.workout_logger_presentation.start_workout
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -116,45 +117,47 @@ fun StartWorkoutScreen(
                 var currExercise: WorkoutTemplate
                 var loggerListState: LoggerListState
                 workoutTemplates.value.forEach {
-                    if (it.rowId == workoutIds[page].toInt()){
-                        currExercise = it
-                        if(state.loggerListStates.size > page && state.loggerListStates[page].id != it.rowId){
-                            loggerListState = LoggerListState(
-                                id = it.rowId,
-                                exerciseName = it.exerciseName,
-                                exerciseId = it.exerciseId,
-                                timerStatus = TimerStatus.START,
-                                sets = it.sets.toString(),
-                                rest = it.rest.toString(),
-                                repsList = List(it.sets) { _ -> it.reps.toString() },
-                                weightList = List(it.sets) { _ -> it.weight.toString() },
-                                isCompleted = List(it.sets) { false },
-                                checkedColor = List(it.sets) { Color.DarkGray },
-                                origRest = it.rest.toString(),
-                                origReps = it.reps.toString(),
-                                origWeight = it.weight.toString()
-                            )
-                            viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
+                    if(it.name == workoutName){
+                        if (it.rowId == workoutIds[page].toInt()){
+                            currExercise = it
+                            if(state.loggerListStates.size > page && state.loggerListStates[page].id != it.rowId){
+                                loggerListState = LoggerListState(
+                                    id = it.rowId,
+                                    exerciseName = it.exerciseName,
+                                    exerciseId = it.exerciseId,
+                                    timerStatus = TimerStatus.START,
+                                    sets = it.sets.toString(),
+                                    rest = it.rest.toString(),
+                                    repsList = List(it.sets) { _ -> it.reps.toString() },
+                                    weightList = List(it.sets) { _ -> it.weight.toString() },
+                                    isCompleted = List(it.sets) { false },
+                                    checkedColor = List(it.sets) { Color.DarkGray },
+                                    origRest = it.rest.toString(),
+                                    origReps = it.reps.toString(),
+                                    origWeight = it.weight.toString()
+                                )
+                                viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
+                            }
+                            else if (state.loggerListStates.size == page) {
+                                loggerListState = LoggerListState(
+                                    id = it.rowId,
+                                    exerciseName = it.exerciseName,
+                                    exerciseId = it.exerciseId,
+                                    timerStatus = TimerStatus.START,
+                                    sets = it.sets.toString(),
+                                    rest = it.rest.toString(),
+                                    repsList = List(it.sets) { "" },
+                                    weightList = List(it.sets) { "" },
+                                    isCompleted = List(it.sets) { false },
+                                    checkedColor = List(it.sets) { Color.DarkGray },
+                                    origRest = it.rest.toString(),
+                                    origReps = it.reps.toString(),
+                                    origWeight = it.weight.toString()
+                                )
+                                viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
+                            }
+                            return@forEach
                         }
-                        else if (state.loggerListStates.size == page) {
-                            loggerListState = LoggerListState(
-                                id = it.rowId,
-                                exerciseName = it.exerciseName,
-                                exerciseId = it.exerciseId,
-                                timerStatus = TimerStatus.START,
-                                sets = it.sets.toString(),
-                                rest = it.rest.toString(),
-                                repsList = List(it.sets) { "" },
-                                weightList = List(it.sets) { "" },
-                                isCompleted = List(it.sets) { false },
-                                checkedColor = List(it.sets) { Color.DarkGray },
-                                origRest = it.rest.toString(),
-                                origReps = it.reps.toString(),
-                                origWeight = it.weight.toString()
-                            )
-                            viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
-                        }
-                        return@forEach
                     }
                 }
 
@@ -164,7 +167,7 @@ fun StartWorkoutScreen(
                 Column{
                     Row{
                         Text(
-                            text = workoutTemplates.value[page].exerciseName,
+                            text = state.loggerListStates[page].exerciseName,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
                             style = MaterialTheme.typography.h3,

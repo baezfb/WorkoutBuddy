@@ -1,5 +1,6 @@
 package com.example.workout_logger_presentation.start_workout.components
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -88,17 +89,20 @@ fun ExerciseCard(
                 )
             }
             LazyColumn{
-                itemsIndexed(List(workoutTemplates.value[page].sets) { it + 1 }){ index, _ ->
-                    ExerciseCardRow(
-                        index + 1,
-                        loggerListState,
-                        workoutTemplates.value[page],
-                        index,
-                        onRepsChange,
-                        onWeightChange,
-                        onCheckboxChange,
-                        page
-                    )
+                List(loggerListState.sets.toInt()) { it + 1 }.forEach {
+                    Log.println(Log.DEBUG, "exercisecard", it.toString())
+                    item {
+                        ExerciseCardRow(
+                            it,
+                            loggerListState,
+                            workoutTemplates.value[page],
+                            it - 1,
+                            onRepsChange,
+                            onWeightChange,
+                            onCheckboxChange,
+                            page
+                        )
+                    }
                 }
             }
         }

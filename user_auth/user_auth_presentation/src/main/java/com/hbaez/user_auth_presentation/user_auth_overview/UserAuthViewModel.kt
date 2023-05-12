@@ -88,6 +88,25 @@ class UserAuthViewModel @Inject constructor(
                 }
             }
             is UserAuthEvent.OnSignupClick -> {
+                if (!event.email.isValidEmail()) {
+                    viewModelScope.launch {
+                        _uiEvent.send(UiEvent.ShowSnackbar(UiText.StringResource(R.string.invalid_email)))
+                    }
+                    return
+                }
+
+                if (!event.password.isValidPassword()) {
+                    viewModelScope.launch {
+                        _uiEvent.send(UiEvent.ShowSnackbar(UiText.StringResource(R.string.invalid_password)))
+                    }
+                    return
+                }
+                if (!event.password.passwordMatches(event.passwordRetyped)) {
+                    viewModelScope.launch {
+                        _uiEvent.send(UiEvent.ShowSnackbar(UiText.StringResource(R.string.mismatched_password)))
+                    }
+                    return
+                }
                 launchCatching {
                     accountService.linkAccount(event.email, event.password)
                     event.openAndPopUp("welcome", "user_auth_signup")

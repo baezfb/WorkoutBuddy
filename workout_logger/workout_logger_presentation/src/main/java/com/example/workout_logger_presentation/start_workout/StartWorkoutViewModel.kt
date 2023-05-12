@@ -61,9 +61,6 @@ class StartWorkoutViewModel @Inject constructor(
         workoutId = savedStateHandle["workoutId"] ?: -1
         workoutIds = (savedStateHandle["workoutIds"] ?: "").trim('[').trim(']').replace(" ","").split(',').toList()
         Log.println(Log.DEBUG, "workoutids viewmodel", workoutIds.toString())
-        launchCatching {
-            workoutName = workoutTemplates.first()[0].name
-        }
     }
 
     fun onEvent(event: StartWorkoutEvent) {
