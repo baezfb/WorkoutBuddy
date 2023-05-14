@@ -1,4 +1,4 @@
-package com.hbaez.workoutbuddy.workout
+package com.hbaez.workoutbuddy.workout.start_workout
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,9 +20,9 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
@@ -33,7 +32,6 @@ import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.ScalingLazyColumn
-import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
@@ -49,9 +47,12 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalLifecycleComposeApi::class)
 @ExperimentalCoilApi
 @Composable
-fun WorkoutOverviewScreen(
-    onNavigateToWorkout: (workoutName: String, day: Int, month: Int, year: Int) -> Unit,
-    viewModel: WorkoutOverviewModel = hiltViewModel()
+fun StartWorkoutScreen(
+    workoutName: String,
+    dayOfMonth: Int,
+    month: Int,
+    year: Int,
+    viewModel: StartWorkoutViewModel = hiltViewModel()
 ) {
     val spacing = LocalSpacing.current
     val state = viewModel.state
@@ -99,6 +100,31 @@ fun WorkoutOverviewScreen(
             .size(24.dp)
             .wrapContentSize(align = Alignment.Center)
 
+        var loggerListState: LoggerListState
+        Log.println(Log.DEBUG, "startworkoutscreen size", workoutTemplates.value.size.toString())
+        workoutTemplates.value.forEach {
+            Log.println(Log.DEBUG, "startworkoutscreen check", it.name)
+            Log.println(Log.DEBUG, "startworkoutscreen check", workoutName)
+            if(it.name == workoutName){
+                loggerListState = LoggerListState(
+                    id = it.rowId,
+                    exerciseName = it.exerciseName,
+                    exerciseId = it.exerciseId,
+                    timerStatus = TimerStatus.START,
+                    sets = it.sets.toString(),
+                    rest = it.rest.toString(),
+                    repsList = List(it.sets) { _ -> it.reps.toString() },
+                    weightList = List(it.sets) { _ -> it.weight.toString() },
+                    isCompleted = List(it.sets) { false },
+                    checkedColor = List(it.sets) { Color.DarkGray },
+                    origRest = it.rest.toString(),
+                    origReps = it.reps.toString(),
+                    origWeight = it.weight.toString()
+                )
+                viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
+            }
+        }
+
         ScalingLazyColumn(
             modifier = Modifier
                 .fillMaxSize(),
@@ -106,30 +132,10 @@ fun WorkoutOverviewScreen(
             state = listState
         ) {
 
-            item { WearText(color = MaterialTheme.colors.onBackground, text = stringResource(R.string.choose_workout)) }
-            item { Spacer(modifier = Modifier.height(spacing.spaceMedium)) }
-            val uniqueNames = mutableListOf<String>()
-            workoutTemplates.value.forEach { workout ->
-                Log.println(Log.DEBUG, "workoutoverviewscreen name", workout.name)
-                if(!uniqueNames.contains(workout.name)) {
-                    item {
-                        WearButton(
-                            text = workout.name,
-                            onClick = {
-                                      onNavigateToWorkout(
-                                          workout.name,
-                                          state.date.dayOfMonth,
-                                          state.date.monthValue,
-                                          state.date.year
-                                      )
-                                      },
-                            icon = null
-                        )
-                    }
-                    uniqueNames.add(workout.name)
-                }
+            state.loggerListStates.forEach {
+                item { SetCard(exerciseName = it.exerciseName) }
+                item { Spacer(modifier = Modifier.height(spacing.spaceMedium)) }
             }
         }
     }
-
 }

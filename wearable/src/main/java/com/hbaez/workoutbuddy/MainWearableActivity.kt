@@ -42,10 +42,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.TimeText
@@ -69,6 +71,7 @@ import com.hbaez.workoutbuddy.ui.theme.WorkoutBuddyWearableTheme
 import com.hbaez.workoutbuddy.user_auth.LoginScreen
 import com.hbaez.workoutbuddy.user_auth.SplashScreen
 import com.hbaez.workoutbuddy.workout.WorkoutOverviewScreen
+import com.hbaez.workoutbuddy.workout.start_workout.StartWorkoutScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -133,17 +136,47 @@ class MainWearableActivity : ComponentActivity(), OnCapabilityChangedListener {
                     }
                     composable(Route.HOME){
                         WorkoutOverviewScreen(
-                            onNavigateToWorkout = { workoutName, day, month, year, workoutIds ->
+                            onNavigateToWorkout = { workoutName, day, month, year ->
                                 navController.navigate(
-                                    Route.VERIFY_MOBILE_APP
-//                                    Route.WORKOUT_START +
-//                                            "/$workoutName" +
-//                                            "/$day" +
-//                                            "/$month" +
-//                                            "/$year" +
-//                                            "/$workoutIds"
+                                    Route.START_WORKOUT +
+                                        "/$workoutName" +
+                                        "/$day" +
+                                        "/$month" +
+                                        "/$year"
                                 )
                             }
+                        )
+                    }
+                    composable(
+                        route = Route.START_WORKOUT +
+                                "/{workoutName}" +
+                                "/{dayOfMonth}" +
+                                "/{month}" +
+                                "/{year}",
+                        arguments = listOf(
+                            navArgument("workoutName") {
+                                type = NavType.StringType
+                            },
+                            navArgument("dayOfMonth") {
+                                type = NavType.IntType
+                            },
+                            navArgument("month") {
+                                type = NavType.IntType
+                            },
+                            navArgument("year") {
+                                type = NavType.IntType
+                            }
+                            )
+                    ) {
+                        val workoutName = it.arguments?.getString("workoutName") ?: ""
+                        val dayOfMonth = it.arguments?.getInt("dayOfMonth")!!
+                        val month = it.arguments?.getInt("month")!!
+                        val year = it.arguments?.getInt("year")!!
+                        StartWorkoutScreen(
+                            workoutName = workoutName,
+                            dayOfMonth = dayOfMonth,
+                            month = month,
+                            year = year,
                         )
                     }
                     composable(Route.VERIFY_MOBILE_APP){
