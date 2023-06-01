@@ -10,6 +10,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -73,7 +75,19 @@ fun DraggableRow(
     onSearchClick: () -> Unit
 ){
     val spacing = LocalSpacing.current
-    val offsetX = remember { mutableStateOf(0f) }
+    var isDragging by remember { mutableStateOf(false) }
+    var center by remember {
+        mutableStateOf(Offset.Zero)
+    }
+    var rowTopLeft by remember {
+        mutableStateOf(Offset.Zero)
+    }
+    var dragStartedPosition by remember {
+        mutableStateOf(0f)
+    }
+    var oldPosition by remember {
+        mutableStateOf(rowTopLeft.x)
+    }
     val transitionState = remember {
         MutableTransitionState(isRevealed).apply {
             targetState = !isRevealed
@@ -84,9 +98,12 @@ fun DraggableRow(
         label = "rowOffsetTransition",
         transitionSpec = { tween(durationMillis = ANIMATION_DURATION) },
         targetValueByState = {
-            if (isRevealed and !isSearchRevealed) (cardOffset - offsetX.value)
-            else if (isRevealed and isSearchRevealed) (-cardOffset - offsetX.value)
-            else -offsetX.value
+            if(!isDragging){
+                if (isRevealed and !isSearchRevealed and (rowTopLeft.x == 400f)) (-rowTopLeft.x)
+                if (isRevealed and !isSearchRevealed) (cardOffset - rowTopLeft.x)
+                else if (isRevealed and isSearchRevealed) (-cardOffset - rowTopLeft.x)
+                else -rowTopLeft.x
+            } else 0f
                              },
     )
 
@@ -142,20 +159,33 @@ fun DraggableRow(
 
         Row(
             modifier = Modifier
-                .offset { IntOffset((offsetX.value.roundToInt() + offsetTransition).toInt(), 0) }
+                .offset { IntOffset((rowTopLeft.x.roundToInt() + offsetTransition.roundToInt()), 0) }
                 .pointerInput(Unit) {
-                    detectHorizontalDragGestures { change, dragAmount ->
-                        val original = Offset(offsetX.value, 0f)
-                        val summed = original + Offset(x = dragAmount, y = 0f)
-                        val newValue = Offset(x = summed.x.coerceIn(-cardOffset, cardOffset), y = 0f)
-                        change.consumePositionChange()
-                        offsetX.value = newValue.x
-                        Log.println(Log.DEBUG, "dragamnt,offsetX.value", dragAmount.toString() + " , " + offsetX.value.toString())
+                    detectDragGestures(
+                        onDragStart = { offset ->
+                            dragStartedPosition = center.x + offset.x
+                            isDragging = true
+
+                        },
+                        onDragEnd = {
+                            oldPosition = rowTopLeft.x
+                            isDragging = false
+                        }
+                    ) { change, dragAmount ->
+                        val touchPosition = center.x + change.position.x
+                        val newPosition = oldPosition + (touchPosition - dragStartedPosition)
+
+                        rowTopLeft = Offset(newPosition.coerceIn(
+                            minimumValue = center.x - cardOffset,
+                            maximumValue = center.x + cardOffset ),
+                            rowTopLeft.y
+                        )
+
                         when {
-                            dragAmount > 10f && offsetX.value in cardOffset*0.5f..cardOffset -> onExpand(id)
-                            dragAmount > 10f && offsetX.value in -cardOffset..0f -> onCenter(id)
-                            dragAmount < -10f && offsetX.value in -cardOffset..-cardOffset*0.5f -> onCollapse(id)
-                            dragAmount < -10f && offsetX.value in 0f..cardOffset -> onCenter(id)
+                            dragAmount.x > 5f && rowTopLeft.x in cardOffset*0.5f..cardOffset -> onExpand(id)
+                            dragAmount.x > 5f && rowTopLeft.x in -cardOffset*0.5f..0f -> onCenter(id)
+                            dragAmount.x < -5f && rowTopLeft.x in -cardOffset..-cardOffset*0.5f -> onCollapse(id)
+                            dragAmount.x < -5f && rowTopLeft.x in 0f..cardOffset*0.5f -> onCenter(id)
                         }
                     }
                 }
