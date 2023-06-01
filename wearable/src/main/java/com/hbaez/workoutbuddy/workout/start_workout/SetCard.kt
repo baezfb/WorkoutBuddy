@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.runtime.Composable
@@ -27,6 +28,7 @@ import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.Icon
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.workoutbuddy.R
+import com.hbaez.workoutbuddy.components.WearButton
 import com.hbaez.workoutbuddy.components.WearText
 
 @Composable
@@ -56,25 +58,10 @@ fun SetCard(
             Row(
               Modifier.fillMaxWidth()
             ){
-                IncDecChip()
+                WearButton(text = "", onClick = { /*TODO*/ }, icon = Icons.Rounded.ArrowDownward)
+                WearText(text = "10")
+                WearButton(text = "", onClick = { /*TODO*/ }, icon = Icons.Rounded.ArrowUpward)
             }
         }
     }
-}
-
-@Composable
-fun IncDecChip(
-    modifier: Modifier = Modifier
-) {
-    Chip(
-        modifier = Modifier.wrapContentSize(),
-        onClick = { /*TODO*/ },
-        icon = {
-            Icon(
-                imageVector = Icons.Rounded.ArrowUpward,
-                contentDescription = "increase count",
-                modifier = modifier.size(24.dp)
-            )
-        }
-    )
 }
