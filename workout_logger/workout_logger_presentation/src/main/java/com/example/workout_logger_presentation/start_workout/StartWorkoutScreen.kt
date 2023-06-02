@@ -122,9 +122,6 @@ fun StartWorkoutScreen(
             ) {page ->
                 var currExercise: WorkoutTemplate
                 var loggerListState: LoggerListState
-                Log.println(Log.DEBUG, "startworkoutscreen workoutIds", workoutIds.toString())
-                Log.println(Log.DEBUG, "startworkoutscreen rowID at page", workoutIds[page])
-                Log.println(Log.DEBUG, "startworkoutscreen page", page.toString())
                 workoutTemplates.value.forEach {
                     if(it.name == workoutName){
                         if (it.rowId == workoutIds[page].toInt()){

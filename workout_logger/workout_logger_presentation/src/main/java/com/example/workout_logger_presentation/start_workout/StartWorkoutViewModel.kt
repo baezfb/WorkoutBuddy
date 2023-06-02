@@ -127,11 +127,13 @@ class StartWorkoutViewModel @Inject constructor(
                 currentTime = currentTime
             }
             is StartWorkoutEvent.OnChangePage -> {
-                state = state.copy(
-                    remainingTime = state.loggerListStates[event.currentPage].rest.toLong(),
-                    timeDuration = Duration.ofSeconds(state.loggerListStates[event.currentPage].rest.toLong()),
-                    pagerIndex = event.currentPage
-                )
+                if(state.timerStatus != TimerStatus.RUNNING){
+                    state = state.copy(
+                        remainingTime = state.loggerListStates[event.currentPage].rest.toLong(),
+                        timeDuration = Duration.ofSeconds(state.loggerListStates[event.currentPage].rest.toLong()),
+                        pagerIndex = event.currentPage
+                    )
+                }
             }
             is StartWorkoutEvent.TimerFinished -> {
                 Log.println(Log.DEBUG, "!!!! current page", state.pagerIndex.toString())
