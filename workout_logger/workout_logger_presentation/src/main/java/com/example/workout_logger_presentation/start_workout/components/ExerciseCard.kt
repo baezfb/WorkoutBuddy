@@ -44,7 +44,7 @@ import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 fun ExerciseCard(
     page: Int,
     loggerListState: LoggerListState,
-    workoutTemplates: State<List<WorkoutTemplate>>,
+    workoutTemplate: WorkoutTemplate,
     onRepsChange: (reps: String, index: Int, id: Int) -> Unit,
     onWeightChange: (weight: String, index: Int, id: Int) -> Unit,
     onCheckboxChange: (isCompleted: Boolean, index: Int, id: Int, page: Int) -> Unit
@@ -90,12 +90,11 @@ fun ExerciseCard(
             }
             LazyColumn{
                 List(loggerListState.sets.toInt()) { it + 1 }.forEach {
-                    Log.println(Log.DEBUG, "exercisecard", it.toString())
                     item {
                         ExerciseCardRow(
                             it,
                             loggerListState,
-                            workoutTemplates.value[page],
+                            workoutTemplate,
                             it - 1,
                             onRepsChange,
                             onWeightChange,

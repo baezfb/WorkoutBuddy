@@ -49,11 +49,14 @@ class NotificationUtil {
             val stopPendingIntent = PendingIntent.getBroadcast(context,
                 0, stopIntent, PendingIntent.FLAG_MUTABLE)
 
-            val df = SimpleDateFormat.getTimeInstance(SimpleDateFormat.MEDIUM)
+//            val df = SimpleDateFormat.getTimeInstance(SimpleDateFormat.MEDIUM)
+
+            val dateFormat = SimpleDateFormat("MM/dd/yyyy HH:mm:ss", Locale.getDefault())
+            val date = Date(wakeUpTime)
 
             val nBuilder = getBasicNotificationBuilder(context, CHANNEL_ID_TIMER, false)
             nBuilder.setContentTitle("Timer is Running.")
-                .setContentText("End: ${df.format(Date(wakeUpTime))}")
+                .setContentText("End: ${dateFormat.format(date)}")
                 .setOngoing(true)
                 .addAction(R.drawable.ic_exercise, "Stop", stopPendingIntent)
 

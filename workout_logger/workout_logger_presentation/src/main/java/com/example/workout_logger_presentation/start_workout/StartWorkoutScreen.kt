@@ -68,9 +68,11 @@ fun StartWorkoutScreen(
     val pagerState = rememberPagerState(initialPage = 0)
     val workoutTemplates = viewModel.workoutTemplates.collectAsStateWithLifecycle(emptyList())
     var count = 0
+    val workoutExerciseNames = ArrayList<String>()
     workoutTemplates.value.forEach {
         if(it.name == workoutName){
             count += 1
+            workoutExerciseNames.add(it.exerciseName)
         }
     }
 
@@ -170,10 +172,18 @@ fun StartWorkoutScreen(
                 if(pagerState.targetPage != pagerState.currentPage){
                     viewModel.onEvent(StartWorkoutEvent.OnChangePage(pagerState.targetPage))
                 }
+                // get current exercise from workoutTemplates
+                // using workoutName and exerciseName
+                lateinit var currentExercise: WorkoutTemplate
+                workoutTemplates.value.forEach {
+                    if(it.name == workoutName && it.exerciseName ==  workoutExerciseNames[page]){
+                        currentExercise = it
+                    }
+                }
                 Column{
                     Row{
                         Text(
-                            text = state.loggerListStates[page].exerciseName,
+                            text = currentExercise.exerciseName,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
                             style = MaterialTheme.typography.h3,
@@ -190,7 +200,7 @@ fun StartWorkoutScreen(
                     ExerciseCard(
                         page = page,
                         loggerListState = state.loggerListStates[page],
-                        workoutTemplates = workoutTemplates,
+                        workoutTemplate = currentExercise,
                         onRepsChange = { reps, index, id ->
                             viewModel.onEvent(StartWorkoutEvent.OnRepsChange(reps = reps, index = index, rowId = id))
                         },
@@ -203,7 +213,7 @@ fun StartWorkoutScreen(
                             }
                             if(isChecked && (state.timerStatus == TimerStatus.START || state.timerStatus == TimerStatus.FINISHED)){ // non checked clicked while timer not running
                                 viewModel.onEvent(StartWorkoutEvent.OnCheckboxChange(isChecked= true, timerStatus = TimerStatus.RUNNING, currRunningIndex = index, index = index, rowId = id, page = page))
-                                val wakeupTime = StartWorkoutViewModel.setAlarm(context = context, timeDuration = Duration.ofSeconds(workoutTemplates.value[page].rest.toLong()))
+                                val wakeupTime = StartWorkoutViewModel.setAlarm(context = context, timeDuration = Duration.ofSeconds(currentExercise.rest.toLong()))
                                 NotificationUtil.showTimerRunning(context, wakeupTime)
                                 viewModel.onEvent(StartWorkoutEvent.ChangeCheckboxColor(color = Color(255,153,51), id = id, index = index))
                             }
