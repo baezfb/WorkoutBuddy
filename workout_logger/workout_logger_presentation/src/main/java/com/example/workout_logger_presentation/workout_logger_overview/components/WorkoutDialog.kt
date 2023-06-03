@@ -47,7 +47,7 @@ fun WorkoutDialog(
     AlertDialog(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(max = 250.dp)
+            .heightIn(max = 275.dp)
             .wrapContentHeight(align = Alignment.CenterVertically)
             .clip( RoundedCornerShape(50.dp) ),
         onDismissRequest = { onDismiss() },

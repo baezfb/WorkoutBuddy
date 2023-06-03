@@ -87,6 +87,8 @@
     <string name="create_edit_workout">Create / Edit Workout</string>
     <string name="create_edit_exercise">Create / Edit Exercise</string>
     <string name="start_exercise">Start Exercise</string>
+    <string name="create_exercise">Create Exercise</string>
+    <string name="edit_exercise">Edit Exercise</string>
     <string name="login_header">Log in to your account</string>
     <string name="login">Login</string>
     <string name="email">Email Address</string>

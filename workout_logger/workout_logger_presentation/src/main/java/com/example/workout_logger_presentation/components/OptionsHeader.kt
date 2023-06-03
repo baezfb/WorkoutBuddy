@@ -56,7 +56,14 @@ fun OptionsHeader(
         Spacer(modifier = Modifier.height(spacing.spaceMedium))
 //        AddButton(text = stringResource(id = R.string.edit_workout), onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth(), icon = Icons.Default.Edit)
 //        Spacer(modifier = Modifier.height(spacing.spaceMedium))
-        AddButton(text = stringResource(id = R.string.create_edit_exercise), onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth(), icon = Icons.Default.Edit)
+        AddButton(
+            text = stringResource(id = R.string.create_edit_exercise),
+            onClick = {
+                      optionsHeaderDialog("exercise")
+                      },
+            modifier = Modifier.fillMaxWidth(),
+            icon = Icons.Default.Edit
+        )
         Spacer(modifier = Modifier.height(spacing.spaceLarge))
     }
 }

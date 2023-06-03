@@ -40,13 +40,15 @@ fun OptionsHeaderDialog(
     onClickCreate: () -> Unit,
     onClickEdit: () -> Unit,
     title: Int,
+    text1: String,
+    text2: String,
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
     AlertDialog(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(max = 250.dp)
+            .heightIn(max = 275.dp)
             .wrapContentHeight(align = Alignment.CenterVertically)
             .clip(RoundedCornerShape(50.dp)),
         onDismissRequest = { onDismiss() },
@@ -79,7 +81,7 @@ fun OptionsHeaderDialog(
                         modifier = Modifier.heightIn(250.dp)
                     ) {
                         AddButton(
-                            text = stringResource(id = R.string.create_workout),
+                            text = text1,
                             onClick = { onClickCreate() },
                             icon = Icons.Default.List,
                             modifier = Modifier
@@ -87,7 +89,7 @@ fun OptionsHeaderDialog(
                                 .padding(spacing.spaceSmall)
                         )
                         AddButton(
-                            text = stringResource(id = R.string.edit_workout),
+                            text = text2,
                             onClick = { onClickEdit() },
                             icon = Icons.Default.List,
                             modifier = Modifier

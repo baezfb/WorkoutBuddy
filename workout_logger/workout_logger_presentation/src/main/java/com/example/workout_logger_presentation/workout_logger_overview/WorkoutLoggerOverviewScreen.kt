@@ -114,16 +114,36 @@ fun WorkoutLoggerOverviewScreen(
                 )
             }
             if(showOptionsHeaderDialog.value){
-                OptionsHeaderDialog(
-                    onDismiss = { showOptionsHeaderDialog.value = false },
-                    onClickCreate = {
-                        onNavigateToCreate()
-                    },
-                    onClickEdit = {
-
-                    },
-                    title = R.string.create_edit_workout
-                )
+                when(optionsHeaderType.value) {
+                    "workout" -> {
+                        OptionsHeaderDialog(
+                            onDismiss = { showOptionsHeaderDialog.value = false },
+                            onClickCreate = {
+                                onNavigateToCreate()
+                            },
+                            onClickEdit = {
+                                /*TODO*/
+                            },
+                            title = R.string.create_edit_workout,
+                            text1 = stringResource(id = R.string.create_workout),
+                            text2 = stringResource(id = R.string.edit_workout)
+                        )
+                    }
+                    "exercise" -> {
+                        OptionsHeaderDialog(
+                            onDismiss = { showOptionsHeaderDialog.value = false },
+                            onClickCreate = {
+                                /*TODO*/
+                            },
+                            onClickEdit = {
+                                /*TODO*/
+                            },
+                            title = R.string.create_edit_exercise,
+                            text1 = stringResource(id = R.string.create_exercise),
+                            text2 = stringResource(id = R.string.edit_exercise)
+                        )
+                    }
+                }
             }
         }
         itemsIndexed(viewModel.completedWorkouts){ index, completedWorkout -> //items(state.completedWorkouts){ completedWorkout ->
