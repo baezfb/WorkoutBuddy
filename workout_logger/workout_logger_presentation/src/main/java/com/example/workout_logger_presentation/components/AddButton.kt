@@ -14,6 +14,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
@@ -24,6 +25,7 @@ fun AddButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colors.onPrimary,
+    borderColor: Color = color,
     icon: ImageVector
 ) {
     val spacing = LocalSpacing.current
@@ -33,7 +35,7 @@ fun AddButton(
             .clickable { onClick() }
             .border(
                 width = 1.dp,
-                color = color,
+                color = borderColor,
                 shape = RoundedCornerShape(100f)
             )
             .padding(spacing.spaceMedium),

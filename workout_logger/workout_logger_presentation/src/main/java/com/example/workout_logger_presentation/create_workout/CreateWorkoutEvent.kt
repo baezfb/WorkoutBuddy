@@ -30,4 +30,8 @@ sealed class CreateWorkoutEvent {
 
     data class OnCreateWorkout(val trackableExercise: List<TrackableExerciseUiState>, val workoutName: String, val lastUsedId: Int): CreateWorkoutEvent()
 
+    object AddPageCount: CreateWorkoutEvent()
+
+    object SubtractPageCount: CreateWorkoutEvent()
+
 }

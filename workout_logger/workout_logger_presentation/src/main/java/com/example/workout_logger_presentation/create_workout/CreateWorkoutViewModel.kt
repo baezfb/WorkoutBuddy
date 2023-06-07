@@ -233,6 +233,18 @@ class CreateWorkoutViewModel @Inject constructor(
                     trackWorkout(event)
                 }
             }
+
+            is CreateWorkoutEvent.AddPageCount -> {
+                state = state.copy(
+                    pageCount = state.pageCount + 1
+                )
+            }
+
+            is CreateWorkoutEvent.SubtractPageCount -> {
+                state = state.copy(
+                    pageCount = state.pageCount - 1
+                )
+            }
         }
     }
 

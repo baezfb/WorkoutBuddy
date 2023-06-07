@@ -4,5 +4,6 @@ data class CreateWorkoutState(
     val workoutName: String = "",
     val isHintVisible: Boolean = false,
     val trackableExercises: MutableList<TrackableExerciseUiState> = mutableListOf(),
-    val lastUsedId: Int = 0
+    val lastUsedId: Int = 0,
+    val pageCount: Int = 0
 )

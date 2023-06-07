@@ -1,8 +1,10 @@
 package com.example.workout_logger_presentation.create_workout
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,11 +29,24 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import com.example.workout_logger_presentation.create_workout.components.ExerciseCard
+import com.example.workout_logger_presentation.start_workout.TimerStatus
+import com.example.workout_logger_presentation.start_workout.scrollEnabled
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerState
+import com.google.accompanist.pager.rememberPagerState
 import com.hbaez.core.util.UiEvent
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalPagerApi::class)
 @ExperimentalCoilApi
 @Composable
 fun CreateWorkoutScreen(
@@ -45,6 +60,10 @@ fun CreateWorkoutScreen(
 
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    val pagerState = rememberPagerState()
+    val pageCount = remember { mutableStateOf(state.pageCount) }
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit){
         viewModel.onEvent(CreateWorkoutEvent.CheckTrackedExercise)
@@ -61,6 +80,19 @@ fun CreateWorkoutScreen(
             }
         }
     }
+
+    LaunchedEffect(state.pageCount) {
+        pageCount.value = state.pageCount
+        if (pagerState.currentPage >= state.pageCount) {
+            pagerState.scrollToPage(state.pageCount)
+        }
+    }
+    LaunchedEffect(pagerState.isScrollInProgress){
+        if(pagerState.targetPage > state.pageCount - 1){
+            pagerState.scrollToPage(state.pageCount)
+        }
+    }
+
 
     Scaffold(
         topBar = {
@@ -82,98 +114,116 @@ fun CreateWorkoutScreen(
             }
         },
         content = { padding ->
-            LazyColumn(
+            HorizontalPager(
+                state = pagerState,
                 modifier = Modifier
-                    .padding(padding)
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-//                    .padding(spacing.spaceMedium)
-            ) {
-                items(state.trackableExercises) {
-                    if (!it.isDeleted) {
-                        DraggableRow(
-                            name = it.name,
-                            sets = it.sets,
-                            reps = it.reps,
-                            rest = it.rest,
-                            weight = it.weight,
-                            isRevealed = it.isRevealed,
-                            isSearchRevealed = it.isSearchRevealed,
-                            hasExercise = (it.exercise != null),
-                            id = it.id,
-                            cardOffset = 400f,
-                            onExpand = { id ->
-                                viewModel.onEvent(CreateWorkoutEvent.OnDraggableRowExpand(id))
-                            },
-                            onCollapse = { id ->
-                                viewModel.onEvent(CreateWorkoutEvent.OnDraggableRowCollapse(id))
-                            },
-                            onCenter = {id ->
-                                viewModel.onEvent(CreateWorkoutEvent.OnDraggableRowCenter(id))
-                            },
-                            onNameChange = { newText ->
-                                viewModel.onEvent(
-                                    CreateWorkoutEvent.OnTrackableExerciseUiNameChange(
-                                        newText,
-                                        it
-                                    )
-                                )
-                            },
-                            onSetsChange = { newText ->
-                                viewModel.onEvent(
-                                    CreateWorkoutEvent.OnTrackableExerciseUiSetsChange(
-                                        newText,
-                                        it
-                                    )
-                                )
-                            },
-                            onRepsChange = { newText ->
-                                viewModel.onEvent(
-                                    CreateWorkoutEvent.OnTrackableExerciseUiRepsChange(
-                                        newText,
-                                        it
-                                    )
-                                )
-                            },
-                            onRestChange = { newText ->
-                                viewModel.onEvent(
-                                    CreateWorkoutEvent.OnTrackableExerciseUiRestChange(
-                                        newText,
-                                        it
-                                    )
-                                )
-                            },
-                            onWeightChange = { newText ->
-                                viewModel.onEvent(
-                                    CreateWorkoutEvent.OnTrackableExerciseUiWeightChange(
-                                        newText,
-                                        it
-                                    )
-                                )
-                            },
-                            onDeleteClick = {
-                                viewModel.onEvent(CreateWorkoutEvent.OnRemoveTableRow(it.id))
-                            },
-                            onSearchClick = {
-                                onNavigateToSearchExercise(it.id)
-                            }
-                        )
-                        Spacer(modifier = Modifier.height(spacing.spaceExtraSmall))
+                    .fillMaxSize()
+                    .padding(padding),
+                verticalAlignment = Alignment.CenterVertically,
+                count = 10,
+                contentPadding = PaddingValues(spacing.spaceSmall)
+            ) {page ->
+                ExerciseCard(
+                    page = page,
+//                         state = state,
+                    addCard = page >= state.pageCount,
+                    onAddCard = {
+                        viewModel.onEvent(CreateWorkoutEvent.AddPageCount)
                     }
-                }
-                item {
-                    AddButton(
-                        text = stringResource(id = R.string.add_exercise),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                        onClick = {
-                            viewModel.onEvent(CreateWorkoutEvent.OnAddExercise)
-                        },
-                        icon = Icons.Default.Add
-                    )
-                }
+                )
             }
+//            LazyColumn(
+//                modifier = Modifier
+//                    .padding(padding)
+//                    .fillMaxWidth()
+//                    .wrapContentHeight()
+////                    .padding(spacing.spaceMedium)
+//            ) {
+//                items(state.trackableExercises) {
+//                    if (!it.isDeleted) {
+//                        DraggableRow(
+//                            name = it.name,
+//                            sets = it.sets,
+//                            reps = it.reps,
+//                            rest = it.rest,
+//                            weight = it.weight,
+//                            isRevealed = it.isRevealed,
+//                            isSearchRevealed = it.isSearchRevealed,
+//                            hasExercise = (it.exercise != null),
+//                            id = it.id,
+//                            cardOffset = 400f,
+//                            onExpand = { id ->
+//                                viewModel.onEvent(CreateWorkoutEvent.OnDraggableRowExpand(id))
+//                            },
+//                            onCollapse = { id ->
+//                                viewModel.onEvent(CreateWorkoutEvent.OnDraggableRowCollapse(id))
+//                            },
+//                            onCenter = {id ->
+//                                viewModel.onEvent(CreateWorkoutEvent.OnDraggableRowCenter(id))
+//                            },
+//                            onNameChange = { newText ->
+//                                viewModel.onEvent(
+//                                    CreateWorkoutEvent.OnTrackableExerciseUiNameChange(
+//                                        newText,
+//                                        it
+//                                    )
+//                                )
+//                            },
+//                            onSetsChange = { newText ->
+//                                viewModel.onEvent(
+//                                    CreateWorkoutEvent.OnTrackableExerciseUiSetsChange(
+//                                        newText,
+//                                        it
+//                                    )
+//                                )
+//                            },
+//                            onRepsChange = { newText ->
+//                                viewModel.onEvent(
+//                                    CreateWorkoutEvent.OnTrackableExerciseUiRepsChange(
+//                                        newText,
+//                                        it
+//                                    )
+//                                )
+//                            },
+//                            onRestChange = { newText ->
+//                                viewModel.onEvent(
+//                                    CreateWorkoutEvent.OnTrackableExerciseUiRestChange(
+//                                        newText,
+//                                        it
+//                                    )
+//                                )
+//                            },
+//                            onWeightChange = { newText ->
+//                                viewModel.onEvent(
+//                                    CreateWorkoutEvent.OnTrackableExerciseUiWeightChange(
+//                                        newText,
+//                                        it
+//                                    )
+//                                )
+//                            },
+//                            onDeleteClick = {
+//                                viewModel.onEvent(CreateWorkoutEvent.OnRemoveTableRow(it.id))
+//                            },
+//                            onSearchClick = {
+//                                onNavigateToSearchExercise(it.id)
+//                            }
+//                        )
+//                        Spacer(modifier = Modifier.height(spacing.spaceExtraSmall))
+//                    }
+//                }
+//                item {
+//                    AddButton(
+//                        text = stringResource(id = R.string.add_exercise),
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .wrapContentHeight(),
+//                        onClick = {
+//                            viewModel.onEvent(CreateWorkoutEvent.OnAddExercise)
+//                        },
+//                        icon = Icons.Default.Add
+//                    )
+//                }
+//            }
         },
         bottomBar = {
             Row(
