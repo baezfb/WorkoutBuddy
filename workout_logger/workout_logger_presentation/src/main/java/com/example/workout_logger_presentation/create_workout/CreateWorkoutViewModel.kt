@@ -1,5 +1,6 @@
 package com.example.workout_logger_presentation.create_workout
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +30,9 @@ class CreateWorkoutViewModel @Inject constructor(
 ): ViewModel() {
 
     var state by mutableStateOf(CreateWorkoutState())
+        private set
+
+    var trackableExercises by mutableStateOf(state.trackableExercises)
         private set
 
     private val _uiEvent = Channel<UiEvent>()
@@ -188,6 +192,7 @@ class CreateWorkoutViewModel @Inject constructor(
                         }.toMutableList()
                     )
                     preferences.removeTrackedExercise()
+                    onEvent(CreateWorkoutEvent.AddPageCount)
                 }
             }
 

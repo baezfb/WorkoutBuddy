@@ -52,11 +52,12 @@ import kotlinx.coroutines.launch
 fun CreateWorkoutScreen(
     scaffoldState: ScaffoldState,
     onNavigateUp: () -> Unit,
-    onNavigateToSearchExercise: (rowId: Int) -> Unit,
+    onNavigateToSearchExercise: (page: Int) -> Unit,
     viewModel: CreateWorkoutViewModel = hiltViewModel()
 ) {
     val spacing = LocalSpacing.current
     val state = viewModel.state
+    val trackableExercises = viewModel.trackableExercises.collectAsState()
 
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -128,8 +129,10 @@ fun CreateWorkoutScreen(
 //                         state = state,
                     addCard = page >= state.pageCount,
                     onAddCard = {
-                        viewModel.onEvent(CreateWorkoutEvent.AddPageCount)
-                    }
+//                        viewModel.onEvent(CreateWorkoutEvent.AddPageCount)
+                        onNavigateToSearchExercise(page)
+                    },
+                    trackableExercises = trackableExercises
                 )
             }
 //            LazyColumn(

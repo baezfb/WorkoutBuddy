@@ -35,7 +35,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import com.example.workout_logger_presentation.components.AddButton
+import com.example.workout_logger_presentation.create_workout.TrackableExerciseUiState
 import com.example.workout_logger_presentation.start_workout.LoggerListState
+import com.example.workout_logger_presentation.start_workout.TrackableInProgressExerciseUi
 import com.example.workout_logger_presentation.start_workout.components.ExerciseCardRow
 import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
@@ -47,6 +49,7 @@ fun ExerciseCard(
     addCard: Boolean = false,
     onAddCard: () -> Unit,
     page: Int,
+    trackableExercises: MutableList<TrackableExerciseUiState>
 ){
     val spacing = LocalSpacing.current
     Card(
@@ -77,7 +80,7 @@ fun ExerciseCard(
                 )
             }
             else {
-                Text(text = "temporary text.")
+                Text(text = trackableExercises[page].name)
             }
 //            Row(
 //                modifier = Modifier

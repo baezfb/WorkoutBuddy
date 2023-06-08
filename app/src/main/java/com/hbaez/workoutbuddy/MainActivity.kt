@@ -341,8 +341,8 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                         composable(Route.WORKOUT_CREATE) {
                             CreateWorkoutScreen(
                                 scaffoldState = scaffoldState,
-                                onNavigateToSearchExercise = { rowId ->
-                                    navController.navigate(Route.WORKOUT_SEARCH + "/$rowId")
+                                onNavigateToSearchExercise = { page ->
+                                    navController.navigate(Route.WORKOUT_SEARCH + "/$page")
                                 },
                                 onNavigateUp = {
                                     navController.navigateUp()
