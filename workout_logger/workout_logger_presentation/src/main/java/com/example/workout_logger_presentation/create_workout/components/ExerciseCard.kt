@@ -4,7 +4,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,6 +25,7 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import com.example.workout_logger_presentation.components.AddButton
@@ -48,8 +52,9 @@ import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 fun ExerciseCard(
     addCard: Boolean = false,
     onAddCard: () -> Unit,
+    onAddSet: () -> Unit,
     page: Int,
-    trackableExercises: MutableList<TrackableExerciseUiState>
+    trackableExercises: TrackableExerciseUiState?
 ){
     val spacing = LocalSpacing.current
     Card(
@@ -64,23 +69,64 @@ fun ExerciseCard(
             .width(275.dp)
             .height(325.dp)
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            if(addCard){
-                AddButton(
-                    text = stringResource(id = R.string.add_exercise),
-                    onClick = {
-                              onAddCard()
-                              },
-                    icon = Icons.Default.Add,
-                    color = MaterialTheme.colors.primary,
-                    borderColor = MaterialTheme.colors.background
-                )
+
+        if(trackableExercises == null){
+            LazyColumn(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                item {
+                    AddButton(
+                        text = stringResource(id = R.string.add_exercise),
+                        onClick = {
+                            onAddCard()
+                        },
+                        icon = Icons.Default.Search,
+                        color = MaterialTheme.colors.primary,
+                        borderColor = MaterialTheme.colors.background
+                    )
+                }
             }
-            else {
-                Text(text = trackableExercises[page].name)
+        }
+        else {
+            Column(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    items(count = trackableExercises.sets) {
+                        Spacer(modifier = Modifier.height(spacing.spaceSmall))
+                        DraggableRow(
+                            sets = it.toString(),
+                            reps = trackableExercises.reps[it],
+                            rest = trackableExercises.rest[it],
+                            weight = trackableExercises.weight[it],
+                            isRevealed = false,
+                            isSearchRevealed = false,
+                            hasExercise = true,
+                            id = 1,
+                            cardOffset = 400f,
+                            onExpand = {},
+                            onCollapse = {},
+                            onCenter = {},
+                            onRepsChange = {},
+                            onRestChange = {},
+                            onWeightChange = {},
+                            onDeleteClick = { /*TODO*/ }) {
+
+                        }
+                    }
+                    item{
+                        AddButton(
+                            text = stringResource(id = R.string.add_set),
+                            onClick = {
+                                onAddSet()
+                            },
+                            color = MaterialTheme.colors.primary,
+                            borderColor = MaterialTheme.colors.background
+                        )
+                    }
+                }
             }
 //            Row(
 //                modifier = Modifier
@@ -122,79 +168,5 @@ fun ExerciseCard(
 //                }
 //            }
         }
-    }
-}
-
-@Composable
-fun ExerciseCardRow(
-    set: Int,
-    loggerListState: LoggerListState,
-    workoutTemplate: WorkoutTemplate,
-    index: Int,
-    onRepsChange: (reps: String, index: Int, id: Int) -> Unit,
-    onWeightChange: (weight: String, index: Int, id: Int) -> Unit,
-    onCheckboxChange: (isCompleted: Boolean, index: Int, id: Int, page: Int) -> Unit,
-    page: Int
-){
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            modifier = Modifier.weight(1f),
-            text= set.toString(),
-            style = MaterialTheme.typography.body2
-        )
-        TextField(
-            modifier = Modifier.weight(1f),
-            placeholder = { Text(text = loggerListState.origWeight) },
-            value = loggerListState.weightList[index],
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
-            singleLine = true,
-            onValueChange = { onWeightChange(it, index, loggerListState.id) },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    defaultKeyboardAction(ImeAction.Next)
-                }
-            ),
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = MaterialTheme.colors.background,
-                focusedIndicatorColor = MaterialTheme.colors.primaryVariant,
-                unfocusedIndicatorColor = Color.Transparent
-            )
-        )
-        TextField(
-            modifier = Modifier.weight(1f),
-            placeholder = { Text(text = loggerListState.origReps.toString()) },
-            value = loggerListState.repsList[index],
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
-            singleLine = true,
-            onValueChange = { onRepsChange(it, index, loggerListState.id) },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    defaultKeyboardAction(ImeAction.Next)
-                }
-            ),
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = MaterialTheme.colors.background,
-                focusedIndicatorColor = MaterialTheme.colors.primaryVariant,
-                unfocusedIndicatorColor = Color.Transparent
-            )
-        )
-        Checkbox(
-            modifier = Modifier.weight(1f),
-            checked = loggerListState.isCompleted[index],
-            onCheckedChange = {
-                onCheckboxChange(it, index, loggerListState.id, page)
-            },
-            colors = CheckboxDefaults.colors(
-                checkedColor = Color.DarkGray /* TODO */
-            )
-        )
-
     }
 }

@@ -4,10 +4,10 @@ import com.example.workout_logger_domain.model.TrackedExercise
 
 data class TrackableExerciseUiState(
     val name: String = "",
-    val sets: String = "",
-    val reps: String = "",
-    val rest: String = "",
-    val weight: String = "",
+    val sets: Int = 0,
+    val reps: MutableList<String> = mutableListOf(),
+    val rest: MutableList<String> = mutableListOf(),
+    val weight: MutableList<String> = mutableListOf(),
     val id: Int = 0,
     val exercise: TrackedExercise?,
     val isRevealed: Boolean = false,

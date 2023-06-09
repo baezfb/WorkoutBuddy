@@ -23,8 +23,10 @@ import com.example.workout_logger_presentation.create_workout.components.Draggab
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
@@ -36,6 +38,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.style.TextOverflow
 import com.example.workout_logger_presentation.create_workout.components.ExerciseCard
 import com.example.workout_logger_presentation.start_workout.TimerStatus
 import com.example.workout_logger_presentation.start_workout.scrollEnabled
@@ -57,7 +60,6 @@ fun CreateWorkoutScreen(
 ) {
     val spacing = LocalSpacing.current
     val state = viewModel.state
-    val trackableExercises = viewModel.trackableExercises.collectAsState()
 
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -111,7 +113,7 @@ fun CreateWorkoutScreen(
                     keyboardController = keyboardController
                 )
                 Spacer(modifier = Modifier.height(spacing.spaceSmall))
-                CreateWorkoutTableHeader()
+//                CreateWorkoutTableHeader()
             }
         },
         content = { padding ->
@@ -124,16 +126,31 @@ fun CreateWorkoutScreen(
                 count = 10,
                 contentPadding = PaddingValues(spacing.spaceSmall)
             ) {page ->
-                ExerciseCard(
-                    page = page,
+                Column() {
+                    if(state.trackableExercises.getOrNull(page) != null){
+                        Text(
+                            modifier = Modifier.padding(spacing.spaceExtraSmall),
+                            text = state.trackableExercises[page].name.uppercase(),
+                            style = MaterialTheme.typography.h3,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(modifier = Modifier.height(spacing.spaceSmall))
+                    }
+                    ExerciseCard(
+                        page = page,
 //                         state = state,
-                    addCard = page >= state.pageCount,
-                    onAddCard = {
+                        addCard = page >= state.pageCount,
+                        onAddCard = {
 //                        viewModel.onEvent(CreateWorkoutEvent.AddPageCount)
-                        onNavigateToSearchExercise(page)
-                    },
-                    trackableExercises = trackableExercises
-                )
+                            onNavigateToSearchExercise(page)
+                        },
+                        onAddSet = {
+                            viewModel.onEvent(CreateWorkoutEvent.AddSet(page))
+                        },
+                        trackableExercises = state.trackableExercises.getOrNull(page)
+                    )
+                }
             }
 //            LazyColumn(
 //                modifier = Modifier

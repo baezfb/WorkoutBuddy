@@ -34,4 +34,8 @@ sealed class CreateWorkoutEvent {
 
     object SubtractPageCount: CreateWorkoutEvent()
 
+    data class AddSet(val page: Int): CreateWorkoutEvent()
+
+    data class SubtractSet(val page: Int): CreateWorkoutEvent()
+
 }

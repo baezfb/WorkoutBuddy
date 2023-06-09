@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
@@ -53,7 +54,6 @@ const val MIN_DRAG_AMOUNT = 6
 @SuppressLint("UnusedTransitionTargetStateParameter")
 @Composable
 fun DraggableRow(
-    name: String,
     sets: String,
     reps: String,
     rest: String,
@@ -66,8 +66,6 @@ fun DraggableRow(
     onExpand: (Int) -> Unit,
     onCollapse: (Int) -> Unit,
     onCenter: (Int) -> Unit,
-    onNameChange: (String) -> Unit,
-    onSetsChange: (String) -> Unit,
     onRepsChange: (String) -> Unit,
     onRestChange: (String) -> Unit,
     onWeightChange: (String) -> Unit,
@@ -112,13 +110,13 @@ fun DraggableRow(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .border(BorderStroke(1.dp, MaterialTheme.colors.onBackground))
-            .padding(8.dp)
+            .border(BorderStroke(1.dp, MaterialTheme.colors.onBackground), RoundedCornerShape(4.dp))
+            .padding(horizontal = 2.dp)
     ){
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
-                .padding(start=5.dp, end=5.dp)
+                .padding(spacing.spaceSmall)
         ) {
             Box(modifier = Modifier
                 .width(150.dp)
@@ -159,6 +157,7 @@ fun DraggableRow(
 
         Row(
             modifier = Modifier
+                .padding(spacing.spaceSmall)
                 .offset { IntOffset((rowTopLeft.x.roundToInt() + offsetTransition.roundToInt()), 0) }
                 .pointerInput(Unit) {
                     detectDragGestures(
@@ -193,12 +192,9 @@ fun DraggableRow(
                 .fillMaxWidth()
         ){
             CreateWorkoutTableRow(
-                onNameChange,
-                onSetsChange,
                 onRepsChange,
                 onRestChange,
                 onWeightChange,
-                name = name,
                 sets = sets,
                 reps = reps,
                 rest = rest,

@@ -26,33 +26,57 @@ fun AddButton(
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colors.onPrimary,
     borderColor: Color = color,
-    icon: ImageVector
+    icon: ImageVector? = null
 ) {
     val spacing = LocalSpacing.current
-    Row(
-        modifier = modifier
-            .clip(RoundedCornerShape(100f))
-            .clickable { onClick() }
-            .border(
-                width = 1.dp,
-                color = borderColor,
-                shape = RoundedCornerShape(100f)
+    if(icon != null){
+        Row(
+            modifier = modifier
+                .clip(RoundedCornerShape(100f))
+                .clickable { onClick() }
+                .border(
+                    width = 1.dp,
+                    color = borderColor,
+                    shape = RoundedCornerShape(100f)
+                )
+                .padding(spacing.spaceMedium),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = stringResource(id = R.string.add),
+                tint = color
             )
-            .padding(spacing.spaceMedium),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = stringResource(id = R.string.add),
-            tint = color
-        )
-        Spacer(modifier = Modifier.width(spacing.spaceMedium))
-        Text(
-            text = text,
-            maxLines = 2,
-            style = MaterialTheme.typography.button,
-            color = color
-        )
+            Spacer(modifier = Modifier.width(spacing.spaceMedium))
+            Text(
+                text = text,
+                maxLines = 2,
+                style = MaterialTheme.typography.button,
+                color = color
+            )
+        }
+    }
+    else {
+        Row(
+            modifier = modifier
+                .clip(RoundedCornerShape(100f))
+                .clickable { onClick() }
+                .border(
+                    width = 1.dp,
+                    color = borderColor,
+                    shape = RoundedCornerShape(100f)
+                )
+                .padding(spacing.spaceMedium),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = text,
+                maxLines = 2,
+                style = MaterialTheme.typography.button,
+                color = color
+            )
+        }
     }
 }
