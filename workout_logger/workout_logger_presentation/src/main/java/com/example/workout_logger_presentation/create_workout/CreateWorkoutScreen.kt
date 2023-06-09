@@ -113,7 +113,6 @@ fun CreateWorkoutScreen(
                     keyboardController = keyboardController
                 )
                 Spacer(modifier = Modifier.height(spacing.spaceSmall))
-//                CreateWorkoutTableHeader()
             }
         },
         content = { padding ->
