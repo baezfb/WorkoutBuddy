@@ -116,47 +116,72 @@ class CreateWorkoutViewModel @Inject constructor(
 
             is CreateWorkoutEvent.OnDraggableRowExpand -> {
                 Log.println(Log.DEBUG, "onExpand", event.id.toString())
-                state = state.copy(
-                    trackableExercises = state.trackableExercises.toList().map {
-                        if(it.id == event.id) {
-                            it.copy(isRevealed = true, isSearchRevealed = false)
-                        } else it
-                    }.toMutableList()
-                )
+//                state = state.copy(
+//                    trackableExercises = state.trackableExercises.toList().map {
+//                        if(it.exercise!!.id!! == event.exerciseId) {
+//                            val newList = it.isDeleted
+//                            newList[event.id] = true
+//                            it.copy(isDeleted = newList.toMutableList())
+//                        } else it
+//                    }.toMutableList()
+//                )
             }
 
             is CreateWorkoutEvent.OnDraggableRowCollapse -> {
                 Log.println(Log.DEBUG, "onCollapse", event.id.toString())
-                state = state.copy(
-                    trackableExercises = state.trackableExercises.toList().map {
-                        if(it.id == event.id){
-                            it.copy(isRevealed = true, isSearchRevealed = true)
-                        } else it
-                    }.toMutableList()
-                )
+//                state = state.copy(
+//                    trackableExercises = state.trackableExercises.toList().map {
+//                        if(it.id == event.id){
+//                            it.copy(isRevealed = true, isSearchRevealed = true)
+//                        } else it
+//                    }.toMutableList()
+//                )
             }
 
             is CreateWorkoutEvent.OnDraggableRowCenter -> {
                 Log.println(Log.DEBUG, "onCenter", event.id.toString())
-                state = state.copy(
-                    trackableExercises = state.trackableExercises.toList().map {
-                        if(it.id == event.id){
-                            it.copy(isRevealed = false, isSearchRevealed = false)
-                        } else it
-                    }.toMutableList()
-                )
+//                state = state.copy(
+//                    trackableExercises = state.trackableExercises.toList().map {
+//                        if(it.id == event.id){
+//                            it.copy(isRevealed = false, isSearchRevealed = false)
+//                        } else it
+//                    }.toMutableList()
+//                )
             }
 
             is CreateWorkoutEvent.OnRemoveTableRow -> {
-                Log.println(Log.DEBUG, "onRemove", event.id.toString())
+                Log.println(Log.DEBUG, "onExpand", event.id.toString())
+//                state = state.copy(
+//                    trackableExercises = state.trackableExercises.toList().map {
+//                        if(it.exercise!!.id!! == event.exerciseId) {
+//                            val newList = it.isDeleted
+//                            newList[event.id] = true
+//                            it.copy(isDeleted = newList.toMutableList())
+//                        } else it
+//                    }.toMutableList()
+//                )
+                var counter = 0
                 state = state.copy(
                     trackableExercises = state.trackableExercises.toList().map {
-                        if(it.id == event.id){
-                            it.copy(isDeleted = true)
-                        } else it
+                        if(counter == event.exerciseId){
+                            Log.println(Log.DEBUG, "viewmodel reps size", it.reps.size.toString())
+                            it.copy(
+                                sets = it.sets - 1,
+                                reps = it.reps.apply { removeAt(event.id) },
+                                rest = it.rest.apply { removeAt(event.id) },
+                                weight = it.weight.apply { removeAt(event.id) },
+                                isDeleted = it.isDeleted.apply { removeAt(event.id) },
+//                                reps = (it.reps.toList() + "").toMutableList(),
+//                                rest = (it.rest.toList() + "").toMutableList(),
+//                                weight = (it.weight.toList() + "").toMutableList(),
+//                                isDeleted = (it.isDeleted.toList() + false).toMutableList()
+                            )
+                        } else {
+                            counter++
+                            it
+                        }
                     }.toMutableList()
                 )
-
             }
 
             is CreateWorkoutEvent.CheckTrackedExercise -> {
@@ -227,7 +252,7 @@ class CreateWorkoutViewModel @Inject constructor(
                     }
                     var counter = 0
                     event.trackableExercise.forEach { exercise ->
-                        if(!exercise.isDeleted){
+                        if(!exercise.isDeleted[0]){ /*TODO: fix index*/
                             counter += 1
                             if(exercise.name.isEmpty() || exercise.sets == 0 || exercise.reps.isEmpty() || exercise.rest.isEmpty() || exercise.weight.isEmpty()){
                                 Log.println(Log.DEBUG, "exercise sets", "reached inside if")
@@ -277,7 +302,8 @@ class CreateWorkoutViewModel @Inject constructor(
                                 sets = it.sets + 1,
                                 reps = (it.reps.toList() + "").toMutableList(),
                                 rest = (it.rest.toList() + "").toMutableList(),
-                                weight = (it.weight.toList() + "").toMutableList()
+                                weight = (it.weight.toList() + "").toMutableList(),
+                                isDeleted = (it.isDeleted.toList() + false).toMutableList()
                             )
                         } else {
                             counter++

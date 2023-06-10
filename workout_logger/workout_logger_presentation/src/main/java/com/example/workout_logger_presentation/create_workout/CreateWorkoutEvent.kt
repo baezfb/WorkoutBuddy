@@ -18,13 +18,13 @@ sealed class CreateWorkoutEvent {
 
     data class OnTrackableExerciseUiWeightChange(val weight: String, val trackableExerciseUiState: TrackableExerciseUiState): CreateWorkoutEvent()
 
-    data class OnDraggableRowExpand(val id: Int): CreateWorkoutEvent()
+    data class OnDraggableRowExpand(val id: Int, val exerciseId: Int): CreateWorkoutEvent()
 
     data class OnDraggableRowCollapse(val id: Int): CreateWorkoutEvent()
 
     data class OnDraggableRowCenter(val id: Int): CreateWorkoutEvent()
 
-    data class OnRemoveTableRow(val id: Int): CreateWorkoutEvent()
+    data class OnRemoveTableRow(val id: Int, val exerciseId: Int): CreateWorkoutEvent()
 
     object CheckTrackedExercise: CreateWorkoutEvent()
 

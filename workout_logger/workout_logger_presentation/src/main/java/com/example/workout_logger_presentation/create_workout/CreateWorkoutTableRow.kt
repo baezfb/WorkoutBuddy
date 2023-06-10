@@ -32,7 +32,6 @@ fun CreateWorkoutTableRow(
     reps: String,
     rest: String,
     weight: String,
-    isRevealed: Boolean,
     hasExercise: Boolean
 ){
     val spacing = LocalSpacing.current
@@ -46,28 +45,8 @@ fun CreateWorkoutTableRow(
             style = MaterialTheme.typography.h3,
             modifier = Modifier.padding(spacing.spaceSmall)
         )
-//        EditTableCell(
-//            isRevealed = isRevealed,
-//            hasExercise = hasExercise,
-//            text = name,
-//            weight = .32f,
-//            keyboardType = KeyboardType.Text,
-//            onValueChange = {
-//                onNameChange(it)
-//            }
-//        )
-//        EditTableCell(
-//            isRevealed = isRevealed,
-//            text = sets,
-//            weight = .16f,
-//            keyboardType = KeyboardType.Number,
-//            onValueChange = {
-//                onSetsChange(it)
-//            }
-//        )
         EditTableCell(
             label = stringResource(id = R.string.reps),
-            isRevealed = isRevealed,
             text = reps,
             weight = .20f,
             keyboardType = KeyboardType.Number,
@@ -79,7 +58,6 @@ fun CreateWorkoutTableRow(
         )
         EditTableCell(
             label = stringResource(id = R.string.rest),
-            isRevealed = isRevealed,
             text = rest,
             weight = .25f,
             keyboardType = KeyboardType.Number,
@@ -91,7 +69,6 @@ fun CreateWorkoutTableRow(
         )
         EditTableCell(
             label = stringResource(id = R.string.weight),
-            isRevealed = isRevealed,
             text = weight,
             weight = .25f,
             keyboardType = KeyboardType.Number,
@@ -109,7 +86,6 @@ fun CreateWorkoutTableRow(
 @Composable
 fun RowScope.EditTableCell(
     label: String,
-    isRevealed: Boolean,
     hasExercise: Boolean = false,
     text: String,
     weight: Float,
@@ -135,6 +111,6 @@ fun RowScope.EditTableCell(
             }
 
         ),
-        enabled = !isRevealed && !hasExercise
+//        enabled = !isRevealed && !hasExercise
     )
 }

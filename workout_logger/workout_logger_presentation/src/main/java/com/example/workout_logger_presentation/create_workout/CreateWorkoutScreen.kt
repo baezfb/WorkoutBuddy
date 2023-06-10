@@ -147,7 +147,13 @@ fun CreateWorkoutScreen(
                         onAddSet = {
                             viewModel.onEvent(CreateWorkoutEvent.AddSet(page))
                         },
-                        trackableExercises = state.trackableExercises.getOrNull(page)
+                        trackableExercises = state.trackableExercises.getOrNull(page),
+                        onExpand = { id, exerciseId ->
+                            viewModel.onEvent(CreateWorkoutEvent.OnDraggableRowExpand(id, exerciseId))
+                        },
+                        onDeleteRow = { id, exerciseId ->
+                            viewModel.onEvent(CreateWorkoutEvent.OnRemoveTableRow(id, exerciseId))
+                        }
                     )
                 }
             }

@@ -10,7 +10,5 @@ data class TrackableExerciseUiState(
     val weight: MutableList<String> = mutableListOf(),
     val id: Int = 0,
     val exercise: TrackedExercise?,
-    val isRevealed: Boolean = false,
-    val isSearchRevealed: Boolean = false,
-    val isDeleted: Boolean = false
+    val isDeleted: MutableList<Boolean> = mutableListOf()
 )
