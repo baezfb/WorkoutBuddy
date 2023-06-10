@@ -103,7 +103,7 @@ fun DraggableRow(
 
     LaunchedEffect(isDismissed) {
         if (isDismissed) {
-            delay(350L) // Wait for 1 second
+            delay(500L) // Wait for 1 second
             withContext(Dispatchers.Main) {
                 isDismissed = false // Reset isDismissed to false
                 onDeleteRow(id)

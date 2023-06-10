@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -19,35 +18,24 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.annotation.ExperimentalCoilApi
 import com.example.workout_logger_presentation.components.AddButton
 import com.example.workout_logger_presentation.components.NameField
-import com.example.workout_logger_presentation.create_workout.components.DraggableRow
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.style.TextOverflow
 import com.example.workout_logger_presentation.create_workout.components.ExerciseCard
-import com.example.workout_logger_presentation.start_workout.TimerStatus
-import com.example.workout_logger_presentation.start_workout.scrollEnabled
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import com.hbaez.core.util.UiEvent
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalPagerApi::class)
 @ExperimentalCoilApi
@@ -125,43 +113,31 @@ fun CreateWorkoutScreen(
                 count = 10,
                 contentPadding = PaddingValues(spacing.spaceSmall)
             ) {page ->
-                Column() {
-                    if(state.trackableExercises.getOrNull(page) != null){
-                        Text(
-                            modifier = Modifier.padding(spacing.spaceExtraSmall),
-                            text = state.trackableExercises[page].name.uppercase(),
-                            style = MaterialTheme.typography.h3,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Spacer(modifier = Modifier.height(spacing.spaceSmall))
-                    }
-                    ExerciseCard(
-                        page = page,
+                ExerciseCard(
+                    page = page,
 //                         state = state,
-                        addCard = page >= state.pageCount,
-                        onAddCard = {
+                    addCard = page >= state.pageCount,
+                    onAddCard = {
 //                        viewModel.onEvent(CreateWorkoutEvent.AddPageCount)
-                            onNavigateToSearchExercise(page)
-                        },
-                        onAddSet = {
-                            viewModel.onEvent(CreateWorkoutEvent.AddSet(page))
-                        },
-                        trackableExercises = state.trackableExercises.getOrNull(page),
-                        onDeleteRow = { id, exerciseId ->
-                            viewModel.onEvent(CreateWorkoutEvent.OnRemoveTableRow(id, exerciseId))
-                        },
-                        onRepsChange = { text, index ->
-                            viewModel.onEvent(CreateWorkoutEvent.OnTrackableExerciseUiRepsChange(reps = text, trackableExerciseUiStateId = state.trackableExercises[page].id, index = index))
-                        },
-                        onRestChange = { text, index ->
-                            viewModel.onEvent(CreateWorkoutEvent.OnTrackableExerciseUiRestChange(rest = text, trackableExerciseUiStateId = state.trackableExercises[page].id, index = index))
-                        },
-                        onWeightChange = { text, index ->
-                            viewModel.onEvent(CreateWorkoutEvent.OnTrackableExerciseUiWeightChange(weight = text, trackableExerciseUiStateId = state.trackableExercises[page].id, index = index))
-                        }
-                    )
-                }
+                        onNavigateToSearchExercise(page)
+                    },
+                    onAddSet = {
+                        viewModel.onEvent(CreateWorkoutEvent.AddSet(page))
+                    },
+                    trackableExercises = state.trackableExercises.getOrNull(page),
+                    onDeleteRow = { id, exerciseId ->
+                        viewModel.onEvent(CreateWorkoutEvent.OnRemoveSetRow(id, exerciseId))
+                    },
+                    onRepsChange = { text, index ->
+                        viewModel.onEvent(CreateWorkoutEvent.OnTrackableExerciseUiRepsChange(reps = text, trackableExerciseUiStateId = state.trackableExercises[page].id, index = index))
+                    },
+                    onRestChange = { text, index ->
+                        viewModel.onEvent(CreateWorkoutEvent.OnTrackableExerciseUiRestChange(rest = text, trackableExerciseUiStateId = state.trackableExercises[page].id, index = index))
+                    },
+                    onWeightChange = { text, index ->
+                        viewModel.onEvent(CreateWorkoutEvent.OnTrackableExerciseUiWeightChange(weight = text, trackableExerciseUiStateId = state.trackableExercises[page].id, index = index))
+                    }
+                )
             }
 //            LazyColumn(
 //                modifier = Modifier
