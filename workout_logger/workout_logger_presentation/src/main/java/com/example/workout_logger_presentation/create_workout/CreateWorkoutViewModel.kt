@@ -79,74 +79,39 @@ class CreateWorkoutViewModel @Inject constructor(
             }
 
             is CreateWorkoutEvent.OnTrackableExerciseUiRepsChange -> {
-//                state = state.copy(
-//                    trackableExercises = state.trackableExercises.toList().map {
-//                        if (it.id == event.trackableExerciseUiState.id) {
-//                            if(event.reps.toIntOrNull() != 0 || event.reps.isEmpty()){
-//                                it.copy(reps = event.reps)
-//                            } else it.copy(reps = "")
-//                        } else it
-//                    }.toMutableList()
-//                )
+                state = state.copy(
+                    trackableExercises = state.trackableExercises.toList().map {
+                        if (it.id == event.trackableExerciseUiStateId) {
+                            val tmp = it.reps.toMutableList()
+                            tmp[event.index] = event.reps
+                            it.copy(reps = tmp.toList())
+                        } else it
+                    }.toMutableList()
+                )
             }
 
             is CreateWorkoutEvent.OnTrackableExerciseUiRestChange -> {
-//                state = state.copy(
-//                    trackableExercises = state.trackableExercises.toList().map {
-//                        if (it.id == event.trackableExerciseUiState.id) {
-//                            if(event.rest.toIntOrNull() != 0 || event.rest.isEmpty()){
-//                                it.copy(rest = event.rest)
-//                            } else it.copy(rest = "")
-//                        } else it
-//                    }.toMutableList()
-//                )
+                state = state.copy(
+                    trackableExercises = state.trackableExercises.toList().map {
+                        if (it.id == event.trackableExerciseUiStateId) {
+                            val tmp = it.rest.toMutableList()
+                            tmp[event.index] = event.rest
+                            it.copy(rest = tmp.toList())
+                        } else it
+                    }.toMutableList()
+                )
             }
 
             is CreateWorkoutEvent.OnTrackableExerciseUiWeightChange -> {
-//                state = state.copy(
-//                    trackableExercises = state.trackableExercises.toList().map {
-//                        if (it.id == event.trackableExerciseUiState.id) {
-//                            if(event.weight.toIntOrNull() != 0 || event.weight.isEmpty()){
-//                                it.copy(weight = event.weight)
-//                            } else it.copy(weight = "")
-//                        } else it
-//                    }.toMutableList()
-//                )
-            }
-
-            is CreateWorkoutEvent.OnDraggableRowExpand -> {
-                Log.println(Log.DEBUG, "onExpand", event.id.toString())
-//                state = state.copy(
-//                    trackableExercises = state.trackableExercises.toList().map {
-//                        if(it.exercise!!.id!! == event.exerciseId) {
-//                            val newList = it.isDeleted
-//                            newList[event.id] = true
-//                            it.copy(isDeleted = newList.toMutableList())
-//                        } else it
-//                    }.toMutableList()
-//                )
-            }
-
-            is CreateWorkoutEvent.OnDraggableRowCollapse -> {
-                Log.println(Log.DEBUG, "onCollapse", event.id.toString())
-//                state = state.copy(
-//                    trackableExercises = state.trackableExercises.toList().map {
-//                        if(it.id == event.id){
-//                            it.copy(isRevealed = true, isSearchRevealed = true)
-//                        } else it
-//                    }.toMutableList()
-//                )
-            }
-
-            is CreateWorkoutEvent.OnDraggableRowCenter -> {
-                Log.println(Log.DEBUG, "onCenter", event.id.toString())
-//                state = state.copy(
-//                    trackableExercises = state.trackableExercises.toList().map {
-//                        if(it.id == event.id){
-//                            it.copy(isRevealed = false, isSearchRevealed = false)
-//                        } else it
-//                    }.toMutableList()
-//                )
+                state = state.copy(
+                    trackableExercises = state.trackableExercises.toList().map {
+                        if (it.id == event.trackableExerciseUiStateId) {
+                            val tmp = it.weight.toMutableList()
+                            tmp[event.index] = event.weight
+                            it.copy(weight = tmp.toList())
+                        } else it
+                    }.toMutableList()
+                )
             }
 
             is CreateWorkoutEvent.OnRemoveTableRow -> {
@@ -164,13 +129,12 @@ class CreateWorkoutViewModel @Inject constructor(
                 state = state.copy(
                     trackableExercises = state.trackableExercises.toList().map {
                         if(counter == event.exerciseId){
-                            Log.println(Log.DEBUG, "viewmodel reps size", it.reps.size.toString())
                             it.copy(
                                 sets = it.sets - 1,
-                                reps = it.reps.apply { removeAt(event.id) },
-                                rest = it.rest.apply { removeAt(event.id) },
-                                weight = it.weight.apply { removeAt(event.id) },
-                                isDeleted = it.isDeleted.apply { removeAt(event.id) },
+                                reps = it.reps.toMutableList().apply { removeAt(event.id) }.toList(),
+                                rest = it.rest.toMutableList().apply { removeAt(event.id) }.toList(),
+                                weight = it.weight.toMutableList().apply { removeAt(event.id) }.toList(),
+                                isDeleted = it.isDeleted.toMutableList().apply { removeAt(event.id) }.toList(),
 //                                reps = (it.reps.toList() + "").toMutableList(),
 //                                rest = (it.rest.toList() + "").toMutableList(),
 //                                weight = (it.weight.toList() + "").toMutableList(),
@@ -182,6 +146,7 @@ class CreateWorkoutViewModel @Inject constructor(
                         }
                     }.toMutableList()
                 )
+                Log.println(Log.DEBUG, "viewmodel trackablelist", state.trackableExercises[0].isDeleted.toString())
             }
 
             is CreateWorkoutEvent.CheckTrackedExercise -> {
@@ -300,10 +265,10 @@ class CreateWorkoutViewModel @Inject constructor(
                         if(counter == event.page){
                             it.copy(
                                 sets = it.sets + 1,
-                                reps = (it.reps.toList() + "").toMutableList(),
-                                rest = (it.rest.toList() + "").toMutableList(),
-                                weight = (it.weight.toList() + "").toMutableList(),
-                                isDeleted = (it.isDeleted.toList() + false).toMutableList()
+                                reps = (it.reps + ""),
+                                rest = (it.rest + ""),
+                                weight = (it.weight + ""),
+                                isDeleted = (it.isDeleted + false)
                             )
                         } else {
                             counter++

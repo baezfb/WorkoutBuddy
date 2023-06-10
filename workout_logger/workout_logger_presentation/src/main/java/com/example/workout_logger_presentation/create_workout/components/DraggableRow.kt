@@ -28,6 +28,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +44,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.workout_logger_presentation.create_workout.CreateWorkoutTableRow
 import com.hbaez.core_ui.LocalSpacing
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
 const val ANIMATION_DURATION = 1000
@@ -55,16 +59,12 @@ fun DraggableRow(
     reps: String,
     rest: String,
     weight: String,
-    isDeleted: Boolean,
     hasExercise: Boolean,
     id: Int,
     cardOffset: Float,
-    onExpand: (Int) -> Unit,
-    onCollapse: (Int) -> Unit,
-    onCenter: (Int) -> Unit,
-    onRepsChange: (String) -> Unit,
-    onRestChange: (String) -> Unit,
-    onWeightChange: (String) -> Unit,
+    onRestChange: (text: String) -> Unit,
+    onRepsChange: (text: String) -> Unit,
+    onWeightChange: (text: String) -> Unit,
     onDeleteRow: (Int) -> Unit,
     onSearchClick: () -> Unit
 ){
@@ -85,8 +85,8 @@ fun DraggableRow(
         mutableStateOf(rowTopLeft.x)
     }
     val transitionState = remember {
-        MutableTransitionState(isDeleted).apply {
-            targetState = !isDeleted
+        MutableTransitionState(isDismissed).apply {
+            targetState = !isDismissed
         }
     }
     val transition = updateTransition(targetState = transitionState, "rowTransition")
@@ -101,6 +101,15 @@ fun DraggableRow(
                              },
     )
 
+    LaunchedEffect(isDismissed) {
+        if (isDismissed) {
+            delay(350L) // Wait for 1 second
+            withContext(Dispatchers.Main) {
+                isDismissed = false // Reset isDismissed to false
+                onDeleteRow(id)
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -111,7 +120,8 @@ fun DraggableRow(
     ){
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(spacing.spaceSmall)
         ) {
             Box(modifier = Modifier
@@ -134,7 +144,12 @@ fun DraggableRow(
         Row(
             modifier = Modifier
                 .padding(spacing.spaceSmall)
-                .offset { IntOffset((rowTopLeft.x.roundToInt() + offsetTransition.roundToInt()), 0) }
+                .offset {
+                    IntOffset(
+                        (rowTopLeft.x.roundToInt() + offsetTransition.roundToInt()),
+                        0
+                    )
+                }
                 .pointerInput(Unit) {
                     detectDragGestures(
                         onDragStart = { offset ->
@@ -148,22 +163,22 @@ fun DraggableRow(
                         }
                     ) { change, dragAmount ->
                         val touchPosition = center.x + change.position.x
-                        val newPosition = if(dragAmount.x < 0){
+                        val newPosition = if (dragAmount.x < 0) {
                             oldPosition + (touchPosition - dragStartedPosition)
                         } else {
                             oldPosition
                         }
 
-                        rowTopLeft = Offset(newPosition.coerceIn(
-                            minimumValue = center.x - cardOffset*1.25f,
-                            maximumValue = center.x ),
+                        rowTopLeft = Offset(
+                            newPosition.coerceIn(
+                                minimumValue = center.x - cardOffset * 1.25f,
+                                maximumValue = center.x
+                            ),
                             rowTopLeft.y
                         )
 
-                        if(rowTopLeft.x < -cardOffset*.5f && !isDismissed){
+                        if (rowTopLeft.x < -cardOffset * .55f && !isDismissed) {
                             isDismissed = true
-                            onExpand(id)
-                            onDeleteRow(id)
                         }
 //                        when {
 //                            dragAmount.x > 5f && rowTopLeft.x in cardOffset*0.5f..cardOffset -> onExpand(id)
@@ -177,9 +192,9 @@ fun DraggableRow(
                 .fillMaxWidth()
         ){
             CreateWorkoutTableRow(
-                onRepsChange,
-                onRestChange,
-                onWeightChange,
+                onRepsChange = { onRepsChange(it) },
+                onRestChange = { onRestChange(it) },
+                onWeightChange = { onWeightChange(it) },
                 sets = sets,
                 reps = reps,
                 rest = rest,

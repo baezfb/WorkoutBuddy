@@ -34,8 +34,10 @@ fun ExerciseCard(
     onAddSet: () -> Unit,
     page: Int,
     trackableExercises: TrackableExerciseUiState?,
-    onExpand: (id: Int, exerciseId: Int) -> Unit,
-    onDeleteRow: (id: Int, exerciseId: Int) -> Unit
+    onDeleteRow: (id: Int, exerciseId: Int) -> Unit,
+    onRepsChange: (text: String, index: Int)  -> Unit,
+    onRestChange: (text: String, index: Int)  -> Unit,
+    onWeightChange: (text: String, index: Int)  -> Unit
 ){
     val spacing = LocalSpacing.current
     Card(
@@ -82,18 +84,18 @@ fun ExerciseCard(
                             reps = trackableExercises.reps[it],
                             rest = trackableExercises.rest[it],
                             weight = trackableExercises.weight[it],
-                            isDeleted = trackableExercises.isDeleted[it],
                             hasExercise = true,
                             id = it,
                             cardOffset = 600f,
-                            onExpand = { id ->
-                                onExpand(id, page)
+                            onRepsChange = { text ->
+                                           onRepsChange(text, it)
                             },
-                            onCollapse = {},
-                            onCenter = {},
-                            onRepsChange = {},
-                            onRestChange = {},
-                            onWeightChange = {},
+                            onRestChange = { text ->
+                                onRestChange(text, it)
+                            },
+                            onWeightChange = { text ->
+                                onWeightChange(text, it)
+                            },
                             onDeleteRow = { id ->
                                 onDeleteRow(id, page)
                             }) {

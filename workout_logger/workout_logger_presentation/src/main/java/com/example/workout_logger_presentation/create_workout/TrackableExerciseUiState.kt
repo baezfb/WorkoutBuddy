@@ -5,10 +5,10 @@ import com.example.workout_logger_domain.model.TrackedExercise
 data class TrackableExerciseUiState(
     val name: String = "",
     val sets: Int = 0,
-    val reps: MutableList<String> = mutableListOf(),
-    val rest: MutableList<String> = mutableListOf(),
-    val weight: MutableList<String> = mutableListOf(),
+    val reps: List<String> = List(0) { "" },
+    val rest: List<String> = List(0) { "" },
+    val weight: List<String> = List(0) { "" },
     val id: Int = 0,
     val exercise: TrackedExercise?,
-    val isDeleted: MutableList<Boolean> = mutableListOf()
+    val isDeleted: List<Boolean> = List(0) { false }
 )
