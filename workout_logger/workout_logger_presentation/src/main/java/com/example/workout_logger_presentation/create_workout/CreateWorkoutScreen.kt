@@ -115,10 +115,7 @@ fun CreateWorkoutScreen(
             ) {page ->
                 ExerciseCard(
                     page = page,
-//                         state = state,
-                    addCard = page >= state.pageCount,
                     onAddCard = {
-//                        viewModel.onEvent(CreateWorkoutEvent.AddPageCount)
                         onNavigateToSearchExercise(page)
                     },
                     onAddSet = {

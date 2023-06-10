@@ -49,7 +49,6 @@ import kotlinx.coroutines.launch
 @ExperimentalCoilApi
 @Composable
 fun ExerciseCard(
-    addCard: Boolean = false,
     onAddCard: () -> Unit,
     onAddSet: () -> Unit,
     page: Int,
@@ -87,7 +86,7 @@ fun ExerciseCard(
             }
             Card(
                 shape = RoundedCornerShape(8.dp),
-                backgroundColor = if(isLongPressed) MaterialTheme.colors.primaryVariant else MaterialTheme.colors.background,
+                backgroundColor = if(isLongPressed && trackableExercises != null) MaterialTheme.colors.primaryVariant else MaterialTheme.colors.background,
                 modifier = Modifier
                     .clip(
                         RoundedCornerShape(50.dp)
