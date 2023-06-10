@@ -65,8 +65,7 @@ fun DraggableRow(
     onRestChange: (text: String) -> Unit,
     onRepsChange: (text: String) -> Unit,
     onWeightChange: (text: String) -> Unit,
-    onDeleteRow: (Int) -> Unit,
-    onSearchClick: () -> Unit
+    onDeleteRow: (Int) -> Unit
 ){
     val spacing = LocalSpacing.current
     var isDragging by remember { mutableStateOf(false) }
@@ -180,12 +179,6 @@ fun DraggableRow(
                         if (rowTopLeft.x < -cardOffset * .55f && !isDismissed) {
                             isDismissed = true
                         }
-//                        when {
-//                            dragAmount.x > 5f && rowTopLeft.x in cardOffset*0.5f..cardOffset -> onExpand(id)
-//                            dragAmount.x > 5f && rowTopLeft.x in -cardOffset*0.5f..0f -> onCenter(id)
-//                            dragAmount.x < -5f && rowTopLeft.x in -cardOffset..-cardOffset*0.5f -> onCollapse(id)
-//                            dragAmount.x < -5f && rowTopLeft.x in 0f..cardOffset*0.5f -> onCenter(id)
-//                        }
                     }
                 }
                 .height(IntrinsicSize.Min)

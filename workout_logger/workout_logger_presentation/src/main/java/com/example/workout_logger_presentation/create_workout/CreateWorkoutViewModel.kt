@@ -100,11 +100,11 @@ class CreateWorkoutViewModel @Inject constructor(
             }
 
             is CreateWorkoutEvent.OnRemoveSetRow -> {
-                Log.println(Log.DEBUG, "onExpand", event.id.toString())
                 var counter = 0
                 state = state.copy(
-                    trackableExercises = state.trackableExercises.toList().map {
+                    trackableExercises = state.trackableExercises.map {
                         if(counter == event.exerciseId){
+                            counter++
                             it.copy(
                                 sets = it.sets - 1,
                                 reps = it.reps.toMutableList().apply { removeAt(event.id) }.toList(),
@@ -119,6 +119,15 @@ class CreateWorkoutViewModel @Inject constructor(
                     }.toMutableList()
                 )
                 Log.println(Log.DEBUG, "viewmodel trackablelist", state.trackableExercises[0].isDeleted.toString())
+            }
+
+            is CreateWorkoutEvent.OnRemovePage -> {
+                state = state.copy(
+                    trackableExercises = state.trackableExercises.toMutableList().apply {
+                        removeAt(event.page)
+                    }.toList()
+                )
+
             }
 
             is CreateWorkoutEvent.CheckTrackedExercise -> {
@@ -212,6 +221,7 @@ class CreateWorkoutViewModel @Inject constructor(
                 state = state.copy(
                     trackableExercises = state.trackableExercises.toList().map {
                         if(counter == event.page){
+                            counter++
                             it.copy(
                                 sets = it.sets + 1,
                                 reps = (it.reps + ""),
@@ -231,7 +241,7 @@ class CreateWorkoutViewModel @Inject constructor(
 
     private fun addExercise(){
         state = state.copy(
-            trackableExercises = (state.trackableExercises.toList() + TrackableExerciseUiState(id = state.lastUsedId + 1, exercise = null)).toMutableList(),
+            trackableExercises = (state.trackableExercises + TrackableExerciseUiState(id = state.lastUsedId + 1, exercise = null)),
             lastUsedId = state.lastUsedId + 1
         )
     }

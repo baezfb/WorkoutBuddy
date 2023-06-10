@@ -55,6 +55,7 @@ fun ExerciseCard(
     page: Int,
     trackableExercises: TrackableExerciseUiState?,
     onDeleteRow: (id: Int, exerciseId: Int) -> Unit,
+    onDeletePage: () -> Unit,
     onRepsChange: (text: String, index: Int)  -> Unit,
     onRestChange: (text: String, index: Int)  -> Unit,
     onWeightChange: (text: String, index: Int)  -> Unit
@@ -152,9 +153,8 @@ fun ExerciseCard(
                                     },
                                     onDeleteRow = { id ->
                                         onDeleteRow(id, page)
-                                    }) {
-
-                                }
+                                    }
+                                )
                             }
                             item{
                                 AddButton(
@@ -174,7 +174,8 @@ fun ExerciseCard(
                         modifier = Modifier
                             .fillMaxSize()
                             .clickable {
-                                /*TODO*/
+                                onDeletePage()
+                                isLongPressed = false
                             },
                         contentAlignment = Alignment.Center
                     ) {
