@@ -27,10 +27,10 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import com.example.workout_logger_presentation.components.ExerciseInfoDialog
 import com.example.workout_logger_presentation.create_workout.components.ExerciseCard
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -54,7 +54,7 @@ fun CreateWorkoutScreen(
 
     val pagerState = rememberPagerState()
     val pageCount = remember { mutableStateOf(state.pageCount) }
-    val coroutineScope = rememberCoroutineScope()
+    val showExerciseInfoDialog = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit){
         viewModel.onEvent(CreateWorkoutEvent.CheckTrackedExercise)
@@ -71,7 +71,6 @@ fun CreateWorkoutScreen(
             }
         }
     }
-
     LaunchedEffect(state.pageCount) {
         pageCount.value = state.pageCount
         if (pagerState.currentPage >= state.pageCount) {
@@ -83,7 +82,21 @@ fun CreateWorkoutScreen(
             pagerState.scrollToPage(state.pageCount)
         }
     }
+    LaunchedEffect(key1 = pagerState.currentPage, key2 = state.trackableExercises.size){
+        if(state.trackableExercises.getOrNull(pagerState.currentPage) != null){
+            viewModel.onEvent(CreateWorkoutEvent.GetExerciseInfo(state.trackableExercises[pagerState.currentPage].exercise!!.name!!))
+        }
+    }
 
+    if(showExerciseInfoDialog.value){
+        ExerciseInfoDialog(
+            trackableExerciseState = state.exerciseInfo.first(),
+            onDescrClick = {
+                           viewModel.onEvent(CreateWorkoutEvent.OnToggleExerciseDescription(state.exerciseInfo.first()))
+                           },
+            onDismiss = { showExerciseInfoDialog.value = false }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -122,6 +135,9 @@ fun CreateWorkoutScreen(
                         viewModel.onEvent(CreateWorkoutEvent.AddSet(page))
                     },
                     trackableExercises = state.trackableExercises.getOrNull(page),
+                    onShowInfo = {
+                        showExerciseInfoDialog.value = true
+                    },
                     onDeleteRow = { id, exerciseId ->
                         viewModel.onEvent(CreateWorkoutEvent.OnRemoveSetRow(id, exerciseId))
                     },

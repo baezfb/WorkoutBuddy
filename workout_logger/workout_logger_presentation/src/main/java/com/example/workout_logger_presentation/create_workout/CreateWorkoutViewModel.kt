@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.workout_logger_domain.model.TrackedExercise
 import com.example.workout_logger_domain.use_case.CreateWorkoutUseCases
+import com.example.workout_logger_domain.use_case.ExerciseTrackerUseCases
+import com.example.workout_logger_presentation.search_exercise.TrackableExerciseState
 import com.hbaez.core.util.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -16,6 +18,9 @@ import com.hbaez.core.domain.preferences.Preferences
 import com.hbaez.core.util.UiText
 import com.hbaez.core.R
 import com.hbaez.user_auth_presentation.model.service.StorageService
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,7 +28,8 @@ import javax.inject.Inject
 class CreateWorkoutViewModel @Inject constructor(
     val preferences: Preferences,
     private val createWorkoutUseCases: CreateWorkoutUseCases,
-    private val storageService: StorageService
+    private val storageService: StorageService,
+    private val searchExerciseUseCases: ExerciseTrackerUseCases
 ): ViewModel() {
 
     var state by mutableStateOf(CreateWorkoutState())
@@ -31,6 +37,8 @@ class CreateWorkoutViewModel @Inject constructor(
 
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
+
+    private var getExerciseJob: Job? = null
 
     fun onEvent(event: CreateWorkoutEvent) {
         when(event) {
@@ -236,6 +244,20 @@ class CreateWorkoutViewModel @Inject constructor(
                     }.toMutableList()
                 )
             }
+
+            is CreateWorkoutEvent.GetExerciseInfo -> {
+                getExerciseByName(event.exerciseName)
+            }
+
+            is CreateWorkoutEvent.OnToggleExerciseDescription -> {
+                state = state.copy(
+                    exerciseInfo = state.exerciseInfo.map {
+                        if(it.exercise.id == event.exercise.exercise.id){
+                            it.copy(isDescrExpanded = !it.isDescrExpanded)
+                        } else it
+                    }
+                )
+            }
         }
     }
 
@@ -244,6 +266,27 @@ class CreateWorkoutViewModel @Inject constructor(
             trackableExercises = (state.trackableExercises + TrackableExerciseUiState(id = state.lastUsedId + 1, exercise = null)),
             lastUsedId = state.lastUsedId + 1
         )
+    }
+
+    private fun getExerciseByName(name: String) {
+        getExerciseJob?.cancel()
+        getExerciseJob = searchExerciseUseCases
+            .getExerciseForName(name)
+            .onEach { exercises ->
+                if(exercises.isEmpty()){
+                    _uiEvent.send(
+                        UiEvent.ShowSnackbar(
+                            UiText.StringResource(R.string.empty_results)
+                        )
+                    )
+                }
+                state = state.copy(
+                    exerciseInfo = exercises.map {
+                        TrackableExerciseState(exercise = it)
+                    }
+                )
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun trackWorkout(event: CreateWorkoutEvent.OnCreateWorkout){

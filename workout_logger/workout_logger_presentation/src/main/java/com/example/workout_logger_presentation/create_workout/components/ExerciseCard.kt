@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -22,6 +23,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import com.example.workout_logger_presentation.components.AddButton
+import com.example.workout_logger_presentation.components.IconButton
 import com.example.workout_logger_presentation.create_workout.TrackableExerciseUiState
 import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
@@ -53,6 +56,7 @@ fun ExerciseCard(
     onAddSet: () -> Unit,
     page: Int,
     trackableExercises: TrackableExerciseUiState?,
+    onShowInfo: () -> Unit,
     onDeleteRow: (id: Int, exerciseId: Int) -> Unit,
     onDeletePage: () -> Unit,
     onRepsChange: (text: String, index: Int)  -> Unit,
@@ -75,13 +79,21 @@ fun ExerciseCard(
     ) {
         Column {
             if(trackableExercises != null){
-                Text(
-                    modifier = Modifier.padding(spacing.spaceExtraSmall),
-                    text = trackableExercises.name.uppercase(),
-                    style = MaterialTheme.typography.h3,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Row {
+                    Text(
+                        text = trackableExercises.name.uppercase(),
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        style = MaterialTheme.typography.h3,
+                        modifier = Modifier.padding(spacing.spaceExtraSmall).weight(.8f)
+                    )
+                    Spacer(modifier = Modifier.width(spacing.spaceSmall))
+                    IconButton(
+                        onClick = { onShowInfo() },
+                        icon = Icons.Default.Info,
+                        padding = 0.dp
+                    )
+                }
                 Spacer(modifier = Modifier.height(spacing.spaceSmall))
             }
             Card(

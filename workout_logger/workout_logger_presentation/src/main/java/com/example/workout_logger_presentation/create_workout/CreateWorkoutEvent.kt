@@ -1,5 +1,8 @@
 package com.example.workout_logger_presentation.create_workout
 
+import com.example.workout_logger_presentation.search_exercise.SearchExerciseEvent
+import com.example.workout_logger_presentation.search_exercise.TrackableExerciseState
+
 sealed class CreateWorkoutEvent {
 
     object OnAddExercise: CreateWorkoutEvent()
@@ -29,5 +32,9 @@ sealed class CreateWorkoutEvent {
     data class AddSet(val page: Int): CreateWorkoutEvent()
 
     data class OnRemovePage(val page: Int): CreateWorkoutEvent()
+
+    data class GetExerciseInfo(val exerciseName: String): CreateWorkoutEvent()
+
+    data class OnToggleExerciseDescription(val exercise: TrackableExerciseState): CreateWorkoutEvent()
 
 }
