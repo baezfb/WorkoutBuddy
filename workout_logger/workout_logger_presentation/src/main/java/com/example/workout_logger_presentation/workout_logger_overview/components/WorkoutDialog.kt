@@ -51,8 +51,9 @@ fun WorkoutDialog(
             .wrapContentHeight(align = Alignment.CenterVertically)
             .clip( RoundedCornerShape(50.dp) ),
         onDismissRequest = { onDismiss() },
-        title = {},
-        text = {
+        title = null,
+        text = null,
+        buttons = {
             Scaffold(
                 backgroundColor = MaterialTheme.colors.surface,
                 modifier = Modifier.fillMaxHeight(),
@@ -107,7 +108,6 @@ fun WorkoutDialog(
                     }
                 }
             )
-               },
-        buttons = {}
+               }
     )
 }
