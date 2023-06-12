@@ -70,6 +70,7 @@ fun ExerciseCard(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .padding(spacing.spaceSmall)
             .pointerInput(Unit) {
                 detectTapGestures {
                     isLongPressed = false // Reset isLongPressed to false when clicked outside Card

@@ -77,10 +77,7 @@ fun WorkoutLoggerOverviewScreen(
                         optionsHeaderType.value = type
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
-                displayWorkouts = {
-
-                }
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
             DaySelector(

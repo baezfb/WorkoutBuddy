@@ -25,8 +25,7 @@ import com.hbaez.core.R
 @Composable
 fun OptionsHeader(
     optionsHeaderDialog: (type: String) -> Unit,
-    modifier: Modifier = Modifier,
-    displayWorkouts: () -> Unit
+    modifier: Modifier = Modifier
 ){
     val spacing = LocalSpacing.current
     Column(
