@@ -139,7 +139,7 @@ class CreateWorkoutViewModel @Inject constructor(
                         removeAt(event.page)
                     }.toList()
                 )
-
+                onEvent(CreateWorkoutEvent.SubtractPageCount)
             }
 
             is CreateWorkoutEvent.CheckTrackedExercise -> {
