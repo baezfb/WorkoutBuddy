@@ -11,13 +11,11 @@ sealed class CreateWorkoutEvent {
 
     data class OnWorkoutNameFocusChange(val isFocused: Boolean): CreateWorkoutEvent()
 
-    data class OnTrackableExerciseUiNameChange(val name: String, val trackableExerciseUiState: TrackableExerciseUiState): CreateWorkoutEvent()
+    data class OnTrackableExerciseUiRepsChange(val reps: String, val page: Int, val index: Int): CreateWorkoutEvent()
 
-    data class OnTrackableExerciseUiRepsChange(val reps: String, val trackableExerciseUiStateId: Int, val index: Int): CreateWorkoutEvent()
+    data class OnTrackableExerciseUiRestChange(val rest: String, val page: Int, val index: Int): CreateWorkoutEvent()
 
-    data class OnTrackableExerciseUiRestChange(val rest: String, val trackableExerciseUiStateId: Int, val index: Int): CreateWorkoutEvent()
-
-    data class OnTrackableExerciseUiWeightChange(val weight: String, val trackableExerciseUiStateId: Int, val index: Int): CreateWorkoutEvent()
+    data class OnTrackableExerciseUiWeightChange(val weight: String, val page: Int, val index: Int): CreateWorkoutEvent()
 
     data class OnRemoveSetRow(val id: Int, val exerciseId: Int): CreateWorkoutEvent()
 

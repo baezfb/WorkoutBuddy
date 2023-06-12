@@ -145,13 +145,13 @@ fun CreateWorkoutScreen(
                         viewModel.onEvent(CreateWorkoutEvent.OnRemovePage(page))
                     },
                     onRepsChange = { text, index ->
-                        viewModel.onEvent(CreateWorkoutEvent.OnTrackableExerciseUiRepsChange(reps = text, trackableExerciseUiStateId = state.trackableExercises[page].id, index = index))
+                        viewModel.onEvent(CreateWorkoutEvent.OnTrackableExerciseUiRepsChange(reps = text, page = page, index = index))
                     },
                     onRestChange = { text, index ->
-                        viewModel.onEvent(CreateWorkoutEvent.OnTrackableExerciseUiRestChange(rest = text, trackableExerciseUiStateId = state.trackableExercises[page].id, index = index))
+                        viewModel.onEvent(CreateWorkoutEvent.OnTrackableExerciseUiRestChange(rest = text, page = page, index = index))
                     },
                     onWeightChange = { text, index ->
-                        viewModel.onEvent(CreateWorkoutEvent.OnTrackableExerciseUiWeightChange(weight = text, trackableExerciseUiStateId = state.trackableExercises[page].id, index = index))
+                        viewModel.onEvent(CreateWorkoutEvent.OnTrackableExerciseUiWeightChange(weight = text, page = page, index = index))
                     }
                 )
             }

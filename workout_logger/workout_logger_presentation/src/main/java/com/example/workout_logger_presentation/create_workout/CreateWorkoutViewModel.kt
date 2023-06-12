@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import com.hbaez.core.domain.preferences.Preferences
 import com.hbaez.core.util.UiText
 import com.hbaez.core.R
+import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 import com.hbaez.user_auth_presentation.model.service.StorageService
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
@@ -59,50 +60,53 @@ class CreateWorkoutViewModel @Inject constructor(
                 )
             }
 
-            is CreateWorkoutEvent.OnTrackableExerciseUiNameChange -> {
-                state = state.copy(
-                    trackableExercises = state.trackableExercises.toList().map {
-                        if (it.id == event.trackableExerciseUiState.id) {
-                            if(event.name.trim().isNotEmpty() || event.name.isEmpty()){
-                                it.copy(name = event.name)
-                            } else it
-                        } else it
-                    }.toMutableList()
-                )
-            }
-
             is CreateWorkoutEvent.OnTrackableExerciseUiRepsChange -> {
+                var counter = 0
                 state = state.copy(
                     trackableExercises = state.trackableExercises.toList().map {
-                        if (it.id == event.trackableExerciseUiStateId) {
+                        if (counter == event.page) {
+                            counter++
                             val tmp = it.reps.toMutableList()
                             tmp[event.index] = event.reps
                             it.copy(reps = tmp.toList())
-                        } else it
+                        } else{
+                            counter++
+                            it
+                        }
                     }.toMutableList()
                 )
             }
 
             is CreateWorkoutEvent.OnTrackableExerciseUiRestChange -> {
+                var counter = 0
                 state = state.copy(
                     trackableExercises = state.trackableExercises.toList().map {
-                        if (it.id == event.trackableExerciseUiStateId) {
+                        if (counter == event.page) {
+                            counter++
                             val tmp = it.rest.toMutableList()
                             tmp[event.index] = event.rest
                             it.copy(rest = tmp.toList())
-                        } else it
+                        } else {
+                            counter++
+                            it
+                        }
                     }.toMutableList()
                 )
             }
 
             is CreateWorkoutEvent.OnTrackableExerciseUiWeightChange -> {
+                var counter = 0
                 state = state.copy(
                     trackableExercises = state.trackableExercises.toList().map {
-                        if (it.id == event.trackableExerciseUiStateId) {
+                        if (counter == event.page) {
+                            counter++
                             val tmp = it.weight.toMutableList()
                             tmp[event.index] = event.weight
                             it.copy(weight = tmp.toList())
-                        } else it
+                        } else {
+                            counter++
+                            it
+                        }
                     }.toMutableList()
                 )
             }
@@ -183,19 +187,17 @@ class CreateWorkoutViewModel @Inject constructor(
                     }
                     var counter = 0
                     event.trackableExercise.forEach { exercise ->
-                        if(!exercise.isDeleted[0]){ /*TODO: fix index*/
-                            counter += 1
-                            if(exercise.name.isEmpty() || exercise.sets == 0 || exercise.reps.isEmpty() || exercise.rest.isEmpty() || exercise.weight.isEmpty()){
-                                Log.println(Log.DEBUG, "exercise sets", "reached inside if")
-                                viewModelScope.launch {
-                                    _uiEvent.send(
-                                        UiEvent.ShowSnackbar(
-                                            UiText.StringResource(R.string.error_incomplete_table)
-                                        )
+                        counter += 1
+                        if(exercise.name.isEmpty() || exercise.sets == 0 || exercise.reps.contains("") || exercise.rest.contains("") || exercise.weight.contains("")){
+                            Log.println(Log.DEBUG, "exercise sets", "reached inside if")
+                            viewModelScope.launch {
+                                _uiEvent.send(
+                                    UiEvent.ShowSnackbar(
+                                        UiText.StringResource(R.string.error_incomplete_table)
                                     )
-                                }
-                                return@breaking
+                                )
                             }
+                            return@breaking
                         }
                     }
                     if(counter == 0) {
@@ -290,8 +292,8 @@ class CreateWorkoutViewModel @Inject constructor(
     }
 
     private fun trackWorkout(event: CreateWorkoutEvent.OnCreateWorkout){
-//        viewModelScope.launch {
-//            event.trackableExercise.forEach {
+        viewModelScope.launch {
+            event.trackableExercise.forEach {
 //                if(it.isDeleted) return@forEach
 //                createWorkoutUseCases.addWorkout(
 //                    workoutName = event.workoutName,
@@ -304,19 +306,21 @@ class CreateWorkoutViewModel @Inject constructor(
 //                    rowId = it.id,
 //                    lastUsedId = event.lastUsedId
 //                )
-//                storageService.saveWorkoutTemplate(WorkoutTemplate(
-//                    name = event.workoutName,
-//                    exerciseName = it.name,
-//                    exerciseId = it.id,
-//                    sets = it.sets.toInt(),
-//                    rest = it.rest.toInt(),
-//                    reps = it.reps.toInt(),
-//                    weight = it.weight.toInt(),
-//                    rowId = it.id,
-//                    lastUsedId = event.lastUsedId,
-//                ))
-//            }
-//            _uiEvent.send(UiEvent.NavigateUp)
-//        }
+                storageService.saveWorkoutTemplate(
+                    WorkoutTemplate(
+                    name = event.workoutName,
+                    exerciseName = it.name,
+                    exerciseId = it.id,
+                    sets = it.sets,
+                    rest = it.rest,
+                    reps = it.reps,
+                    weight = it.weight,
+                    rowId = it.id,
+                    lastUsedId = event.lastUsedId,
+                )
+                )
+            }
+            _uiEvent.send(UiEvent.NavigateUp)
+        }
     }
 }

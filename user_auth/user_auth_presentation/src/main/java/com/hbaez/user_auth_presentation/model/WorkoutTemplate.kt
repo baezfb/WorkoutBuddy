@@ -9,15 +9,9 @@ data class WorkoutTemplate(
     val exerciseName: String,
     val exerciseId: Int?,
     val sets: Int,
-    val rest: Int,
-//    val restList: List<String> = List(rest) { "" },
-    val reps: Int,
-//    val repsList: List<String> = List(reps) { "" },
-    val weight: Int,
-//    val weightList: List<String> = List(weight) { "" },
+    val rest: List<String> = emptyList(),
+    val reps: List<String> = emptyList(),
+    val weight: List<String> = emptyList(),
     val rowId: Int,
     val lastUsedId: Int,
-//    val isCompleted: List<Boolean> = List(sets) { false },
-//    val timerStatus: String = "START",
-//    val checkedColor: List<Color> = List(sets) { Color.DarkGray }
 )

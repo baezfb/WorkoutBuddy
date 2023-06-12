@@ -50,9 +50,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                                 exerciseName = it.get("exerciseName").toString(),
                                 exerciseId = it.get("exerciseId").toString().toInt(),
                                 sets = it.get("sets").toString().toInt(),
-                                rest = it.get("rest").toString().toInt(),
-                                reps = it.get("reps").toString().toInt(),
-                                weight = it.get("weight").toString().toInt(),
+                                rest = it.get("rest").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
+                                reps = it.get("reps").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
+                                weight = it.get("weight").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
                                 rowId = it.get("rowId").toString().toInt(),
                                 lastUsedId = it.get("lastUsedId").toString().toInt(),
                             )
