@@ -43,9 +43,6 @@ class CreateWorkoutViewModel @Inject constructor(
 
     fun onEvent(event: CreateWorkoutEvent) {
         when(event) {
-            is CreateWorkoutEvent.OnAddExercise -> {
-                addExercise()
-            }
             is CreateWorkoutEvent.OnWorkoutNameChange -> {
                 state = state.copy(
                     workoutName = if(event.name.trim().isNotEmpty() || event.name.isEmpty()){
@@ -149,6 +146,7 @@ class CreateWorkoutViewModel @Inject constructor(
                     state = state.copy(
                         trackableExercises = (state.trackableExercises.toList() + TrackableExerciseUiState(
                                 name = trackedExercise.name,
+                                id = state.lastUsedId,
                                 exercise = TrackedExercise(
                                     id = trackedExercise.id,
                                     name = trackedExercise.name,
@@ -165,7 +163,8 @@ class CreateWorkoutViewModel @Inject constructor(
                                     image_url_secondary = trackedExercise.image_url_secondary.toList(),
                                     muscle_name_secondary = trackedExercise.muscle_name_secondary
                                 )
-                            )).toMutableList()
+                            )).toMutableList(),
+                        lastUsedId = state.lastUsedId + 1
                     )
                     preferences.removeTrackedExercise()
                     onEvent(CreateWorkoutEvent.AddPageCount)
@@ -263,13 +262,6 @@ class CreateWorkoutViewModel @Inject constructor(
         }
     }
 
-    private fun addExercise(){
-        state = state.copy(
-            trackableExercises = (state.trackableExercises + TrackableExerciseUiState(id = state.lastUsedId + 1, exercise = null)),
-            lastUsedId = state.lastUsedId + 1
-        )
-    }
-
     private fun getExerciseByName(name: String) {
         getExerciseJob?.cancel()
         getExerciseJob = searchExerciseUseCases
@@ -308,15 +300,15 @@ class CreateWorkoutViewModel @Inject constructor(
 //                )
                 storageService.saveWorkoutTemplate(
                     WorkoutTemplate(
-                    name = event.workoutName,
+                    name = state.workoutName,
                     exerciseName = it.name,
-                    exerciseId = it.id,
+                    exerciseId = it.exercise!!.id,
                     sets = it.sets,
                     rest = it.rest,
                     reps = it.reps,
                     weight = it.weight,
                     rowId = it.id,
-                    lastUsedId = event.lastUsedId,
+                    lastUsedId = state.lastUsedId,
                 )
                 )
             }

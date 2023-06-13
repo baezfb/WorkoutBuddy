@@ -180,14 +180,14 @@ fun WorkoutLoggerOverviewScreen(
                                 style = MaterialTheme.typography.body2
                             )
                         }
-                        val weight = completedWorkout.weight.removeSurrounding("[","]").split(",").toList().map{ it.trim().toInt() }
-                        val reps = completedWorkout.reps.removeSurrounding("[","]").split(",").toList().map{ it.trim().toInt() }
+                        val weight = completedWorkout.weight
+                        val reps = completedWorkout.reps
                         for(i in 1..completedWorkout.sets){
                             if(i <= reps.size){
                                 ExerciseRow(
                                     set = i,
-                                    reps = reps[i-1],
-                                    weight = weight[i-1],
+                                    reps = reps[i-1].toInt(),
+                                    weight = weight[i-1].toInt(),
                                     completed = true
                                 )
                             }

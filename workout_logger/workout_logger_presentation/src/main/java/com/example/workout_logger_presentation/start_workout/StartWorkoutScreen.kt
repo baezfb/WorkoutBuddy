@@ -105,7 +105,7 @@ fun StartWorkoutScreen(
                     modifier = Modifier
                         .padding(top = spacing.spaceMedium, end = spacing.spaceMedium),
                     onClick = {
-                                viewModel.onEvent(StartWorkoutEvent.OnSubmitWorkout(state.workoutName, state.loggerListStates, dayOfMonth, month, year))
+                                viewModel.onEvent(StartWorkoutEvent.OnSubmitWorkout(state.workoutName, state.loggerListStates, workoutTemplates.value, dayOfMonth, month, year))
                               },
                     icon = Icons.Default.Done
                 )
@@ -135,14 +135,11 @@ fun StartWorkoutScreen(
                                     exerciseId = it.exerciseId,
                                     timerStatus = TimerStatus.START,
                                     sets = it.sets.toString(),
-                                    rest = it.rest.toString(),
-                                    repsList = List(it.sets) { _ -> it.reps.toString() },
-                                    weightList = List(it.sets) { _ -> it.weight.toString() },
+                                    rest = List(it.rest.size) { "" },
+                                    reps = List(it.reps.size) { "" },
+                                    weight = List(it.weight.size) { "" },
                                     isCompleted = List(it.sets) { false },
                                     checkedColor = List(it.sets) { Color.DarkGray },
-                                    origRest = it.rest.toString(),
-                                    origReps = it.reps.toString(),
-                                    origWeight = it.weight.toString()
                                 )
                                 viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
                             }
@@ -153,14 +150,11 @@ fun StartWorkoutScreen(
                                     exerciseId = it.exerciseId,
                                     timerStatus = TimerStatus.START,
                                     sets = it.sets.toString(),
-                                    rest = it.rest.toString(),
-                                    repsList = List(it.sets) { "" },
-                                    weightList = List(it.sets) { "" },
+                                    rest = it.rest,
+                                    reps = List(it.reps.size) { "" },
+                                    weight = List(it.weight.size) { "" },
                                     isCompleted = List(it.sets) { false },
-                                    checkedColor = List(it.sets) { Color.DarkGray },
-                                    origRest = it.rest.toString(),
-                                    origReps = it.reps.toString(),
-                                    origWeight = it.weight.toString()
+                                    checkedColor = List(it.sets) { Color.DarkGray }
                                 )
                                 viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
                             }
@@ -202,10 +196,10 @@ fun StartWorkoutScreen(
                         loggerListState = state.loggerListStates[page],
                         workoutTemplate = currentExercise,
                         onRepsChange = { reps, index, id ->
-                            viewModel.onEvent(StartWorkoutEvent.OnRepsChange(reps = reps, index = index, rowId = id))
+                            viewModel.onEvent(StartWorkoutEvent.OnRepsChange(reps = reps, index = index, rowId = id, page = page))
                         },
                         onWeightChange = { weight, index, id ->
-                            viewModel.onEvent(StartWorkoutEvent.OnWeightChange(weight = weight, index = index, rowId = id))
+                            viewModel.onEvent(StartWorkoutEvent.OnWeightChange(weight = weight, index = index, rowId = id, page = page))
                         },
                         onCheckboxChange = { isChecked, index, id, page ->
                             if(isChecked && state.currRunningIndex != index && state.timerStatus == TimerStatus.RUNNING){ // non checked clicked while timer already running

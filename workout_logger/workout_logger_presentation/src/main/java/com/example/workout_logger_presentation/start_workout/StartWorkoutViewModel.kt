@@ -67,13 +67,18 @@ class StartWorkoutViewModel @Inject constructor(
         when(event) {
             is StartWorkoutEvent.OnRepsChange -> {
                 Log.println(Log.DEBUG, "on reps change", event.reps)
+                var counter = 0
                 state = state.copy(
-                    loggerListStates = state.loggerListStates.toList().map {
-                        if(event.rowId == it.id){
-                            val tmp = it.repsList.toMutableList()
+                    loggerListStates = state.loggerListStates.map {
+                        if(counter == event.page){
+                            counter++
+                            val tmp = it.reps.toMutableList()
                             tmp[event.index] = event.reps
-                            it.copy(repsList = tmp)
-                        } else it
+                            it.copy(reps = tmp)
+                        } else {
+                            counter++
+                            it
+                        }
                     }.toMutableList()
                 )
             }
@@ -86,13 +91,18 @@ class StartWorkoutViewModel @Inject constructor(
                 Log.println(Log.DEBUG, "loggerlist add item vm", state.loggerListStates.size.toString())
             }
             is StartWorkoutEvent.OnWeightChange -> {
+                var counter = 0
                 state = state.copy(
                     loggerListStates = state.loggerListStates.toList().map {
-                        if(it.id == event.rowId){
-                            val tmp = it.weightList.toMutableList()
+                        if(counter == event.page){
+                            counter++
+                            val tmp = it.weight.toMutableList()
                             tmp[event.index]=event.weight
-                            it.copy(weightList = tmp.toList())
-                        }else it
+                            it.copy(weight = tmp.toList())
+                        }else {
+                            counter++
+                            it
+                        }
                     }.toMutableList()
                 )
             }
@@ -103,17 +113,22 @@ class StartWorkoutViewModel @Inject constructor(
                     )
                 }
                 Log.println(Log.DEBUG, "loggerliststates size", state.loggerListStates.size.toString())
+                var counter = 0
                 state = state.copy(
                     loggerListStates = state.loggerListStates.toList().map {
-                        if(it.id == event.rowId){
+                        if(counter == event.page){
+                            counter++
                             val tmp = it.isCompleted.toMutableList()
                             tmp[event.index] = event.isChecked
                             it.copy(isCompleted = tmp, timerStatus = TimerStatus.RUNNING)
-                        } else it
+                        } else {
+                            counter++
+                            it
+                        }
                     }.toMutableList(),
                     timerStatus = event.timerStatus,
                     pagerIndex = event.page,
-                    timeDuration = Duration.ofSeconds(state.loggerListStates[event.page].rest.toLong()),
+                    timeDuration = Duration.ofSeconds(state.loggerListStates[event.page].rest[event.index].toLong()),
                     currRunningIndex = event.currRunningIndex,
                     currRunningId = event.rowId
                 )
@@ -129,8 +144,8 @@ class StartWorkoutViewModel @Inject constructor(
             is StartWorkoutEvent.OnChangePage -> {
                 if(state.timerStatus != TimerStatus.RUNNING){
                     state = state.copy(
-                        remainingTime = state.loggerListStates[event.currentPage].rest.toLong(),
-                        timeDuration = Duration.ofSeconds(state.loggerListStates[event.currentPage].rest.toLong()),
+                        remainingTime = state.loggerListStates[event.currentPage].rest[0].toLong(),
+                        timeDuration = Duration.ofSeconds(state.loggerListStates[event.currentPage].rest[0].toLong()),
                         pagerIndex = event.currentPage
                     )
                 }
@@ -159,22 +174,24 @@ class StartWorkoutViewModel @Inject constructor(
                     if(state.timerStatus == TimerStatus.RUNNING){
                         return@breaking
                     }
+                    var counter = 0
                     event.trackableExercises.forEach{// for each exercise
                         val repsList = mutableListOf<Int>()
                         val weightList = mutableListOf<Int>()
                         it.isCompleted.forEachIndexed { index, b ->  // for each set in exercise
                             if(b){
-                                if(it.repsList[index].isEmpty()){
-                                    repsList.add(it.origReps.toInt())
-                                } else repsList.add(it.repsList[index].toInt())
-                                if(it.weightList[index].isEmpty()){
-                                    weightList.add(it.origWeight.toInt())
-                                } else weightList.add(it.weightList[index].toInt())
+                                if(it.reps[index].isEmpty()){
+                                    repsList.add(event.workoutTemplates[counter].reps[index].toInt())
+                                } else repsList.add(it.reps[index].toInt())
+                                if(it.weight[index].isEmpty()){
+                                    weightList.add(event.workoutTemplates[counter].weight[index].toInt())
+                                } else weightList.add(it.weight[index].toInt())
                             }
                         }
                         if(repsList.isNotEmpty() && weightList.isNotEmpty()){
                             trackCompletedWorkout(it, repsList, weightList, event.dayOfMonth, event.month, event.year)
                         }
+                        counter++
                     }
                     viewModelScope.launch {
                         _uiEvent.send(UiEvent.NavigateUp)
@@ -186,19 +203,19 @@ class StartWorkoutViewModel @Inject constructor(
 
     private fun trackCompletedWorkout(loggerListState: LoggerListState, repsList: List<Int>, weightList: List<Int>, dayOfMonth: Int, month: Int, year: Int){
         viewModelScope.launch {
-            startWorkoutUseCases.addCompletedWorkout(
-                workoutName = workoutName,
-                workoutId = workoutId,
-                exerciseName = loggerListState.exerciseName,
-                exerciseId = loggerListState.exerciseId,
-                sets = loggerListState.sets.toInt(),
-                rest = loggerListState.origRest.toInt(),
-                reps = repsList.toString(),
-                weight = weightList.toString(),
-                dayOfMonth = dayOfMonth,
-                month = month,
-                year = year
-            )
+//            startWorkoutUseCases.addCompletedWorkout(
+//                workoutName = workoutName,
+//                workoutId = workoutId,
+//                exerciseName = loggerListState.exerciseName,
+//                exerciseId = loggerListState.exerciseId,
+//                sets = loggerListState.sets.toInt(),
+//                rest = loggerListState.origRest.toInt(),
+//                reps = repsList.toString(),
+//                weight = weightList.toString(),
+//                dayOfMonth = dayOfMonth,
+//                month = month,
+//                year = year
+//            )
             val date = "${year}-${month.toString().padStart(2,'0')}-${dayOfMonth.toString().padStart(2, '0')}"
             storageService.saveCompletedWorkout(
                 CompletedWorkout(
@@ -207,9 +224,9 @@ class StartWorkoutViewModel @Inject constructor(
                     exerciseName = loggerListState.exerciseName,
                     exerciseId = loggerListState.exerciseId,
                     sets = loggerListState.sets.toInt(),
-                    rest = loggerListState.origRest.toInt(),
-                    reps = repsList.toString(),
-                    weight = weightList.toString(),
+                    rest = loggerListState.rest,
+                    reps = loggerListState.reps,
+                    weight = loggerListState.weight,
                     dayOfMonth = dayOfMonth,
                     month = month,
                     year = year

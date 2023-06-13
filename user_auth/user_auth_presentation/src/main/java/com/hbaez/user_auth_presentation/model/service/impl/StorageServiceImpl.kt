@@ -72,9 +72,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                     exerciseName = it.get("exerciseName").toString(),
                     exerciseId = it.get("exerciseId").toString().toInt(),
                     sets = it.get("sets").toString().toInt(),
-                    rest = it.get("rest").toString().toInt(),
-                    reps = it.get("reps").toString(),
-                    weight = it.get("weight").toString(),
+                    rest = it.get("rest").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
+                    reps = it.get("reps").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
+                    weight = it.get("weight").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
                     dayOfMonth = it.get("dayOfMonth").toString().toInt(),
                     month = it.get("month").toString().toInt(),
                     year = it.get("year").toString().toInt()

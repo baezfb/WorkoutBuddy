@@ -88,7 +88,7 @@ fun CompletedWorkoutItem(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = workout.weight.removeSurrounding("[","]").split(",").toList().size.toString() + "/" + workout.sets.toString() ,
+                    text = workout.weight.size.toString() + "/" + workout.sets.toString() ,
                     fontSize = 20.sp
                 )
                 Text(
@@ -104,7 +104,7 @@ fun CompletedWorkoutItem(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = workout.weight.removeSurrounding("[","]").split(",").toList().map{ it.trim().toInt() }.average().toString(),
+                    text = workout.weight.map{ it.trim().toInt() }.average().toString(),
                     fontSize = 20.sp
                 )
                 Text(
@@ -120,7 +120,7 @@ fun CompletedWorkoutItem(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = workout.reps.removeSurrounding("[","]").split(",").toList().map{ it.trim().toInt() }.average().toString(),
+                    text = workout.reps.map{ it.trim().toInt() }.average().toString(),
                     fontSize = 20.sp
                 )
                 Text(

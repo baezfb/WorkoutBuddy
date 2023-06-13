@@ -5,8 +5,6 @@ import com.example.workout_logger_presentation.search_exercise.TrackableExercise
 
 sealed class CreateWorkoutEvent {
 
-    object OnAddExercise: CreateWorkoutEvent()
-
     data class OnWorkoutNameChange(val name: String): CreateWorkoutEvent()
 
     data class OnWorkoutNameFocusChange(val isFocused: Boolean): CreateWorkoutEvent()

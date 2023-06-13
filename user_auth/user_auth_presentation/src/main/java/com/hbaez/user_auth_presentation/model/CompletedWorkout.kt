@@ -6,9 +6,9 @@ data class CompletedWorkout(
     val exerciseName: String,
     val exerciseId: Int?,
     val sets: Int,
-    val rest: Int,
-    val reps: String,
-    val weight: String,
+    val rest: List<String>,
+    val reps: List<String>,
+    val weight: List<String>,
     val dayOfMonth: Int,
     val month: Int,
     val year: Int

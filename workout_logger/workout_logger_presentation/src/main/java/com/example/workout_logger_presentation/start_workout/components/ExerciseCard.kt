@@ -89,17 +89,18 @@ fun ExerciseCard(
                 )
             }
             LazyColumn{
-                List(loggerListState.sets.toInt()) { it + 1 }.forEach {
+                List(loggerListState.sets.toInt()) { it }.forEach {
+                    Log.println(Log.DEBUG, "exercisecard it index", it.toString())
                     item {
                         ExerciseCardRow(
-                            it,
-                            loggerListState,
-                            workoutTemplate,
-                            it - 1,
-                            onRepsChange,
-                            onWeightChange,
-                            onCheckboxChange,
-                            page
+                            set = it + 1,
+                            loggerListState = loggerListState,
+                            workoutTemplate = workoutTemplate,
+                            index = it,
+                            onRepsChange = onRepsChange,
+                            onWeightChange = onWeightChange,
+                            onCheckboxChange = onCheckboxChange,
+                            page = page
                         )
                     }
                 }
@@ -132,8 +133,8 @@ fun ExerciseCardRow(
         )
         TextField(
             modifier = Modifier.weight(1f),
-            placeholder = { Text(text = loggerListState.origWeight) },
-            value = loggerListState.weightList[index],
+            placeholder = { Text(text = workoutTemplate.weight[index]) },
+            value = loggerListState.weight[index],
             textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
             singleLine = true,
             onValueChange = { onWeightChange(it, index, loggerListState.id) },
@@ -151,8 +152,8 @@ fun ExerciseCardRow(
         )
         TextField(
             modifier = Modifier.weight(1f),
-            placeholder = { Text(text = loggerListState.origReps.toString()) },
-            value = loggerListState.repsList[index],
+            placeholder = { Text(text = workoutTemplate.reps[index]) },
+            value = loggerListState.reps[index],
             textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
             singleLine = true,
             onValueChange = { onRepsChange(it, index, loggerListState.id) },
