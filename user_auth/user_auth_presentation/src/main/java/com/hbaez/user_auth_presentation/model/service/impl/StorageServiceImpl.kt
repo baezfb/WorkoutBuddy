@@ -75,6 +75,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                     rest = it.get("rest").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
                     reps = it.get("reps").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
                     weight = it.get("weight").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
+                    isCompleted = it.get("completed").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
                     dayOfMonth = it.get("dayOfMonth").toString().toInt(),
                     month = it.get("month").toString().toInt(),
                     year = it.get("year").toString().toInt()

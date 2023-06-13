@@ -182,24 +182,14 @@ fun WorkoutLoggerOverviewScreen(
                         }
                         val weight = completedWorkout.weight
                         val reps = completedWorkout.reps
+                        val isCompleted = completedWorkout.isCompleted
                         for(i in 1..completedWorkout.sets){
-                            if(i <= reps.size){
-                                ExerciseRow(
-                                    set = i,
-                                    reps = reps[i-1].toInt(),
-                                    weight = weight[i-1].toInt(),
-                                    completed = true
-                                )
-                            }
-                            else {
-                                ExerciseRow(
-                                    set = i,
-                                    reps = 0,
-                                    weight = 0,
-//                                    rest = 0,
-                                    completed = false
-                                )
-                            }
+                            ExerciseRow(
+                                set = i,
+                                reps = reps[i-1].toInt(),
+                                weight = weight[i-1].toInt(),
+                                completed = isCompleted[i-1].toBoolean()
+                            )
                             if(i != completedWorkout.sets) Divider(color = MaterialTheme.colors.primaryVariant, thickness = 1.dp)
                         }
                         Spacer(modifier = Modifier.height(spacing.spaceExtraSmall))

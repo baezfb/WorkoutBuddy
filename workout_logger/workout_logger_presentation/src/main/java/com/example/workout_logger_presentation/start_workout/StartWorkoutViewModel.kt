@@ -45,8 +45,6 @@ class StartWorkoutViewModel @Inject constructor(
 
     var currentTime by mutableStateOf(state.remainingTime)
         private set
-
-    private var workoutName: String = ""
     var workoutIds: List<String>
 
     val workoutTemplates = storageService.workouts
@@ -176,20 +174,30 @@ class StartWorkoutViewModel @Inject constructor(
                     }
                     var counter = 0
                     event.trackableExercises.forEach{// for each exercise
-                        val repsList = mutableListOf<Int>()
-                        val weightList = mutableListOf<Int>()
+                        val repsList = mutableListOf<String>()
+                        val weightList = mutableListOf<String>()
+                        val isCompletedList = mutableListOf<String>()
                         it.isCompleted.forEachIndexed { index, b ->  // for each set in exercise
                             if(b){
+                                isCompletedList.add("true")
                                 if(it.reps[index].isEmpty()){
-                                    repsList.add(event.workoutTemplates[counter].reps[index].toInt())
-                                } else repsList.add(it.reps[index].toInt())
+                                    repsList.add(event.workoutTemplates[counter].reps[index])
+                                } else repsList.add(it.reps[index])
                                 if(it.weight[index].isEmpty()){
-                                    weightList.add(event.workoutTemplates[counter].weight[index].toInt())
-                                } else weightList.add(it.weight[index].toInt())
+                                    weightList.add(event.workoutTemplates[counter].weight[index])
+                                } else weightList.add(it.weight[index])
+                            } else {
+                                isCompletedList.add("false")
+                                if(it.reps[index].isEmpty()){
+                                    repsList.add(event.workoutTemplates[counter].reps[index])
+                                } else repsList.add(it.reps[index])
+                                if(it.weight[index].isEmpty()){
+                                    weightList.add(event.workoutTemplates[counter].weight[index])
+                                } else weightList.add(it.weight[index])
                             }
                         }
                         if(repsList.isNotEmpty() && weightList.isNotEmpty()){
-                            trackCompletedWorkout(it, repsList, weightList, event.dayOfMonth, event.month, event.year)
+                            trackCompletedWorkout(it, repsList, weightList, isCompletedList.toList(), event.dayOfMonth, event.month, event.year)
                         }
                         counter++
                     }
@@ -201,32 +209,20 @@ class StartWorkoutViewModel @Inject constructor(
         }
     }
 
-    private fun trackCompletedWorkout(loggerListState: LoggerListState, repsList: List<Int>, weightList: List<Int>, dayOfMonth: Int, month: Int, year: Int){
+    private fun trackCompletedWorkout(loggerListState: LoggerListState, repsList: List<String>, weightList: List<String>, isCompletedList: List<String>, dayOfMonth: Int, month: Int, year: Int){
         viewModelScope.launch {
-//            startWorkoutUseCases.addCompletedWorkout(
-//                workoutName = workoutName,
-//                workoutId = workoutId,
-//                exerciseName = loggerListState.exerciseName,
-//                exerciseId = loggerListState.exerciseId,
-//                sets = loggerListState.sets.toInt(),
-//                rest = loggerListState.origRest.toInt(),
-//                reps = repsList.toString(),
-//                weight = weightList.toString(),
-//                dayOfMonth = dayOfMonth,
-//                month = month,
-//                year = year
-//            )
             val date = "${year}-${month.toString().padStart(2,'0')}-${dayOfMonth.toString().padStart(2, '0')}"
             storageService.saveCompletedWorkout(
                 CompletedWorkout(
-                    workoutName = workoutName,
+                    workoutName = state.workoutName,
                     workoutId = workoutId,
                     exerciseName = loggerListState.exerciseName,
                     exerciseId = loggerListState.exerciseId,
                     sets = loggerListState.sets.toInt(),
                     rest = loggerListState.rest,
-                    reps = loggerListState.reps,
-                    weight = loggerListState.weight,
+                    reps = repsList,
+                    weight = weightList,
+                    isCompleted = isCompletedList,
                     dayOfMonth = dayOfMonth,
                     month = month,
                     year = year

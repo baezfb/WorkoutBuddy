@@ -65,6 +65,8 @@
     <string name="reps">Reps</string>
     <string name="rest">Rest</string>
     <string name="weight">Weight</string>
+    <string name="total_volume">Total Volume</string>
+    <string name="total_reps">Total Reps</string>
     <string name="exercise_id">ID</string>
     <string name="add_exercise">Add Exercise</string>
     <string name="add_set">Add Set</string>

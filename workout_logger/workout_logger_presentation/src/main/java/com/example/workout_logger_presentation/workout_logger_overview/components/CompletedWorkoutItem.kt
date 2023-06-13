@@ -87,8 +87,10 @@ fun CompletedWorkoutItem(
                 modifier = modifier,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                var completed = 0
+                workout.isCompleted.forEach { if(it == "true") completed++ }
                 Text(
-                    text = workout.weight.size.toString() + "/" + workout.sets.toString() ,
+                    text = completed.toString() + "/" + workout.sets.toString() ,
                     fontSize = 20.sp
                 )
                 Text(
@@ -103,12 +105,20 @@ fun CompletedWorkoutItem(
                 modifier = modifier,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                var totalVolume = 0
+                var counter = 0
+                workout.weight.forEach{
+                    if(workout.isCompleted[counter] == "true"){
+                        totalVolume += it.trim().toInt()
+                    }
+                    counter++
+                }
                 Text(
-                    text = workout.weight.map{ it.trim().toInt() }.average().toString(),
+                    text = totalVolume.toString(),
                     fontSize = 20.sp
                 )
                 Text(
-                    text = stringResource(id = R.string.weight),
+                    text = stringResource(id = R.string.total_volume),
                     color = MaterialTheme.colors.onBackground,
                     style = MaterialTheme.typography.body1,
                     fontWeight = FontWeight.Light
@@ -119,8 +129,16 @@ fun CompletedWorkoutItem(
                 modifier = modifier,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                var totalReps = 0
+                var counter = 0
+                workout.reps.forEach{
+                    if(workout.isCompleted[counter] == "true"){
+                        totalReps += it.trim().toInt()
+                    }
+                    counter++
+                }
                 Text(
-                    text = workout.reps.map{ it.trim().toInt() }.average().toString(),
+                    text = totalReps.toString(),
                     fontSize = 20.sp
                 )
                 Text(

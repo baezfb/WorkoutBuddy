@@ -9,6 +9,7 @@ data class CompletedWorkout(
     val rest: List<String>,
     val reps: List<String>,
     val weight: List<String>,
+    val isCompleted: List<String>,
     val dayOfMonth: Int,
     val month: Int,
     val year: Int
