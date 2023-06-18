@@ -41,7 +41,6 @@ class StartWorkoutViewModel @Inject constructor(
     private val preferences: Preferences,
     private val storageService: StorageService,
     private val startWorkoutUseCases: ExerciseTrackerUseCases,
-    private val searchExerciseUseCases: ExerciseTrackerUseCases,
     logService: LogService
 ): AuthViewModel(logService) {
 
@@ -253,7 +252,7 @@ class StartWorkoutViewModel @Inject constructor(
 
     private fun getExerciseByName(name: String) {
         getExerciseJob?.cancel()
-        getExerciseJob = searchExerciseUseCases
+        getExerciseJob = startWorkoutUseCases
             .getExerciseForName(name)
             .onEach { exercises ->
                 if(exercises.isEmpty()){

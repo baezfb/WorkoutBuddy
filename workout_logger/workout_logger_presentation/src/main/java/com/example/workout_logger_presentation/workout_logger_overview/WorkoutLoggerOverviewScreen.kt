@@ -146,6 +146,7 @@ fun WorkoutLoggerOverviewScreen(
         itemsIndexed(viewModel.completedWorkouts){ index, completedWorkout -> //items(state.completedWorkouts){ completedWorkout ->
             CompletedWorkoutItem(
                 workout = completedWorkout,
+                imageUrl = if(viewModel.imageUrls.containsKey(completedWorkout.exerciseName)) viewModel.imageUrls[completedWorkout.exerciseName]!! else "",
                 isExpanded = state.completedWorkoutIsExpanded[index],
                 modifier = Modifier,
                 onClick = {
