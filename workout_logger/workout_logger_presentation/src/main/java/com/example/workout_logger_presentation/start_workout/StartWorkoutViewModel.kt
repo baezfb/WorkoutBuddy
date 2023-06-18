@@ -12,9 +12,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.workout_logger_domain.use_case.ExerciseTrackerUseCases
+import com.example.workout_logger_presentation.search_exercise.TrackableExerciseState
 import com.example.workout_logger_presentation.start_workout.components.TimerExpiredReceiver
+import com.hbaez.core.R
 import com.hbaez.core.domain.preferences.Preferences
 import com.hbaez.core.util.UiEvent
+import com.hbaez.core.util.UiText
 import com.hbaez.user_auth_presentation.AuthViewModel
 import com.hbaez.user_auth_presentation.model.CompletedWorkout
 import com.hbaez.user_auth_presentation.model.WorkoutTemplate
@@ -24,6 +27,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -37,6 +41,7 @@ class StartWorkoutViewModel @Inject constructor(
     private val preferences: Preferences,
     private val storageService: StorageService,
     private val startWorkoutUseCases: ExerciseTrackerUseCases,
+    private val searchExerciseUseCases: ExerciseTrackerUseCases,
     logService: LogService
 ): AuthViewModel(logService) {
 
@@ -206,6 +211,20 @@ class StartWorkoutViewModel @Inject constructor(
                     }
                 }
             }
+
+            is StartWorkoutEvent.GetExerciseInfo -> {
+                getExerciseByName(event.exerciseName)
+            }
+
+            is StartWorkoutEvent.OnToggleExerciseDescription -> {
+                state = state.copy(
+                    exerciseInfo = state.exerciseInfo.map {
+                        if(it.exercise.id == event.trackableExerciseState.exercise.id){
+                            it.copy(isDescrExpanded = !it.isDescrExpanded)
+                        } else it
+                    }
+                )
+            }
         }
     }
 
@@ -230,6 +249,27 @@ class StartWorkoutViewModel @Inject constructor(
                 date = date
             )
         }
+    }
+
+    private fun getExerciseByName(name: String) {
+        getExerciseJob?.cancel()
+        getExerciseJob = searchExerciseUseCases
+            .getExerciseForName(name)
+            .onEach { exercises ->
+                if(exercises.isEmpty()){
+                    _uiEvent.send(
+                        UiEvent.ShowSnackbar(
+                            UiText.StringResource(R.string.empty_results)
+                        )
+                    )
+                }
+                state = state.copy(
+                    exerciseInfo = exercises.map {
+                        TrackableExerciseState(exercise = it)
+                    }
+                )
+            }
+            .launchIn(viewModelScope)
     }
 
     companion object {

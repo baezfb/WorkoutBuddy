@@ -22,6 +22,8 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -36,7 +38,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.annotation.ExperimentalCoilApi
+import com.example.workout_logger_presentation.components.ExerciseInfoDialog
 import com.example.workout_logger_presentation.components.IconButton
+import com.example.workout_logger_presentation.create_workout.CreateWorkoutEvent
 import com.example.workout_logger_presentation.start_workout.components.Timer
 import com.example.workout_logger_presentation.start_workout.components.ExerciseCard
 import com.example.workout_logger_presentation.start_workout.components.NotificationUtil
@@ -69,6 +73,7 @@ fun StartWorkoutScreen(
     val workoutTemplates = viewModel.workoutTemplates.collectAsStateWithLifecycle(emptyList())
     var count = 0
     val workoutExerciseNames = ArrayList<String>()
+    val showExerciseInfoDialog = remember { mutableStateOf(false) }
     workoutTemplates.value.forEach {
         if(it.name == workoutName){
             count += 1
@@ -88,6 +93,21 @@ fun StartWorkoutScreen(
                 else -> Unit
             }
         }
+    }
+
+    LaunchedEffect(key1 = pagerState.currentPage, key2 = state.loggerListStates.size){
+        if(state.loggerListStates.getOrNull(pagerState.currentPage) != null) {
+            viewModel.onEvent(StartWorkoutEvent.GetExerciseInfo(state.loggerListStates[pagerState.currentPage].exerciseName))
+        }
+    }
+
+    if(showExerciseInfoDialog.value && state.exerciseInfo.isNotEmpty()){
+        ExerciseInfoDialog(
+            trackableExerciseState = state.exerciseInfo.first(),
+            onDescrClick = {
+                           viewModel.onEvent(StartWorkoutEvent.OnToggleExerciseDescription(state.exerciseInfo.first()))
+                           },
+            onDismiss = { showExerciseInfoDialog.value = false })
     }
     Scaffold(
         topBar = {
@@ -185,7 +205,9 @@ fun StartWorkoutScreen(
                         )
                         Spacer(modifier = Modifier.width(spacing.spaceSmall))
                         IconButton(
-                            onClick = { /*TODO*/ },
+                            onClick = {
+                                      showExerciseInfoDialog.value = true
+                                      },
                             icon = Icons.Default.Info,
                             padding = 0.dp
                         )
