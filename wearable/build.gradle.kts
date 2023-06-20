@@ -69,7 +69,7 @@ dependencies {
     implementation(Compose.material)
     implementation(Compose.materialExtended)
     implementation(Compose.runtime)
-    implementation("androidx.wear.compose:compose-navigation:1.1.0")
+    implementation("androidx.wear.compose:compose-navigation:1.1.2")
     implementation(Compose.viewModelCompose)
     implementation(Compose.activityCompose)
 

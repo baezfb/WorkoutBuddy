@@ -124,15 +124,13 @@ fun StartWorkoutScreen(
                 viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
             }
         }
-
+        Spacer(modifier = Modifier.height(spacing.spaceMedium))
         ScalingLazyColumn(
             modifier = Modifier
                 .fillMaxSize(),
             autoCentering = AutoCenteringParams(itemIndex = 0),
             state = listState
         ) {
-
-            item { Spacer(modifier = Modifier.height(spacing.spaceSmall)) }
             state.loggerListStates.forEach {
                 item { SetCard(exerciseName = it.exerciseName) }
                 item { Spacer(modifier = Modifier.height(spacing.spaceMedium)) }

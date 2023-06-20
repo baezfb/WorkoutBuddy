@@ -39,14 +39,9 @@ import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
@@ -56,6 +51,7 @@ import androidx.wear.compose.material.VignettePosition
 import androidx.wear.compose.material.rememberScalingLazyListState
 import androidx.wear.compose.material.scrollAway
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
+import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
 import androidx.wear.phone.interactions.PhoneTypeHelper
 import androidx.wear.remote.interactions.RemoteActivityHelper
@@ -112,35 +108,26 @@ class MainWearableActivity : ComponentActivity(), OnCapabilityChangedListener {
 
 //                val navBackStackEntry by navController.currentBackStackEntryAsState()
 //                val currentRoute = navBackStackEntry?.destination?.route
-                NavHost(
+                SwipeDismissableNavHost(
                     navController = navController,
                     startDestination = Route.SPLASH
                 ) {
                     composable(Route.SPLASH){
                         SplashScreen(
                             openAndPopUp = { route, popup ->
-                                navController.navigate(route)
-//                                if (navController.backQueue.isNotEmpty()){
-//                                    navController.navigate(route) {
-//                                        launchSingleTop = true
-//                                        popUpTo(popup) { inclusive = false }
-//                                    }
-//                                } else {
-//                                    navController.navigate(route)
-//                                }
+                                navController.navigate(route) {
+                                    launchSingleTop = true
+                                    popUpTo(popup) { inclusive = true }
+                                }
                             }
                         )
                     }
                     composable(Route.LOGIN){
                         LoginScreen(
                             openAndPopUp = { route, popup ->
-                                if (navController.backQueue.isNotEmpty()){
-                                    navController.navigate(route) {
-                                        launchSingleTop = true
-                                        popUpTo(popup) { inclusive = false }
-                                    }
-                                } else {
-                                    navController.navigate(route)
+                                navController.navigate(route) {
+                                    launchSingleTop = true
+                                    popUpTo(popup) { inclusive = true }
                                 }
                             }
                         )
@@ -198,18 +185,18 @@ class MainWearableActivity : ComponentActivity(), OnCapabilityChangedListener {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-//        Wearable.getCapabilityClient(this).removeListener(this, CAPABILITY_PHONE_APP)
-    }
+//    override fun onPause() {
+//        super.onPause()
+////        Wearable.getCapabilityClient(this).removeListener(this, CAPABILITY_PHONE_APP)
+//    }
 
-    override fun onResume() {
-        super.onResume()
-//        Wearable.getCapabilityClient(this).addListener(this, CAPABILITY_PHONE_APP)
-//        lifecycleScope.launch {
-//            checkIfPhoneHasApp()
-//        }
-    }
+//    override fun onResume() {
+//        super.onResume()
+////        Wearable.getCapabilityClient(this).addListener(this, CAPABILITY_PHONE_APP)
+////        lifecycleScope.launch {
+////            checkIfPhoneHasApp()
+////        }
+//    }
 
 //    @ExperimentalCoilApi
 //    @Composable

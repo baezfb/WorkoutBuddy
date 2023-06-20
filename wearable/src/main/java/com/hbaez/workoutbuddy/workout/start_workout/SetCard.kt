@@ -47,7 +47,7 @@ fun SetCard(
             .border(2.dp, MaterialTheme.colors.primary, RoundedCornerShape(50.dp))
             .padding(spacing.spaceMedium)
             .fillMaxWidth(.8f)
-            .height(150.dp)
+            .height(135.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
