@@ -53,7 +53,7 @@ fun WearButton(
                 color = borderColor,
                 shape = RoundedCornerShape(100f)
             )
-            .padding(spacing.spaceMedium),
+            .padding(if(text.isNotEmpty()) spacing.spaceMedium else 0.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -63,6 +63,8 @@ fun WearButton(
                 contentDescription = "temporary icon description",
                 tint = iconColor
             )
+        }
+        if(icon != null && text.isNotEmpty()){
             Spacer(modifier = Modifier.width(spacing.spaceMedium))
         }
         if(text.isNotEmpty()){

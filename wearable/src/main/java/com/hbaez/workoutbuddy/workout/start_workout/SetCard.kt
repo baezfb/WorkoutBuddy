@@ -58,9 +58,22 @@ fun SetCard(
             Row(
               Modifier.fillMaxWidth()
             ){
-                WearButton(text = "", onClick = { /*TODO*/ }, icon = Icons.Rounded.ArrowDownward)
-                WearText(text = "10")
-                WearButton(text = "", onClick = { /*TODO*/ }, icon = Icons.Rounded.ArrowUpward)
+                WearButton(
+                    text = "",
+                    onClick = { /*TODO*/ },
+                    icon = Icons.Rounded.ArrowDownward,
+                    modifier = Modifier.weight(1f)
+                )
+                WearText(
+                    text = "10",
+                    modifier = Modifier.weight(1f)
+                )
+                WearButton(
+                    text = "",
+                    onClick = { /*TODO*/ },
+                    icon = Icons.Rounded.ArrowUpward,
+                    modifier = Modifier.weight(1f)
+                )
             }
         }
     }

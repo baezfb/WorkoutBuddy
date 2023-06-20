@@ -33,7 +33,6 @@ import kotlinx.coroutines.launch
 
 private const val SPLASH_TIMEOUT = 1000L
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SplashScreen(
     openAndPopUp: (String, String) -> Unit,

@@ -55,6 +55,8 @@ import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
 import androidx.wear.compose.material.rememberScalingLazyListState
 import androidx.wear.compose.material.scrollAway
+import androidx.wear.compose.navigation.SwipeDismissableNavHost
+import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
 import androidx.wear.phone.interactions.PhoneTypeHelper
 import androidx.wear.remote.interactions.RemoteActivityHelper
 import androidx.wear.widget.ConfirmationOverlay
@@ -106,10 +108,10 @@ class MainWearableActivity : ComponentActivity(), OnCapabilityChangedListener {
 //                val listState = rememberScalingLazyListState()
 //                val focusRequester = remember { FocusRequester() }
 //                val coroutineScope = rememberCoroutineScope()
-                val navController = rememberNavController()
+                val navController = rememberSwipeDismissableNavController()
 
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentRoute = navBackStackEntry?.destination?.route
+//                val navBackStackEntry by navController.currentBackStackEntryAsState()
+//                val currentRoute = navBackStackEntry?.destination?.route
                 NavHost(
                     navController = navController,
                     startDestination = Route.SPLASH
@@ -117,19 +119,28 @@ class MainWearableActivity : ComponentActivity(), OnCapabilityChangedListener {
                     composable(Route.SPLASH){
                         SplashScreen(
                             openAndPopUp = { route, popup ->
-                                navController.navigate(route) {
-                                    launchSingleTop = true
-                                    popUpTo(popup) { inclusive = true }
-                                }
+                                navController.navigate(route)
+//                                if (navController.backQueue.isNotEmpty()){
+//                                    navController.navigate(route) {
+//                                        launchSingleTop = true
+//                                        popUpTo(popup) { inclusive = false }
+//                                    }
+//                                } else {
+//                                    navController.navigate(route)
+//                                }
                             }
                         )
                     }
                     composable(Route.LOGIN){
                         LoginScreen(
                             openAndPopUp = { route, popup ->
-                                navController.navigate(route) {
-                                    launchSingleTop = true
-                                    popUpTo(popup) { inclusive = true }
+                                if (navController.backQueue.isNotEmpty()){
+                                    navController.navigate(route) {
+                                        launchSingleTop = true
+                                        popUpTo(popup) { inclusive = false }
+                                    }
+                                } else {
+                                    navController.navigate(route)
                                 }
                             }
                         )
@@ -179,9 +190,9 @@ class MainWearableActivity : ComponentActivity(), OnCapabilityChangedListener {
                             year = year,
                         )
                     }
-                    composable(Route.VERIFY_MOBILE_APP){
-                        VerifyMobileApp()
-                    }
+//                    composable(Route.VERIFY_MOBILE_APP){
+//                        VerifyMobileApp()
+//                    }
                 }
             }
         }
@@ -189,87 +200,87 @@ class MainWearableActivity : ComponentActivity(), OnCapabilityChangedListener {
 
     override fun onPause() {
         super.onPause()
-        Wearable.getCapabilityClient(this).removeListener(this, CAPABILITY_PHONE_APP)
+//        Wearable.getCapabilityClient(this).removeListener(this, CAPABILITY_PHONE_APP)
     }
 
     override fun onResume() {
         super.onResume()
-        Wearable.getCapabilityClient(this).addListener(this, CAPABILITY_PHONE_APP)
-        lifecycleScope.launch {
-            checkIfPhoneHasApp()
-        }
+//        Wearable.getCapabilityClient(this).addListener(this, CAPABILITY_PHONE_APP)
+//        lifecycleScope.launch {
+//            checkIfPhoneHasApp()
+//        }
     }
 
-    @ExperimentalCoilApi
-    @Composable
-    fun VerifyMobileApp(){
-        val spacing = LocalSpacing.current
-        val androidPhoneNodeWithApp = androidPhoneNodeWithApp
-
-        val textInfo: Pair<String, Boolean> = if (androidPhoneNodeWithApp != null) {
-            // TODO: Add your code to communicate with the phone app via
-            //       Wear APIs (MessageClient, DataClient, etc.)
-            Log.d(TAG, "Installed")
-            Pair(getString(R.string.message_installed, androidPhoneNodeWithApp.displayName), false)
-    //            binding.informationTextView.text =
-    //                getString(R.string.message_installed, androidPhoneNodeWithApp.displayName)
-    //            binding.remoteOpenButton.isInvisible = true
-        } else {
-            Log.d(TAG, "Missing")
-            Pair(getString(R.string.message_missing), true)
-    //            binding.informationTextView.text = getString(R.string.message_missing)
-    //            binding.remoteOpenButton.isVisible = true
-        }
-
-
-        Column(
-            Modifier
-                .fillMaxSize()
-                .padding(10.dp)
-                .background(color = MaterialTheme.colors.background),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Text(
-                text = textInfo.first,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colors.onBackground
-            )
-            if(textInfo.second){
-                Row(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(100f))
-                        .clickable { openAppInStoreOnPhone() }
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colors.primary,
-                            shape = RoundedCornerShape(100f)
-                        )
-                        .padding(spacing.spaceMedium),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "add icon",
-                        tint = MaterialTheme.colors.primary
-                    )
-                    Spacer(modifier = Modifier.width(spacing.spaceMedium))
-                    Text(
-                        text = stringResource(R.string.install_app),
-                        style = MaterialTheme.typography.button,
-                        color = MaterialTheme.colors.primary
-                    )
-                }
-            }
-        }
-    }
+//    @ExperimentalCoilApi
+//    @Composable
+//    fun VerifyMobileApp(){
+//        val spacing = LocalSpacing.current
+//        val androidPhoneNodeWithApp = androidPhoneNodeWithApp
+//
+//        val textInfo: Pair<String, Boolean> = if (androidPhoneNodeWithApp != null) {
+//            // TODO: Add your code to communicate with the phone app via
+//            //       Wear APIs (MessageClient, DataClient, etc.)
+//            Log.d(TAG, "Installed")
+//            Pair(getString(R.string.message_installed, androidPhoneNodeWithApp.displayName), false)
+//    //            binding.informationTextView.text =
+//    //                getString(R.string.message_installed, androidPhoneNodeWithApp.displayName)
+//    //            binding.remoteOpenButton.isInvisible = true
+//        } else {
+//            Log.d(TAG, "Missing")
+//            Pair(getString(R.string.message_missing), true)
+//    //            binding.informationTextView.text = getString(R.string.message_missing)
+//    //            binding.remoteOpenButton.isVisible = true
+//        }
+//
+//
+//        Column(
+//            Modifier
+//                .fillMaxSize()
+//                .padding(10.dp)
+//                .background(color = MaterialTheme.colors.background),
+//            verticalArrangement = Arrangement.Center,
+//            horizontalAlignment = Alignment.CenterHorizontally
+//        ){
+//            Text(
+//                text = textInfo.first,
+//                textAlign = TextAlign.Center,
+//                color = MaterialTheme.colors.onBackground
+//            )
+//            if(textInfo.second){
+//                Row(
+//                    modifier = Modifier
+//                        .clip(RoundedCornerShape(100f))
+//                        .clickable { openAppInStoreOnPhone() }
+//                        .border(
+//                            width = 1.dp,
+//                            color = MaterialTheme.colors.primary,
+//                            shape = RoundedCornerShape(100f)
+//                        )
+//                        .padding(spacing.spaceMedium),
+//                    horizontalArrangement = Arrangement.Center,
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Icon(
+//                        imageVector = Icons.Default.Add,
+//                        contentDescription = "add icon",
+//                        tint = MaterialTheme.colors.primary
+//                    )
+//                    Spacer(modifier = Modifier.width(spacing.spaceMedium))
+//                    Text(
+//                        text = stringResource(R.string.install_app),
+//                        style = MaterialTheme.typography.button,
+//                        color = MaterialTheme.colors.primary
+//                    )
+//                }
+//            }
+//        }
+//    }
 
     override fun onCapabilityChanged(capabilityInfo: CapabilityInfo) {
         Log.d(TAG, "onCapabilityChanged(): $capabilityInfo")
         // There should only ever be one phone in a node set (much less w/ the correct
         // capability), so I am just grabbing the first one (which should be the only one).
-        androidPhoneNodeWithApp = capabilityInfo.nodes.firstOrNull()
+//        androidPhoneNodeWithApp = capabilityInfo.nodes.firstOrNull()
 //        updateUi()
     }
 

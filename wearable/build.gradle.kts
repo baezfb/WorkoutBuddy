@@ -62,7 +62,6 @@ android {
 }
 
 dependencies {
-
     implementation(Compose.compiler)
     implementation(Compose.ui)
     implementation(Compose.uiToolingPreview)
@@ -70,7 +69,7 @@ dependencies {
     implementation(Compose.material)
     implementation(Compose.materialExtended)
     implementation(Compose.runtime)
-    implementation(Compose.navigation)
+    implementation("androidx.wear.compose:compose-navigation:1.1.0")
     implementation(Compose.viewModelCompose)
     implementation(Compose.activityCompose)
 

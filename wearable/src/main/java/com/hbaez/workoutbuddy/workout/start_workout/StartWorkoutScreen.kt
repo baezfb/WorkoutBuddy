@@ -132,6 +132,7 @@ fun StartWorkoutScreen(
             state = listState
         ) {
 
+            item { Spacer(modifier = Modifier.height(spacing.spaceSmall)) }
             state.loggerListStates.forEach {
                 item { SetCard(exerciseName = it.exerciseName) }
                 item { Spacer(modifier = Modifier.height(spacing.spaceMedium)) }
