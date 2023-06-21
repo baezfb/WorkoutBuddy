@@ -69,9 +69,7 @@ dependencies {
     implementation(Compose.material)
     implementation(Compose.materialExtended)
     implementation(Compose.runtime)
-    implementation("androidx.wear.compose:compose-navigation:1.1.2")
     implementation(Compose.viewModelCompose)
-    implementation(Compose.activityCompose)
 
     implementation(DaggerHilt.hiltAndroid)
     kapt(DaggerHilt.hiltCompiler)
@@ -95,6 +93,10 @@ dependencies {
     "implementation"("androidx.wear.compose:compose-material:1.1.2")
     "implementation"("androidx.wear.compose:compose-foundation:1.1.2")
     "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.3.9")
+    "implementation" ("com.google.accompanist:accompanist-pager:0.23.1")
+    "implementation" ("androidx.wear:wear-input:1.1.0")
+    "implementation"("androidx.wear.compose:compose-navigation:1.1.2")
+    "implementation"("androidx.wear:wear:1.2.0")
 
     implementation("androidx.wear:wear-input:1.2.0-alpha02")
 

@@ -38,13 +38,18 @@ import androidx.wear.compose.material.VignettePosition
 import androidx.wear.compose.material.rememberScalingLazyListState
 import androidx.wear.compose.material.scrollAway
 import coil.annotation.ExperimentalCoilApi
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.VerticalPager
+import com.google.accompanist.pager.rememberPagerState
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.workoutbuddy.R
 import com.hbaez.workoutbuddy.components.WearButton
 import com.hbaez.workoutbuddy.components.WearText
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalLifecycleComposeApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalLifecycleComposeApi::class,
+    ExperimentalPagerApi::class
+)
 @ExperimentalCoilApi
 @Composable
 fun StartWorkoutScreen(
@@ -57,6 +62,7 @@ fun StartWorkoutScreen(
     val spacing = LocalSpacing.current
     val state = viewModel.state
     val workoutTemplates = viewModel.workoutTemplates.collectAsStateWithLifecycle(emptyList())
+    val pagerState = rememberPagerState(initialPage = 0)
 
     val listState = rememberScalingLazyListState()
     val focusRequester = remember { FocusRequester() }
@@ -89,7 +95,7 @@ fun StartWorkoutScreen(
                 true
             }
             .focusRequester(focusRequester)
-            .focusable()
+            .focusable(),
     ) {
         LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
@@ -124,17 +130,32 @@ fun StartWorkoutScreen(
                 viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
             }
         }
-        Spacer(modifier = Modifier.height(spacing.spaceMedium))
-        ScalingLazyColumn(
+        VerticalPager(
+            state = pagerState,
             modifier = Modifier
-                .fillMaxSize(),
-            autoCentering = AutoCenteringParams(itemIndex = 0),
-            state = listState
+                .fillMaxSize()
+                .padding(spacing.spaceSmall)
+                .onRotaryScrollEvent {
+                                     coroutineScope.launch {
+                                         pagerState.animateScrollToPage(pagerState.targetPage, 1f)
+                                     }
+                    true
+                },
+            count = state.loggerListStates.size
         ) {
-            state.loggerListStates.forEach {
-                item { SetCard(exerciseName = it.exerciseName) }
-                item { Spacer(modifier = Modifier.height(spacing.spaceMedium)) }
-            }
+            SetCard(exerciseName = state.loggerListStates[it].exerciseName)
         }
+//        Spacer(modifier = Modifier.height(spacing.spaceMedium))
+//        ScalingLazyColumn(
+//            modifier = Modifier
+//                .fillMaxSize(),
+//            autoCentering = AutoCenteringParams(itemIndex = 0),
+//            state = listState
+//        ) {
+//            state.loggerListStates.forEach {
+//                item { SetCard(exerciseName = it.exerciseName) }
+//                item { Spacer(modifier = Modifier.height(spacing.spaceMedium)) }
+//            }
+//        }
     }
 }
