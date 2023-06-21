@@ -11,6 +11,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import androidx.wear.ambient.AmbientMode
+import androidx.wear.ambient.AmbientModeSupport
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
@@ -43,7 +45,7 @@ import javax.inject.Inject
 @ExperimentalComposeUiApi
 @ExperimentalCoilApi
 @AndroidEntryPoint
-class MainWearableActivity : ComponentActivity() {
+class MainWearableActivity : ComponentActivity(), AmbientMode.AmbientCallbackProvider {
 
     @Inject
     lateinit var preferences: Preferences
@@ -53,11 +55,26 @@ class MainWearableActivity : ComponentActivity() {
 
     private var androidPhoneNodeWithApp: Node? = null
 
+
+    override fun getAmbientCallback(): AmbientMode.AmbientCallback? {
+        return MyAmbientCallback()
+    }
+
+    inner class MyAmbientCallback : AmbientMode.AmbientCallback() {
+        // Override ambient mode lifecycle methods here
+        // For example: onEnterAmbient(), onUpdateAmbient(), onExitAmbient(), etc.
+    }
+
+//    private lateinit var ambientController: AmbientModeSupport.AmbientController
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         capabilityClient = Wearable.getCapabilityClient(this)
         remoteActivityHelper = RemoteActivityHelper(this)
+
+//        ambientController = AmbientModeSupport.attach(this)
 
 
         setContent {

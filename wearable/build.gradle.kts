@@ -70,6 +70,7 @@ dependencies {
     implementation(Compose.materialExtended)
     implementation(Compose.runtime)
     implementation(Compose.viewModelCompose)
+    implementation(Compose.activityCompose)
 
     implementation(DaggerHilt.hiltAndroid)
     kapt(DaggerHilt.hiltCompiler)

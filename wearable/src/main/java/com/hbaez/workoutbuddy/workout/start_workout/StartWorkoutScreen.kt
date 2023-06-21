@@ -82,22 +82,8 @@ fun StartWorkoutScreen(
             )
         },
         modifier = Modifier
-            .background(color = MaterialTheme.colors.background)
-            .onRotaryScrollEvent {
-                coroutineScope.launch {
-                    Log.println(
-                        Log.DEBUG,
-                        "verticalScrollPixels",
-                        it.verticalScrollPixels.toString()
-                    )
-                    listState.scrollBy(it.verticalScrollPixels)
-                }
-                true
-            }
-            .focusRequester(focusRequester)
-            .focusable(),
+            .background(color = MaterialTheme.colors.background),
     ) {
-        LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
         val contentModifier = Modifier
             .fillMaxWidth()
@@ -136,13 +122,21 @@ fun StartWorkoutScreen(
                 .fillMaxSize()
                 .padding(spacing.spaceSmall)
                 .onRotaryScrollEvent {
-                                     coroutineScope.launch {
-                                         pagerState.animateScrollToPage(pagerState.targetPage, 1f)
-                                     }
+                    coroutineScope.launch {
+                        Log.println(
+                            Log.DEBUG,
+                            "verticalScrollPixels",
+                            it.verticalScrollPixels.toString()
+                        )
+                        pagerState.scrollBy(it.verticalScrollPixels)
+                    }
                     true
-                },
+                }
+                .focusRequester(focusRequester)
+                .focusable(),
             count = state.loggerListStates.size
         ) {
+            LaunchedEffect(Unit) { focusRequester.requestFocus() }
             SetCard(exerciseName = state.loggerListStates[it].exerciseName)
         }
 //        Spacer(modifier = Modifier.height(spacing.spaceMedium))
