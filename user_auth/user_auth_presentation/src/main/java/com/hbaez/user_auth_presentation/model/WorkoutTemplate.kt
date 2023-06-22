@@ -12,6 +12,7 @@ data class WorkoutTemplate(
     val rest: List<String> = emptyList(),
     val reps: List<String> = emptyList(),
     val weight: List<String> = emptyList(),
+    val currentSet: Int = 0,
     val rowId: Int,
     val lastUsedId: Int,
 )

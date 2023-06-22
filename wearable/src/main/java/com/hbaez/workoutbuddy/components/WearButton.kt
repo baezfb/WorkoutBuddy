@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
@@ -41,7 +42,8 @@ fun WearButton(
     borderColor: Color = MaterialTheme.colors.primary,
     icon: ImageVector?,
     iconModifier: Modifier = Modifier,
-    iconColor: Color = MaterialTheme.colors.onPrimary
+    iconColor: Color = MaterialTheme.colors.onPrimary,
+    padding: Dp = 16.dp
 ){
     val spacing = LocalSpacing.current
     Row(
@@ -53,7 +55,7 @@ fun WearButton(
                 color = borderColor,
                 shape = RoundedCornerShape(100f)
             )
-            .padding(if(text.isNotEmpty()) spacing.spaceMedium else 0.dp),
+            .padding(if(text.isNotEmpty()) padding else 0.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {

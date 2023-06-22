@@ -50,7 +50,7 @@ import kotlinx.coroutines.launch
 @ExperimentalCoilApi
 @Composable
 fun WorkoutOverviewScreen(
-    onNavigateToWorkout: (workoutName: String, day: Int, month: Int, year: Int) -> Unit,
+    onNavigateToWorkout: (workoutName: String, day: Int, month: Int, year: Int, workoutIds: String) -> Unit,
     viewModel: WorkoutOverviewModel = hiltViewModel()
 ) {
     val spacing = LocalSpacing.current
@@ -109,25 +109,32 @@ fun WorkoutOverviewScreen(
             item { WearText(color = MaterialTheme.colors.onBackground, text = stringResource(R.string.choose_workout)) }
             item { Spacer(modifier = Modifier.height(spacing.spaceMedium)) }
             val uniqueNames = mutableListOf<String>()
-            workoutTemplates.value.forEach { workout ->
-                Log.println(Log.DEBUG, "workoutoverviewscreen name", workout.name)
-                if(!uniqueNames.contains(workout.name)) {
-                    item {
-                        WearButton(
-                            text = workout.name,
-                            onClick = {
-                                      onNavigateToWorkout(
-                                          workout.name,
-                                          state.date.dayOfMonth,
-                                          state.date.monthValue,
-                                          state.date.year
-                                      )
-                                      },
-                            icon = null
-                        )
-                    }
-                    uniqueNames.add(workout.name)
+            val workoutId = hashMapOf<String, List<Int>>()
+            workoutTemplates.value.forEach {
+                if(uniqueNames.contains(it.name)) {
+                    val tmp = workoutId[it.name]!!.toMutableList()
+                    tmp.add(it.rowId)
+                    workoutId[it.name] = tmp.toList()
+                    return@forEach
                 }
+                uniqueNames.add(it.name)
+                val tmp = listOf(it.rowId)
+                workoutId[it.name] = tmp
+            }
+            items(uniqueNames.size){
+                WearButton(
+                    text = uniqueNames[it],
+                    onClick = {
+                        onNavigateToWorkout(
+                            uniqueNames[it],
+                            state.date.dayOfMonth,
+                            state.date.monthValue,
+                            state.date.year,
+                            workoutId[uniqueNames[it]]!!.toString()
+                        )
+                    },
+                    icon = null
+                )
             }
         }
     }

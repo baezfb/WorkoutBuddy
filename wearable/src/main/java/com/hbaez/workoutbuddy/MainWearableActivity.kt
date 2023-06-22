@@ -112,13 +112,14 @@ class MainWearableActivity : ComponentActivity(), AmbientMode.AmbientCallbackPro
                     }
                     composable(Route.HOME){
                         WorkoutOverviewScreen(
-                            onNavigateToWorkout = { workoutName, day, month, year ->
+                            onNavigateToWorkout = { workoutName, day, month, year, workoutIds ->
                                 navController.navigate(
                                     Route.START_WORKOUT +
                                         "/$workoutName" +
                                         "/$day" +
                                         "/$month" +
-                                        "/$year"
+                                        "/$year" +
+                                        "/$workoutIds"
                                 )
                             }
                         )
@@ -128,7 +129,8 @@ class MainWearableActivity : ComponentActivity(), AmbientMode.AmbientCallbackPro
                                 "/{workoutName}" +
                                 "/{dayOfMonth}" +
                                 "/{month}" +
-                                "/{year}",
+                                "/{year}" +
+                                "/{workoutIds}",
                         arguments = listOf(
                             navArgument("workoutName") {
                                 type = NavType.StringType
@@ -141,6 +143,9 @@ class MainWearableActivity : ComponentActivity(), AmbientMode.AmbientCallbackPro
                             },
                             navArgument("year") {
                                 type = NavType.IntType
+                            },
+                            navArgument("workoutIds") {
+                                type = NavType.StringType
                             }
                             )
                     ) {

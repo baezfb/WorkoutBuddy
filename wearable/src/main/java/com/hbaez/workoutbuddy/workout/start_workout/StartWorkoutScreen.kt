@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -42,6 +43,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.VerticalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.hbaez.core_ui.LocalSpacing
+import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 import com.hbaez.workoutbuddy.R
 import com.hbaez.workoutbuddy.components.WearButton
 import com.hbaez.workoutbuddy.components.WearText
@@ -62,11 +64,21 @@ fun StartWorkoutScreen(
     val spacing = LocalSpacing.current
     val state = viewModel.state
     val workoutTemplates = viewModel.workoutTemplates.collectAsStateWithLifecycle(emptyList())
+    val workoutIds = viewModel.workoutIds
     val pagerState = rememberPagerState(initialPage = 0)
 
     val listState = rememberScalingLazyListState()
     val focusRequester = remember { FocusRequester() }
     val coroutineScope = rememberCoroutineScope()
+
+    val workoutExerciseNames = ArrayList<String>()
+    var counter = 0
+    workoutTemplates.value.forEach {
+        if(it.name == workoutName){
+            counter += 1
+            workoutExerciseNames.add(it.exerciseName)
+        }
+    }
 
     Scaffold(
         timeText = {
@@ -94,28 +106,6 @@ fun StartWorkoutScreen(
 
         var loggerListState: LoggerListState
         Log.println(Log.DEBUG, "startworkoutscreen size", workoutTemplates.value.size.toString())
-        workoutTemplates.value.forEach {
-            Log.println(Log.DEBUG, "startworkoutscreen check", it.name)
-            Log.println(Log.DEBUG, "startworkoutscreen check", workoutName)
-            if(it.name == workoutName){
-                loggerListState = LoggerListState(
-                    id = it.rowId,
-                    exerciseName = it.exerciseName,
-                    exerciseId = it.exerciseId,
-                    timerStatus = TimerStatus.START,
-                    sets = it.sets.toString(),
-                    rest = it.rest.toString(),
-                    repsList = List(it.sets) { _ -> it.reps.toString() },
-                    weightList = List(it.sets) { _ -> it.weight.toString() },
-                    isCompleted = List(it.sets) { false },
-                    checkedColor = List(it.sets) { Color.DarkGray },
-                    origRest = it.rest.toString(),
-                    origReps = it.reps.toString(),
-                    origWeight = it.weight.toString()
-                )
-                viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
-            }
-        }
         VerticalPager(
             state = pagerState,
             modifier = Modifier
@@ -134,10 +124,76 @@ fun StartWorkoutScreen(
                 }
                 .focusRequester(focusRequester)
                 .focusable(),
-            count = state.loggerListStates.size
-        ) {
+            count = counter
+        ) {page ->
+            workoutTemplates.value.forEach {
+                if(it.name == workoutName){
+                    if (it.rowId == workoutIds[page].toInt()){
+                        if(state.loggerListStates.size > page && state.loggerListStates[page].id != it.rowId){
+                            loggerListState = LoggerListState(
+                                id = it.rowId,
+                                exerciseName = it.exerciseName,
+                                exerciseId = it.exerciseId,
+                                timerStatus = TimerStatus.START,
+                                sets = it.sets.toString(),
+                                rest = List(it.rest.size) { "" },
+                                reps = List(it.reps.size) { "" },
+                                weight = List(it.weight.size) { "" },
+                                isCompleted = List(it.sets) { false },
+                                checkedColor = List(it.sets) { Color.DarkGray },
+                            )
+                            viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
+                        }
+                        else if (state.loggerListStates.size == page) {
+                            loggerListState = LoggerListState(
+                                id = it.rowId,
+                                exerciseName = it.exerciseName,
+                                exerciseId = it.exerciseId,
+                                timerStatus = TimerStatus.START,
+                                sets = it.sets.toString(),
+                                rest = it.rest,
+                                reps = List(it.reps.size) { "" },
+                                weight = List(it.weight.size) { "" },
+                                isCompleted = List(it.sets) { false },
+                                checkedColor = List(it.sets) { Color.DarkGray }
+                            )
+                            viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
+                        }
+                        return@forEach
+                    }
+                }
+            }
+
+            // get current exercise from workoutTemplates
+            // using workoutName and exerciseName
+            lateinit var currentExercise: WorkoutTemplate
+            workoutTemplates.value.forEach {
+                if(it.name == workoutName && it.exerciseName ==  workoutExerciseNames[page]){
+                    currentExercise = it
+                }
+            }
             LaunchedEffect(Unit) { focusRequester.requestFocus() }
-            SetCard(exerciseName = state.loggerListStates[it].exerciseName)
+            SetCard(
+                exerciseName = currentExercise.exerciseName,
+                page = page,
+                currReps = currentExercise.reps[currentExercise.currentSet],
+                currWeight = currentExercise.weight[currentExercise.currentSet],
+                onRepIncrease = {
+                    viewModel.onEvent(StartWorkoutEvent.OnRepIncrease(page, currentExercise.currentSet))
+                },
+                onRepDecrease = {
+                    viewModel.onEvent(StartWorkoutEvent.OnRepDecrease(page, currentExercise.currentSet))
+                },
+                onWeightIncrease = {
+                    viewModel.onEvent(StartWorkoutEvent.OnWeightIncrease(page, currentExercise.currentSet))
+                },
+                onWeightDecrease = {
+                    viewModel.onEvent(StartWorkoutEvent.OnWeightDecrease(page, currentExercise.currentSet))
+                },
+                onRest = {
+                    currentExercise = currentExercise.copy(currentSet = currentExercise.currentSet + 1)
+                }
+            )
         }
 //        Spacer(modifier = Modifier.height(spacing.spaceMedium))
 //        ScalingLazyColumn(

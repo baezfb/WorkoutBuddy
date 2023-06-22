@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.hbaez.core.util.UiEvent
 import com.hbaez.user_auth_presentation.model.service.StorageService
@@ -14,6 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StartWorkoutViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val storageService: StorageService
 ): ViewModel() {
 
@@ -25,6 +27,15 @@ class StartWorkoutViewModel @Inject constructor(
 
     val workoutTemplates = storageService.workouts
 
+    private val workoutId: Int
+    var workoutIds: List<String>
+
+    init {
+        workoutId = savedStateHandle["workoutId"] ?: -1
+        workoutIds = (savedStateHandle["workoutIds"] ?: "").trim('[').trim(']').replace(" ","").split(',').toList()
+        Log.println(Log.DEBUG, "workoutids viewmodel", workoutIds.toString())
+    }
+
     fun onEvent(event: StartWorkoutEvent) {
         when(event) {
             is StartWorkoutEvent.AddLoggerList -> {
@@ -32,6 +43,78 @@ class StartWorkoutViewModel @Inject constructor(
                 tmp.add(event.loggerListState)
                 state = state.copy(
                     loggerListStates = tmp
+                )
+            }
+
+            is StartWorkoutEvent.OnRepIncrease -> {
+                var counter = 0
+                state = state.copy(
+                    loggerListStates = state.loggerListStates.map {
+                        if(counter == event.page){
+                            counter++
+                            val tmp = it.reps.toMutableList()
+                            tmp[event.index] = (it.reps[event.index].toInt() + 1).toString()
+                            it.copy(reps = tmp.toList())
+                        }
+                        else {
+                            counter++
+                            it
+                        }
+                    }.toMutableList()
+                )
+            }
+
+            is StartWorkoutEvent.OnRepDecrease -> {
+                var counter = 0
+                state = state.copy(
+                    loggerListStates = state.loggerListStates.map {
+                        if(counter == event.page){
+                            counter++
+                            val tmp = it.reps.toMutableList()
+                            tmp[event.index] = (it.reps[event.index].toInt() - 1).coerceIn(0,null).toString()
+                            it.copy(reps = tmp.toList())
+                        }
+                        else {
+                            counter++
+                            it
+                        }
+                    }.toMutableList()
+                )
+            }
+
+            is StartWorkoutEvent.OnWeightIncrease -> {
+                var counter = 0
+                state = state.copy(
+                    loggerListStates = state.loggerListStates.map {
+                        if(counter == event.page){
+                            counter++
+                            val tmp = it.weight.toMutableList()
+                            tmp[event.index] = (it.weight[event.index].toInt() + 1).toString()
+                            it.copy(weight = tmp.toList())
+                        }
+                        else {
+                            counter++
+                            it
+                        }
+                    }.toMutableList()
+                )
+            }
+
+            is StartWorkoutEvent.OnWeightDecrease -> {
+                var counter = 0
+                state = state.copy(
+                    loggerListStates = state.loggerListStates.map {
+                        if(counter == event.page){
+                            counter++
+                            val tmp = it.weight.toMutableList()
+                            tmp[event.index] = (it.weight[event.index].toInt() - 1).coerceIn(0,null).toString()
+                            it.copy(weight = tmp.toList())
+                        }
+                        else {
+                            counter++
+                            it
+                        }
+                    }.toMutableList()
                 )
             }
         }
