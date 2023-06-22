@@ -136,9 +136,9 @@ fun StartWorkoutScreen(
                                 exerciseId = it.exerciseId,
                                 timerStatus = TimerStatus.START,
                                 sets = it.sets.toString(),
-                                rest = List(it.rest.size) { "" },
-                                reps = List(it.reps.size) { "" },
-                                weight = List(it.weight.size) { "" },
+                                rest = it.rest,
+                                reps = it.reps,
+                                weight = it.weight,
                                 isCompleted = List(it.sets) { false },
                                 checkedColor = List(it.sets) { Color.DarkGray },
                             )
@@ -152,8 +152,8 @@ fun StartWorkoutScreen(
                                 timerStatus = TimerStatus.START,
                                 sets = it.sets.toString(),
                                 rest = it.rest,
-                                reps = List(it.reps.size) { "" },
-                                weight = List(it.weight.size) { "" },
+                                reps = it.reps,
+                                weight = it.weight,
                                 isCompleted = List(it.sets) { false },
                                 checkedColor = List(it.sets) { Color.DarkGray }
                             )
@@ -174,38 +174,27 @@ fun StartWorkoutScreen(
             }
             LaunchedEffect(Unit) { focusRequester.requestFocus() }
             SetCard(
-                exerciseName = currentExercise.exerciseName,
-                page = page,
-                currReps = currentExercise.reps[currentExercise.currentSet],
-                currWeight = currentExercise.weight[currentExercise.currentSet],
+                exerciseName = state.loggerListStates[page].exerciseName,
+                currSet = state.loggerListStates[page].currentSet,
+                totalSets = state.loggerListStates[page].reps.size,
+                currReps = state.loggerListStates[page].reps[state.loggerListStates[page].currentSet],
+                currWeight = state.loggerListStates[page].weight[state.loggerListStates[page].currentSet],
                 onRepIncrease = {
-                    viewModel.onEvent(StartWorkoutEvent.OnRepIncrease(page, currentExercise.currentSet))
+                    viewModel.onEvent(StartWorkoutEvent.OnRepIncrease(page, state.loggerListStates[page].currentSet))
                 },
                 onRepDecrease = {
-                    viewModel.onEvent(StartWorkoutEvent.OnRepDecrease(page, currentExercise.currentSet))
+                    viewModel.onEvent(StartWorkoutEvent.OnRepDecrease(page, state.loggerListStates[page].currentSet))
                 },
                 onWeightIncrease = {
-                    viewModel.onEvent(StartWorkoutEvent.OnWeightIncrease(page, currentExercise.currentSet))
+                    viewModel.onEvent(StartWorkoutEvent.OnWeightIncrease(page, state.loggerListStates[page].currentSet))
                 },
                 onWeightDecrease = {
-                    viewModel.onEvent(StartWorkoutEvent.OnWeightDecrease(page, currentExercise.currentSet))
+                    viewModel.onEvent(StartWorkoutEvent.OnWeightDecrease(page, state.loggerListStates[page].currentSet))
                 },
                 onRest = {
-                    currentExercise = currentExercise.copy(currentSet = currentExercise.currentSet + 1)
+//                    currentExercise = currentExercise.copy(currentSet = currentExercise.currentSet + 1)
                 }
             )
         }
-//        Spacer(modifier = Modifier.height(spacing.spaceMedium))
-//        ScalingLazyColumn(
-//            modifier = Modifier
-//                .fillMaxSize(),
-//            autoCentering = AutoCenteringParams(itemIndex = 0),
-//            state = listState
-//        ) {
-//            state.loggerListStates.forEach {
-//                item { SetCard(exerciseName = it.exerciseName) }
-//                item { Spacer(modifier = Modifier.height(spacing.spaceMedium)) }
-//            }
-//        }
     }
 }

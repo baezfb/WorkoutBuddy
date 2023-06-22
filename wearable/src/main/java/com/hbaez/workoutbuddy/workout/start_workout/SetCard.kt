@@ -18,6 +18,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.CheckCircleOutline
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.runtime.Composable
@@ -37,7 +40,8 @@ import com.hbaez.workoutbuddy.components.WearText
 @Composable
 fun SetCard(
     exerciseName: String,
-    page: Int,
+    currSet: Int,
+    totalSets: Int,
     currReps: String,
     currWeight: String,
     onRepIncrease: () -> Unit,
@@ -170,18 +174,23 @@ fun SetCard(
             Spacer(modifier = Modifier.height(spacing.spaceSmall))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(35.dp)
             ){
+                WearText(
+                    text = "${currSet+1}/${totalSets}",
+                    style = MaterialTheme.typography.body2,
+                    color = MaterialTheme.colors.onBackground
+                )
                 WearButton(
-                    text = stringResource(id = R.string.rest),
+                    text = "",
                     onClick = { onRest() },
-                    icon = Icons.Rounded.Done,
+                    icon = Icons.Rounded.CheckCircleOutline,
+                    borderColor = MaterialTheme.colors.background,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(),
-                    padding = 0.dp
+                        .fillMaxHeight()
                 )
             }
         }
