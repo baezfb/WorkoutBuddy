@@ -5,9 +5,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.wear.ambient.AmbientMode
+import androidx.wear.ambient.AmbientModeSupport
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
@@ -31,7 +33,7 @@ import javax.inject.Inject
 @ExperimentalComposeUiApi
 @ExperimentalCoilApi
 @AndroidEntryPoint
-class MainWearableActivity : ComponentActivity(), AmbientMode.AmbientCallbackProvider {
+class MainWearableActivity : FragmentActivity(), AmbientModeSupport.AmbientCallbackProvider {
 
     @Inject
     lateinit var preferences: Preferences
@@ -41,27 +43,13 @@ class MainWearableActivity : ComponentActivity(), AmbientMode.AmbientCallbackPro
 
     private var androidPhoneNodeWithApp: Node? = null
 
-
-    override fun getAmbientCallback(): AmbientMode.AmbientCallback? {
-        return MyAmbientCallback()
+    private inner class MyAmbientCallback : AmbientModeSupport.AmbientCallback() {
+        // Override ambient mode lifecycle methods here
+        // For example: onEnterAmbient(), onUpdateAmbient(), onExitAmbient(), etc.
     }
 
-    inner class MyAmbientCallback : AmbientMode.AmbientCallback() {
-        override fun onEnterAmbient(ambientDetails: Bundle?) {
-            // Handle entering ambient mode
-        }
-
-        override fun onExitAmbient() {
-            // Handle exiting ambient mode
-        }
-
-        override fun onUpdateAmbient() {
-            // Update the content
-        }
-
-    }
-
-//    private lateinit var ambientController: AmbientModeSupport.AmbientController
+    override fun getAmbientCallback(): AmbientModeSupport.AmbientCallback = MyAmbientCallback()
+    private lateinit var ambientController: AmbientModeSupport.AmbientController
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,7 +58,8 @@ class MainWearableActivity : ComponentActivity(), AmbientMode.AmbientCallbackPro
         capabilityClient = Wearable.getCapabilityClient(this)
         remoteActivityHelper = RemoteActivityHelper(this)
 
-//        ambientController = AmbientModeSupport.attach(this)
+        ambientController = AmbientModeSupport.attach(this)
+
 
 
         setContent {

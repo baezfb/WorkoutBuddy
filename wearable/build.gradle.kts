@@ -109,15 +109,6 @@ dependencies {
 
     implementation(Google.material)
 
-    implementation(Retrofit.okHttp)
-    implementation(Retrofit.retrofit)
-    implementation(Retrofit.okHttpLoggingInterceptor)
-    implementation(Retrofit.moshiConverter)
-
-    kapt(Room.roomCompiler)
-    implementation(Room.roomKtx)
-    implementation(Room.roomRuntime)
-
     implementation(Coroutines.coroutines)
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.17.0")
