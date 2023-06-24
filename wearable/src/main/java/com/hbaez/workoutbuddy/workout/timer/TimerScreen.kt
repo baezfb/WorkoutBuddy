@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +50,13 @@ fun TimerScreen(
         val wakeupTime = TimerViewModel.setAlarm(context, Duration.ofSeconds(seconds.toLong()))
         NotificationUtil.showTimerRunning(context, wakeupTime)
         timerRunning.value = true
+    }
+
+    DisposableEffect(key1 = Unit) {
+        // Cleanup logic when the composable is disposed (when user swipes back)
+        onDispose {
+            NotificationUtil.hideTimerNotification(context)
+        }
     }
 
     LaunchedEffect(true) {
