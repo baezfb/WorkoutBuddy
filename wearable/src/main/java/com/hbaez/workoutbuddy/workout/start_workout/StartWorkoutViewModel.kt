@@ -117,6 +117,22 @@ class StartWorkoutViewModel @Inject constructor(
                     }.toMutableList()
                 )
             }
+
+            is StartWorkoutEvent.OnSetIncrease -> {
+                var counter = 0
+                state = state.copy(
+                    loggerListStates = state.loggerListStates.map {
+                        if(counter == event.page){
+                            counter++
+                            it.copy(currentSet = it.currentSet + 1)
+                        }
+                        else {
+                            counter++
+                            it
+                        }
+                    }.toMutableList()
+                )
+            }
         }
     }
 }

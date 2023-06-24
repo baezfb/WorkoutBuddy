@@ -59,6 +59,7 @@ fun StartWorkoutScreen(
     dayOfMonth: Int,
     month: Int,
     year: Int,
+    onNavigateToTimer: (seconds: Int, exerciseName: String, currentSet: Int, totalSet: Int) -> Unit,
     viewModel: StartWorkoutViewModel = hiltViewModel()
 ) {
     val spacing = LocalSpacing.current
@@ -192,7 +193,13 @@ fun StartWorkoutScreen(
                     viewModel.onEvent(StartWorkoutEvent.OnWeightDecrease(page, state.loggerListStates[page].currentSet))
                 },
                 onRest = {
-//                    currentExercise = currentExercise.copy(currentSet = currentExercise.currentSet + 1)
+                    viewModel.onEvent(StartWorkoutEvent.OnSetIncrease(page))
+                    onNavigateToTimer(
+                        currentExercise.rest[state.loggerListStates[page].currentSet].toInt(),
+                        currentExercise.exerciseName,
+                        state.loggerListStates[page].currentSet + 1,
+                        state.loggerListStates[page].reps.size
+                    )
                 }
             )
         }

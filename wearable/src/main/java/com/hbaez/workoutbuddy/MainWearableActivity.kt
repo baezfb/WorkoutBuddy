@@ -32,6 +32,7 @@ import com.hbaez.workoutbuddy.user_auth.LoginScreen
 import com.hbaez.workoutbuddy.user_auth.SplashScreen
 import com.hbaez.workoutbuddy.workout.WorkoutOverviewScreen
 import com.hbaez.workoutbuddy.workout.start_workout.StartWorkoutScreen
+import com.hbaez.workoutbuddy.workout.start_workout.TimerScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -158,6 +159,47 @@ class MainWearableActivity : ComponentActivity(), AmbientMode.AmbientCallbackPro
                             dayOfMonth = dayOfMonth,
                             month = month,
                             year = year,
+                            onNavigateToTimer = { seconds, exerciseName, currentSet, totalSet ->
+                                navController.navigate(
+                                    Route.TIMER +
+                                            "/$seconds" +
+                                            "/$exerciseName" +
+                                            "/$currentSet" +
+                                            "/$totalSet"
+                                )
+                            }
+                        )
+                    }
+                    composable(
+                        route = Route.TIMER +
+                                "/{seconds}" +
+                                "/{exerciseName}" +
+                                "/{currentSet}" +
+                                "/{totalSet}",
+                        arguments = listOf(
+                            navArgument("seconds") {
+                                type = NavType.IntType
+                            },
+                            navArgument("exerciseName") {
+                                type = NavType.StringType
+                            },
+                            navArgument("currentSet") {
+                                type = NavType.IntType
+                            },
+                            navArgument("totalSet") {
+                                type = NavType.IntType
+                            }
+                        )
+                    ){
+                        val seconds = it.arguments?.getInt("seconds")!!
+                        val exerciseName = it.arguments?.getString("exerciseName")!!
+                        val currentSet = it.arguments?.getInt("currentSet")!!
+                        val totalSet = it.arguments?.getInt("totalSet")!!
+                        TimerScreen(
+                            seconds = seconds,
+                            exerciseName = exerciseName,
+                            currentSet = currentSet,
+                            totalSet = totalSet
                         )
                     }
 //                    composable(Route.VERIFY_MOBILE_APP){

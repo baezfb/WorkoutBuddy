@@ -10,4 +10,6 @@ sealed class StartWorkoutEvent {
     data class OnWeightIncrease(val page: Int, val index: Int): StartWorkoutEvent()
 
     data class OnWeightDecrease(val page: Int, val index: Int): StartWorkoutEvent()
+
+    data class OnSetIncrease(val page: Int): StartWorkoutEvent()
 }

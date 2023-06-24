@@ -6,4 +6,5 @@ object Route {
     const val SPLASH = "splash"
     const val LOGIN = "login"
     const val START_WORKOUT = "start_workout"
+    const val TIMER = "timer"
 }
