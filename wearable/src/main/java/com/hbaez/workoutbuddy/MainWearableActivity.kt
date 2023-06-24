@@ -1,28 +1,19 @@
 package com.hbaez.workoutbuddy
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.wear.ambient.AmbientMode
-import androidx.wear.ambient.AmbientModeSupport
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
-import androidx.wear.phone.interactions.PhoneTypeHelper
 import androidx.wear.remote.interactions.RemoteActivityHelper
-import androidx.wear.widget.ConfirmationOverlay
 import coil.annotation.ExperimentalCoilApi
 import com.google.android.gms.wearable.CapabilityClient
-import com.google.android.gms.wearable.CapabilityClient.OnCapabilityChangedListener
-import com.google.android.gms.wearable.CapabilityInfo
 import com.google.android.gms.wearable.Node
 import com.google.android.gms.wearable.Wearable
 import com.hbaez.core.domain.preferences.Preferences
@@ -32,14 +23,8 @@ import com.hbaez.workoutbuddy.user_auth.LoginScreen
 import com.hbaez.workoutbuddy.user_auth.SplashScreen
 import com.hbaez.workoutbuddy.workout.WorkoutOverviewScreen
 import com.hbaez.workoutbuddy.workout.start_workout.StartWorkoutScreen
-import com.hbaez.workoutbuddy.workout.start_workout.TimerScreen
+import com.hbaez.workoutbuddy.workout.timer.TimerScreen
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.guava.await
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @ExperimentalMaterialApi
@@ -62,8 +47,18 @@ class MainWearableActivity : ComponentActivity(), AmbientMode.AmbientCallbackPro
     }
 
     inner class MyAmbientCallback : AmbientMode.AmbientCallback() {
-        // Override ambient mode lifecycle methods here
-        // For example: onEnterAmbient(), onUpdateAmbient(), onExitAmbient(), etc.
+        override fun onEnterAmbient(ambientDetails: Bundle?) {
+            // Handle entering ambient mode
+        }
+
+        override fun onExitAmbient() {
+            // Handle exiting ambient mode
+        }
+
+        override fun onUpdateAmbient() {
+            // Update the content
+        }
+
     }
 
 //    private lateinit var ambientController: AmbientModeSupport.AmbientController

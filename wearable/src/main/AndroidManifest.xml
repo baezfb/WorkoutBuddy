@@ -4,6 +4,11 @@
 
     <uses-feature android:name="android.hardware.type.watch" />
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <application
         android:name="com.hbaez.workoutbuddy.WorkoutBuddyWearableApp"
         android:allowBackup="true"
@@ -30,6 +35,12 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <receiver
+            android:name="com.hbaez.workoutbuddy.workout.timer.TimerExpiredReceiver"
+            android:enabled="true" />
+        <receiver
+            android:name="com.hbaez.workoutbuddy.workout.timer.TimerNotificationActionReceiver"
+            android:enabled="true" />
     </application>
 
 </manifest>

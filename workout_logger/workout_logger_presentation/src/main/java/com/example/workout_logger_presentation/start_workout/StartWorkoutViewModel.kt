@@ -280,7 +280,7 @@ class StartWorkoutViewModel @Inject constructor(
             val intent = Intent(context, TimerExpiredReceiver::class.java)
             val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_MUTABLE)
             Log.println(Log.DEBUG, "current Time", Date().time.toString())
-            val wakeUpTime = (Date().time + timeDuration.toMillis())
+            val wakeUpTime = (System.currentTimeMillis() + timeDuration.toMillis())
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, wakeUpTime, pendingIntent)
             return wakeUpTime
         }

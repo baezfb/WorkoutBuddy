@@ -2,8 +2,10 @@ package com.hbaez.workoutbuddy.workout.start_workout
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.scrollBy
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -19,11 +23,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
@@ -174,34 +180,74 @@ fun StartWorkoutScreen(
                 }
             }
             LaunchedEffect(Unit) { focusRequester.requestFocus() }
-            SetCard(
-                exerciseName = state.loggerListStates[page].exerciseName,
-                currSet = state.loggerListStates[page].currentSet,
-                totalSets = state.loggerListStates[page].reps.size,
-                currReps = state.loggerListStates[page].reps[state.loggerListStates[page].currentSet],
-                currWeight = state.loggerListStates[page].weight[state.loggerListStates[page].currentSet],
-                onRepIncrease = {
-                    viewModel.onEvent(StartWorkoutEvent.OnRepIncrease(page, state.loggerListStates[page].currentSet))
-                },
-                onRepDecrease = {
-                    viewModel.onEvent(StartWorkoutEvent.OnRepDecrease(page, state.loggerListStates[page].currentSet))
-                },
-                onWeightIncrease = {
-                    viewModel.onEvent(StartWorkoutEvent.OnWeightIncrease(page, state.loggerListStates[page].currentSet))
-                },
-                onWeightDecrease = {
-                    viewModel.onEvent(StartWorkoutEvent.OnWeightDecrease(page, state.loggerListStates[page].currentSet))
-                },
-                onRest = {
-                    viewModel.onEvent(StartWorkoutEvent.OnSetIncrease(page))
-                    onNavigateToTimer(
-                        currentExercise.rest[state.loggerListStates[page].currentSet].toInt(),
-                        currentExercise.exerciseName,
-                        state.loggerListStates[page].currentSet + 1,
-                        state.loggerListStates[page].reps.size
-                    )
+            if(state.loggerListStates[page].currentSet >= state.loggerListStates[page].reps.size){
+                Card(
+                    shape = RoundedCornerShape(8.dp),
+                    backgroundColor = androidx.compose.material.MaterialTheme.colors.background,
+                    modifier = Modifier
+                        .clip(
+                            RoundedCornerShape(50.dp)
+                        )
+                        .border(
+                            2.dp,
+                            androidx.compose.material.MaterialTheme.colors.primary,
+                            RoundedCornerShape(50.dp)
+                        )
+                        .padding(spacing.spaceSmall)
+                        .fillMaxWidth(.9f)
+                        .height(155.dp)
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        WearText(
+                            modifier = Modifier.padding(horizontal = spacing.spaceSmall),
+                            color = androidx.compose.material.MaterialTheme.colors.onBackground,
+                            text = state.loggerListStates[page].exerciseName,
+                            style = androidx.compose.material.MaterialTheme.typography.body2,
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(modifier = Modifier.height(spacing.spaceSmall))
+                        WearText(
+                            modifier = Modifier.padding(horizontal = spacing.spaceSmall),
+                            color = androidx.compose.material.MaterialTheme.colors.onBackground,
+                            text = stringResource(id = com.hbaez.core.R.string.redo),
+                            style = androidx.compose.material.MaterialTheme.typography.body2
+                        )
+                    }
                 }
-            )
+            }
+            else {
+                SetCard(
+                    exerciseName = state.loggerListStates[page].exerciseName,
+                    currSet = state.loggerListStates[page].currentSet,
+                    totalSets = state.loggerListStates[page].reps.size,
+                    currReps = state.loggerListStates[page].reps[state.loggerListStates[page].currentSet],
+                    currWeight = state.loggerListStates[page].weight[state.loggerListStates[page].currentSet],
+                    onRepIncrease = {
+                        viewModel.onEvent(StartWorkoutEvent.OnRepIncrease(page, state.loggerListStates[page].currentSet))
+                    },
+                    onRepDecrease = {
+                        viewModel.onEvent(StartWorkoutEvent.OnRepDecrease(page, state.loggerListStates[page].currentSet))
+                    },
+                    onWeightIncrease = {
+                        viewModel.onEvent(StartWorkoutEvent.OnWeightIncrease(page, state.loggerListStates[page].currentSet))
+                    },
+                    onWeightDecrease = {
+                        viewModel.onEvent(StartWorkoutEvent.OnWeightDecrease(page, state.loggerListStates[page].currentSet))
+                    },
+                    onRest = {
+                        viewModel.onEvent(StartWorkoutEvent.OnSetIncrease(page))
+                        onNavigateToTimer(
+                            currentExercise.rest[state.loggerListStates[page].currentSet].toInt(),
+                            currentExercise.exerciseName,
+                            state.loggerListStates[page].currentSet + 1,
+                            state.loggerListStates[page].reps.size
+                        )
+                    }
+                )
+            }
         }
     }
 }
