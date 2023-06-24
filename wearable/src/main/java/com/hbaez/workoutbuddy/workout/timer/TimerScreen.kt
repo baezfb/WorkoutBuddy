@@ -1,5 +1,6 @@
 package com.hbaez.workoutbuddy.workout.timer
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +15,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.wear.compose.material.MaterialTheme
+import androidx.wear.compose.material.PositionIndicator
+import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
+import androidx.wear.compose.material.TimeText
+import androidx.wear.compose.material.Vignette
+import androidx.wear.compose.material.VignettePosition
+import androidx.wear.compose.material.scrollAway
 import com.hbaez.core_ui.LocalSpacing
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -58,25 +65,33 @@ fun TimerScreen(
     }
 
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    Scaffold(
+        timeText = {
+            TimeText()
+        },
+        modifier = Modifier
+            .background(color = MaterialTheme.colors.background),
     ) {
-        Text(
-            text = exerciseName,
-            style = MaterialTheme.typography.caption2,
-            modifier = Modifier.padding(bottom = spacing.spaceSmall)
-        )
-        Text(
-            text = "$currentSet of $totalSet finished",
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier.padding(bottom = spacing.spaceMedium)
-        )
-        Text(
-            text = formatSeconds(remainingSeconds.value),
-            style = MaterialTheme.typography.display1
-        )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = exerciseName,
+                style = MaterialTheme.typography.caption2,
+                modifier = Modifier.padding(bottom = spacing.spaceSmall)
+            )
+            Text(
+                text = "$currentSet of $totalSet finished",
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.padding(bottom = spacing.spaceMedium)
+            )
+            Text(
+                text = formatSeconds(remainingSeconds.value),
+                style = MaterialTheme.typography.display1
+            )
+        }
     }
 }
 
