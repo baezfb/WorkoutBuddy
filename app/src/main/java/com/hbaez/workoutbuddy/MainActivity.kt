@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
@@ -36,6 +37,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.wear.remote.interactions.RemoteActivityHelper
 import coil.annotation.ExperimentalCoilApi
+import com.example.chatbot_presentation.chat_overview.ChatScreen
 import com.example.workout_logger_presentation.create_workout.CreateWorkoutScreen
 import com.example.workout_logger_presentation.search_exercise.SearchExerciseScreen
 import com.example.workout_logger_presentation.start_workout.StartWorkoutScreen
@@ -127,7 +129,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                     scaffoldState = scaffoldState,
                     bottomBar = {
                         if( currentRoute == Route.WORKOUT_OVERVIEW || currentRoute == Route.TRACKER_OVERVIEW
-                            || currentRoute == Route.APP_SETTINGS || currentRoute == Route.ANALYZER_OVERVIEW ){
+                            || currentRoute == Route.APP_SETTINGS || currentRoute == Route.ANALYZER_OVERVIEW || currentRoute == Route.CHAT_BOT){
                             BottomNavigationBar(
                                 items = listOf(
                                     BottomNavItem(
@@ -146,11 +148,11 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                         route = Route.ANALYZER_OVERVIEW,
                                         icon = Icons.Default.Person
                                     ),
-//                                    BottomNavItem(
-//                                        name = "Wear",
-//                                        route = Route.WEAR_OVERVIEW,
-//                                        icon = Icons.Default.Person
-//                                    ),
+                                    BottomNavItem(
+                                        name = "Chat",
+                                        route = Route.CHAT_BOT,
+                                        icon = Icons.Default.Face
+                                    ),
                                     BottomNavItem(
                                         name = "Settings",
                                         route = Route.APP_SETTINGS,
@@ -453,7 +455,9 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                 }
                             )
                         }
-
+                        composable(Route.CHAT_BOT) {
+                            ChatScreen()
+                        }
                     }
                 }
             }

@@ -24,4 +24,8 @@ object Modules {
     const val userAuthPresentation = ":user_auth:user_auth_presentation"
     const val userAuthDomain = ":user_auth:user_auth_domain"
     const val userAuthData = ":user_auth:user_auth_data"
+
+    const val chatBotPresentation = ":chatbot:chatbot_presentation"
+    const val chatBotDomain = ":chatbot:chatbot_domain"
+    const val chatBotData = ":chatbot:chatbot_data"
 }

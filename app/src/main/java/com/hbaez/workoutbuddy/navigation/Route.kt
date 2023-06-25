@@ -31,4 +31,6 @@ object Route {
     const val USER_AUTH_WELCOME = "user_auth_welcome"
 
     const val SPLASH = "splash"
+
+    const val CHAT_BOT = "chatbot"
 }

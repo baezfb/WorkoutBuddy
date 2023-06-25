@@ -17,6 +17,10 @@
             <option value="$PROJECT_DIR$/app_settings" />
             <option value="$PROJECT_DIR$/app_settings/settings_presentation" />
             <option value="$PROJECT_DIR$/buildSrc" />
+            <option value="$PROJECT_DIR$/chatbot" />
+            <option value="$PROJECT_DIR$/chatbot/chatbot_data" />
+            <option value="$PROJECT_DIR$/chatbot/chatbot_domain" />
+            <option value="$PROJECT_DIR$/chatbot/chatbot_presentation" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/core-ui" />
             <option value="$PROJECT_DIR$/onboarding" />

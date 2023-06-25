@@ -88,6 +88,9 @@ dependencies {
     implementation(project(Modules.userAuthPresentation))
     implementation(project(Modules.userAuthDomain))
     implementation(project(Modules.userAuthData))
+    implementation(project(Modules.chatBotPresentation))
+    implementation(project(Modules.chatBotDomain))
+    implementation(project(Modules.chatBotData))
 
     implementation(platform("com.google.firebase:firebase-bom:30.3.1"))
     implementation("com.google.firebase:firebase-auth-ktx")
