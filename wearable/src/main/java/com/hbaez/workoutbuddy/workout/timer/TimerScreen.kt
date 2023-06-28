@@ -56,6 +56,7 @@ fun TimerScreen(
         // Cleanup logic when the composable is disposed (when user swipes back)
         onDispose {
             NotificationUtil.hideTimerNotification(context)
+            TimerViewModel.removeAlarm(context)
         }
     }
 
