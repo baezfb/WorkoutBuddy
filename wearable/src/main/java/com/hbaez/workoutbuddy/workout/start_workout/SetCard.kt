@@ -1,6 +1,7 @@
 package com.hbaez.workoutbuddy.workout.start_workout
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -63,16 +65,19 @@ fun SetCard(
             .fillMaxWidth(.9f)
             .height(155.dp)
     ) {
+        val scroll = rememberScrollState(0)
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             WearText(
-                modifier = Modifier.padding(horizontal = spacing.spaceSmall),
+                modifier = Modifier
+                    .padding(horizontal = spacing.spaceSmall)
+                    .horizontalScroll(scroll),
                 color = MaterialTheme.colors.onBackground,
                 text = exerciseName,
                 style = MaterialTheme.typography.body2,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+//                overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(spacing.spaceSmall))
 
