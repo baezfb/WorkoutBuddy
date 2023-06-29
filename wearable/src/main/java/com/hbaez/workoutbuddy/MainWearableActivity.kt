@@ -181,7 +181,10 @@ class MainWearableActivity : FragmentActivity(), AmbientModeSupport.AmbientCallb
                             seconds = seconds,
                             exerciseName = exerciseName,
                             currentSet = currentSet,
-                            totalSet = totalSet
+                            totalSet = totalSet,
+                            onPopUp = {
+                                navController.popBackStack()
+                            }
                         )
                     }
 //                    composable(Route.VERIFY_MOBILE_APP){

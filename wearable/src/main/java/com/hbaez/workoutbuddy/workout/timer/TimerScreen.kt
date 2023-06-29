@@ -38,6 +38,7 @@ fun TimerScreen(
     exerciseName: String,
     currentSet: Int,
     totalSet: Int,
+    onPopUp: () -> Unit,
     viewModel: TimerViewModel = hiltViewModel()
 ){
     val spacing = LocalSpacing.current
@@ -69,6 +70,7 @@ fun TimerScreen(
             if(remainingSeconds.value == 0){
                 timerRunning.value = false
                 NotificationUtil.hideTimerNotification(context)
+                onPopUp()
             }
         }
     }
