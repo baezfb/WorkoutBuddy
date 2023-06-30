@@ -143,6 +143,32 @@ fun WorkoutLoggerOverviewScreen(
                 }
             }
         }
+        item{
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                AddButton(
+                    text = stringResource(id = R.string.start_workout),
+                    onClick = {
+                        viewModel.onEvent(WorkoutLoggerOverviewEvent.OnStartWorkoutClick)
+                        showDialog.value = true
+                    },
+                    modifier = Modifier.weight(1f),
+                    color = MaterialTheme.colors.primary,
+                    icon = Icons.Default.AddCircle
+                )
+                Spacer(modifier = Modifier.width(spacing.spaceExtraSmall))
+                AddButton(
+                    text = stringResource(id = R.string.start_exercise),
+                    onClick = { /*TODO*/ },
+                    modifier = Modifier.weight(1f),
+                    color = MaterialTheme.colors.primary,
+                    icon = Icons.Default.AddCircle
+                )
+            }
+            Spacer(modifier = Modifier.height(spacing.spaceMedium))
+        }
         itemsIndexed(viewModel.completedWorkouts){ index, completedWorkout -> //items(state.completedWorkouts){ completedWorkout ->
             CompletedWorkoutItem(
                 workout = completedWorkout,
@@ -199,31 +225,6 @@ fun WorkoutLoggerOverviewScreen(
 //                color = MaterialTheme.colors.primaryVariant
             )
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
-        }
-        item{
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                AddButton(
-                    text = stringResource(id = R.string.start_workout),
-                    onClick = {
-                        viewModel.onEvent(WorkoutLoggerOverviewEvent.OnStartWorkoutClick)
-                        showDialog.value = true
-                    },
-                    modifier = Modifier.weight(1f),
-                    color = MaterialTheme.colors.primary,
-                    icon = Icons.Default.AddCircle
-                )
-                Spacer(modifier = Modifier.width(spacing.spaceExtraSmall))
-                AddButton(
-                    text = stringResource(id = R.string.start_exercise),
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier.weight(1f),
-                    color = MaterialTheme.colors.primary,
-                    icon = Icons.Default.AddCircle
-                )
-            }
         }
     }
 }
