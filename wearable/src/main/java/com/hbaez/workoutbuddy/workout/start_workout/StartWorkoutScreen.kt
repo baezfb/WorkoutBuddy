@@ -55,6 +55,7 @@ import coil.annotation.ExperimentalCoilApi
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.VerticalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.hbaez.core.util.UiEvent
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 import com.hbaez.workoutbuddy.R
@@ -73,6 +74,7 @@ fun StartWorkoutScreen(
     month: Int,
     year: Int,
     onNavigateToTimer: (seconds: Int, exerciseName: String, currentSet: Int, totalSet: Int) -> Unit,
+    onNavigateUp: () -> Unit,
     viewModel: StartWorkoutViewModel = hiltViewModel()
 ) {
     val spacing = LocalSpacing.current
@@ -91,6 +93,15 @@ fun StartWorkoutScreen(
         if(it.name == workoutName){
             counter += 1
             workoutExerciseNames.add(it.exerciseName)
+        }
+    }
+
+    LaunchedEffect(key1 = viewModel.uiEvent) {
+        viewModel.uiEvent.collect {event ->
+            when(event) {
+                is UiEvent.NavigateUp -> onNavigateUp()
+                else -> Unit
+            }
         }
     }
 
@@ -139,41 +150,43 @@ fun StartWorkoutScreen(
                     }
                     .focusRequester(focusRequester)
                     .focusable(),
-                count = counter
+                count = counter + 1
             ) { page ->
-                workoutTemplates.value.forEach {
-                    if (it.name == workoutName) {
-                        if (it.rowId == workoutIds[page].toInt()) {
-                            if (state.loggerListStates.size > page && state.loggerListStates[page].id != it.rowId) {
-                                loggerListState = LoggerListState(
-                                    id = it.rowId,
-                                    exerciseName = it.exerciseName,
-                                    exerciseId = it.exerciseId,
-                                    timerStatus = TimerStatus.START,
-                                    sets = it.sets.toString(),
-                                    rest = it.rest,
-                                    reps = it.reps,
-                                    weight = it.weight,
-                                    isCompleted = List(it.sets) { false },
-                                    checkedColor = List(it.sets) { Color.DarkGray },
-                                )
-                                viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
-                            } else if (state.loggerListStates.size == page) {
-                                loggerListState = LoggerListState(
-                                    id = it.rowId,
-                                    exerciseName = it.exerciseName,
-                                    exerciseId = it.exerciseId,
-                                    timerStatus = TimerStatus.START,
-                                    sets = it.sets.toString(),
-                                    rest = it.rest,
-                                    reps = it.reps,
-                                    weight = it.weight,
-                                    isCompleted = List(it.sets) { false },
-                                    checkedColor = List(it.sets) { Color.DarkGray }
-                                )
-                                viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
+                if(page != (counter)){
+                    workoutTemplates.value.forEach {
+                        if (it.name == workoutName) {
+                            if (it.rowId == workoutIds[page].toInt()) {
+                                if (state.loggerListStates.size > page && state.loggerListStates[page].id != it.rowId) {
+                                    loggerListState = LoggerListState(
+                                        id = it.rowId,
+                                        exerciseName = it.exerciseName,
+                                        exerciseId = it.exerciseId,
+                                        timerStatus = TimerStatus.START,
+                                        sets = it.sets.toString(),
+                                        rest = it.rest,
+                                        reps = it.reps,
+                                        weight = it.weight,
+                                        isCompleted = List(it.sets) { false },
+                                        checkedColor = List(it.sets) { Color.DarkGray },
+                                    )
+                                    viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
+                                } else if (state.loggerListStates.size == page && page != counter) {
+                                    loggerListState = LoggerListState(
+                                        id = it.rowId,
+                                        exerciseName = it.exerciseName,
+                                        exerciseId = it.exerciseId,
+                                        timerStatus = TimerStatus.START,
+                                        sets = it.sets.toString(),
+                                        rest = it.rest,
+                                        reps = it.reps,
+                                        weight = it.weight,
+                                        isCompleted = List(it.sets) { false },
+                                        checkedColor = List(it.sets) { Color.DarkGray }
+                                    )
+                                    viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
+                                }
+                                return@forEach
                             }
-                            return@forEach
                         }
                     }
                 }
@@ -182,12 +195,15 @@ fun StartWorkoutScreen(
                 // using workoutName and exerciseName
                 lateinit var currentExercise: WorkoutTemplate
                 workoutTemplates.value.forEach {
+                    if(page == counter){
+                        return@forEach
+                    }
                     if (it.name == workoutName && it.exerciseName == workoutExerciseNames[page]) {
                         currentExercise = it
                     }
                 }
                 LaunchedEffect(Unit) { focusRequester.requestFocus() }
-                if(page == pagerState.pageCount - 1){
+                if(page == counter){
                     // finish workout button
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -196,7 +212,9 @@ fun StartWorkoutScreen(
                     ) {
                         WearButton(
                             text = stringResource(id = com.hbaez.core.R.string.finish),
-                            onClick = { /*TODO*/ },
+                            onClick = {
+                                viewModel.onEvent(StartWorkoutEvent.OnSubmitWorkout(state.workoutName, state.loggerListStates, workoutTemplates.value, dayOfMonth, month, year))
+                                      },
                             icon = Icons.Rounded.Done,
                             borderColor = androidx.compose.material.MaterialTheme.colors.primary,
                             modifier = Modifier
@@ -205,94 +223,97 @@ fun StartWorkoutScreen(
                                 .alignByBaseline()
                         )
                     }
-                } else if (state.loggerListStates[page].currentSet >= state.loggerListStates[page].reps.size) {
-                    Card(
-                        shape = RoundedCornerShape(8.dp),
-                        backgroundColor = androidx.compose.material.MaterialTheme.colors.background,
-                        modifier = Modifier
-                            .clip(
-                                RoundedCornerShape(50.dp)
-                            )
-                            .border(
-                                2.dp,
-                                androidx.compose.material.MaterialTheme.colors.primary,
-                                RoundedCornerShape(50.dp)
-                            )
-                            .padding(spacing.spaceSmall)
-                            .fillMaxWidth(.9f)
-                            .height(155.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.fillMaxHeight(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                }
+                if(state.loggerListStates.getOrNull(page) != null){
+                    if (state.loggerListStates[page].currentSet >= state.loggerListStates[page].reps.size) {
+                        Card(
+                            shape = RoundedCornerShape(8.dp),
+                            backgroundColor = androidx.compose.material.MaterialTheme.colors.background,
+                            modifier = Modifier
+                                .clip(
+                                    RoundedCornerShape(50.dp)
+                                )
+                                .border(
+                                    2.dp,
+                                    androidx.compose.material.MaterialTheme.colors.primary,
+                                    RoundedCornerShape(50.dp)
+                                )
+                                .padding(spacing.spaceSmall)
+                                .fillMaxWidth(.9f)
+                                .height(155.dp)
                         ) {
-                            WearText(
-                                modifier = Modifier.padding(horizontal = spacing.spaceSmall),
-                                color = androidx.compose.material.MaterialTheme.colors.onBackground,
-                                text = state.loggerListStates[page].exerciseName,
-                                style = androidx.compose.material.MaterialTheme.typography.body2,
-                                maxLines = 3,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Spacer(modifier = Modifier.height(spacing.spaceSmall))
-                            WearText(
-                                modifier = Modifier.padding(horizontal = spacing.spaceSmall),
-                                color = androidx.compose.material.MaterialTheme.colors.onBackground,
-                                text = stringResource(id = com.hbaez.core.R.string.redo),
-                                style = androidx.compose.material.MaterialTheme.typography.body2
-                            )
+                            Column(
+                                modifier = Modifier.fillMaxHeight(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                WearText(
+                                    modifier = Modifier.padding(horizontal = spacing.spaceSmall),
+                                    color = androidx.compose.material.MaterialTheme.colors.onBackground,
+                                    text = state.loggerListStates[page].exerciseName,
+                                    style = androidx.compose.material.MaterialTheme.typography.body2,
+                                    maxLines = 3,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Spacer(modifier = Modifier.height(spacing.spaceSmall))
+                                WearText(
+                                    modifier = Modifier.padding(horizontal = spacing.spaceSmall),
+                                    color = androidx.compose.material.MaterialTheme.colors.onBackground,
+                                    text = stringResource(id = com.hbaez.core.R.string.redo),
+                                    style = androidx.compose.material.MaterialTheme.typography.body2
+                                )
+                            }
                         }
+                    } else {
+                        SetCard(
+                            exerciseName = state.loggerListStates[page].exerciseName,
+                            currSet = state.loggerListStates[page].currentSet,
+                            totalSets = state.loggerListStates[page].reps.size,
+                            currReps = state.loggerListStates[page].reps[state.loggerListStates[page].currentSet],
+                            currWeight = state.loggerListStates[page].weight[state.loggerListStates[page].currentSet],
+                            onRepIncrease = {
+                                viewModel.onEvent(
+                                    StartWorkoutEvent.OnRepIncrease(
+                                        page,
+                                        state.loggerListStates[page].currentSet
+                                    )
+                                )
+                            },
+                            onRepDecrease = {
+                                viewModel.onEvent(
+                                    StartWorkoutEvent.OnRepDecrease(
+                                        page,
+                                        state.loggerListStates[page].currentSet
+                                    )
+                                )
+                            },
+                            onWeightIncrease = {
+                                viewModel.onEvent(
+                                    StartWorkoutEvent.OnWeightIncrease(
+                                        page,
+                                        state.loggerListStates[page].currentSet
+                                    )
+                                )
+                            },
+                            onWeightDecrease = {
+                                viewModel.onEvent(
+                                    StartWorkoutEvent.OnWeightDecrease(
+                                        page,
+                                        state.loggerListStates[page].currentSet
+                                    )
+                                )
+                            },
+                            onRest = {
+                                viewModel.onEvent(StartWorkoutEvent.OnSetIncrease(page))
+                                onNavigateToTimer(
+                                    currentExercise.rest[state.loggerListStates[page].currentSet].toInt(),
+                                    currentExercise.exerciseName,
+                                    state.loggerListStates[page].currentSet + 1,
+                                    state.loggerListStates[page].reps.size
+                                )
+                            }
+                        )
                     }
-                } else {
-                    SetCard(
-                        exerciseName = state.loggerListStates[page].exerciseName,
-                        currSet = state.loggerListStates[page].currentSet,
-                        totalSets = state.loggerListStates[page].reps.size,
-                        currReps = state.loggerListStates[page].reps[state.loggerListStates[page].currentSet],
-                        currWeight = state.loggerListStates[page].weight[state.loggerListStates[page].currentSet],
-                        onRepIncrease = {
-                            viewModel.onEvent(
-                                StartWorkoutEvent.OnRepIncrease(
-                                    page,
-                                    state.loggerListStates[page].currentSet
-                                )
-                            )
-                        },
-                        onRepDecrease = {
-                            viewModel.onEvent(
-                                StartWorkoutEvent.OnRepDecrease(
-                                    page,
-                                    state.loggerListStates[page].currentSet
-                                )
-                            )
-                        },
-                        onWeightIncrease = {
-                            viewModel.onEvent(
-                                StartWorkoutEvent.OnWeightIncrease(
-                                    page,
-                                    state.loggerListStates[page].currentSet
-                                )
-                            )
-                        },
-                        onWeightDecrease = {
-                            viewModel.onEvent(
-                                StartWorkoutEvent.OnWeightDecrease(
-                                    page,
-                                    state.loggerListStates[page].currentSet
-                                )
-                            )
-                        },
-                        onRest = {
-                            viewModel.onEvent(StartWorkoutEvent.OnSetIncrease(page))
-                            onNavigateToTimer(
-                                currentExercise.rest[state.loggerListStates[page].currentSet].toInt(),
-                                currentExercise.exerciseName,
-                                state.loggerListStates[page].currentSet + 1,
-                                state.loggerListStates[page].reps.size
-                            )
-                        }
-                    )
                 }
             }
         }

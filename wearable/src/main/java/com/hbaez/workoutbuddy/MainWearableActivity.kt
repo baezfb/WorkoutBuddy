@@ -149,6 +149,9 @@ class MainWearableActivity : FragmentActivity(), AmbientModeSupport.AmbientCallb
                                             "/$currentSet" +
                                             "/$totalSet"
                                 )
+                            },
+                            onNavigateUp = {
+                                navController.navigateUp()
                             }
                         )
                     }
@@ -183,7 +186,7 @@ class MainWearableActivity : FragmentActivity(), AmbientModeSupport.AmbientCallb
                             currentSet = currentSet,
                             totalSet = totalSet,
                             onPopUp = {
-                                navController.popBackStack()
+                                navController.navigateUp()
                             }
                         )
                     }
