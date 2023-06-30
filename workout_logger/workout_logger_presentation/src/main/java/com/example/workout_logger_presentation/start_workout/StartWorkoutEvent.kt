@@ -6,6 +6,8 @@ import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 
 sealed class StartWorkoutEvent {
 
+    data class OnUpdateWorkoutName(val workoutName: String): StartWorkoutEvent()
+
     data class OnRepsChange(val reps: String, val index: Int, val rowId: Int, val page: Int): StartWorkoutEvent()
 
     data class OnWeightChange(val weight: String, val index: Int, val rowId: Int, val page: Int): StartWorkoutEvent()

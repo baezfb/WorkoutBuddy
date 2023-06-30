@@ -79,6 +79,7 @@ fun StartWorkoutScreen(
             count += 1
             workoutExerciseNames.add(it.exerciseName)
         }
+        viewModel.onEvent(StartWorkoutEvent.OnUpdateWorkoutName(workoutName))
     }
 
     LaunchedEffect(Unit){

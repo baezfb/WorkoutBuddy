@@ -67,6 +67,11 @@ class StartWorkoutViewModel @Inject constructor(
 
     fun onEvent(event: StartWorkoutEvent) {
         when(event) {
+            is StartWorkoutEvent.OnUpdateWorkoutName -> {
+                state = state.copy(
+                    workoutName = event.workoutName
+                )
+            }
             is StartWorkoutEvent.OnRepsChange -> {
                 Log.println(Log.DEBUG, "on reps change", event.reps)
                 var counter = 0
@@ -184,22 +189,53 @@ class StartWorkoutViewModel @Inject constructor(
                         it.isCompleted.forEachIndexed { index, b ->  // for each set in exercise
                             if(b){
                                 isCompletedList.add("true")
-                                if(it.reps[index].isEmpty()){
-                                    repsList.add(event.workoutTemplates[counter].reps[index])
+                                if(it.reps[index].isBlank()){
+                                    Log.println(Log.DEBUG, "it(loggerlist) exercisename", it.exerciseName)
+                                    event.workoutTemplates.forEach { workoutTemplate ->
+                                        Log.println(Log.DEBUG, "workouttemplate exercisename", workoutTemplate.exerciseName)
+                                        Log.println(Log.DEBUG, "if statement", workoutTemplate.name)
+                                        Log.println(Log.DEBUG, "if statement", state.workoutName)
+                                        Log.println(Log.DEBUG, "if statement", workoutTemplate.exerciseName)
+                                        Log.println(Log.DEBUG, "if statement", it.exerciseName)
+                                        if(workoutTemplate.name == state.workoutName && workoutTemplate.exerciseName == it.exerciseName){
+                                            repsList.add(workoutTemplate.reps[index])
+                                            Log.println(Log.DEBUG, "reached inside", repsList.toString())
+                                        }
+                                    }
                                 } else repsList.add(it.reps[index])
-                                if(it.weight[index].isEmpty()){
-                                    weightList.add(event.workoutTemplates[counter].weight[index])
+                                if(it.weight[index].isBlank()){
+                                    event.workoutTemplates.forEach {workoutTemplate ->
+                                        if(workoutTemplate.name == state.workoutName && workoutTemplate.exerciseName == it.exerciseName){
+                                            weightList.add(workoutTemplate.weight[index])
+                                        }
+                                    }
                                 } else weightList.add(it.weight[index])
                             } else {
                                 isCompletedList.add("false")
-                                if(it.reps[index].isEmpty()){
-                                    repsList.add(event.workoutTemplates[counter].reps[index])
+                                if(it.reps[index].isBlank()){
+                                    event.workoutTemplates.forEach {workoutTemplate ->
+                                        if(workoutTemplate.name == state.workoutName && workoutTemplate.exerciseName == it.exerciseName){
+                                            repsList.add(workoutTemplate.reps[index])
+                                        }
+                                    }
                                 } else repsList.add(it.reps[index])
-                                if(it.weight[index].isEmpty()){
-                                    weightList.add(event.workoutTemplates[counter].weight[index])
+                                if(it.weight[index].isBlank()){
+                                    event.workoutTemplates.forEach {workoutTemplate ->
+                                        if(workoutTemplate.name == state.workoutName && workoutTemplate.exerciseName == it.exerciseName){
+                                            weightList.add(workoutTemplate.weight[index])
+                                        }
+                                    }
                                 } else weightList.add(it.weight[index])
                             }
                         }
+//                        Log.println(Log.DEBUG, "lists", repsList.toString())
+//                        Log.println(Log.DEBUG, "lists", weightList.toString())
+//                        Log.println(Log.DEBUG, "lists", isCompletedList.toString())
+//                        Log.println(Log.DEBUG, "workout templates 0", event.workoutTemplates[0].toString())
+//                        Log.println(Log.DEBUG, "workout templates 1", event.workoutTemplates[1].toString())
+//                        Log.println(Log.DEBUG, "workout templates 2", event.workoutTemplates[2].toString())
+//                        Log.println(Log.DEBUG, "workout templates 3", event.workoutTemplates[3].toString())
+//                        Log.println(Log.DEBUG, "workout templates 4", event.workoutTemplates[4].toString())
                         if(repsList.isNotEmpty() && weightList.isNotEmpty()){
                             trackCompletedWorkout(it, repsList, weightList, isCompletedList.toList(), event.dayOfMonth, event.month, event.year)
                         }
