@@ -64,25 +64,28 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         userInfoCollection(auth.currentUserId).document(taskId).get().await().toObject()
 
     override suspend fun getCompletedWorkoutByDate(date: String): List<CompletedWorkout> {
-        val completedWorkouts = completedWorkoutCollection(auth.currentUserId, date).snapshots().map { snapshot ->
-            return@map snapshot.documents.map {
-                CompletedWorkout(
-                    workoutName = it.get("workoutName").toString(),
-                    workoutId = it.get("workoutId").toString().toInt(),
-                    exerciseName = it.get("exerciseName").toString(),
-                    exerciseId = it.get("exerciseId").toString().toInt(),
-                    sets = it.get("sets").toString().toInt(),
-                    rest = it.get("rest").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
-                    reps = it.get("reps").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
-                    weight = it.get("weight").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
-                    isCompleted = it.get("completed").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
-                    dayOfMonth = it.get("dayOfMonth").toString().toInt(),
-                    month = it.get("month").toString().toInt(),
-                    year = it.get("year").toString().toInt()
+        val completedWorkouts = mutableListOf<CompletedWorkout>()
+        completedWorkoutCollection(auth.currentUserId, date).get().addOnSuccessListener { snapshot ->
+            for (document in snapshot.documents) {
+                val completedWorkout = CompletedWorkout(
+                    workoutName = document.get("workoutName").toString(),
+                    workoutId = document.get("workoutId").toString().toInt(),
+                    exerciseName = document.get("exerciseName").toString(),
+                    exerciseId = document.get("exerciseId").toString().toInt(),
+                    sets = document.get("sets").toString().toInt(),
+                    rest = document.get("rest").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
+                    reps = document.get("reps").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
+                    weight = document.get("weight").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
+                    isCompleted = document.get("completed").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
+                    dayOfMonth = document.get("dayOfMonth").toString().toInt(),
+                    month = document.get("month").toString().toInt(),
+                    year = document.get("year").toString().toInt()
                 )
+                completedWorkouts.add(completedWorkout)
             }
         }
-        return completedWorkouts.first()
+            .await()
+        return completedWorkouts
     }
     override suspend fun saveUserInfo(userInfo: UserInfo): String =
         trace(SAVE_USER_INFO_TRACE) {
