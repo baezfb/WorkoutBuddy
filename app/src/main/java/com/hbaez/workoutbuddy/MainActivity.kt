@@ -38,6 +38,7 @@ import androidx.navigation.navArgument
 import androidx.wear.remote.interactions.RemoteActivityHelper
 import coil.annotation.ExperimentalCoilApi
 import com.example.chatbot_presentation.chat_overview.ChatScreen
+import com.example.workout_logger_presentation.create_exercise.CreateExerciseScreen
 import com.example.workout_logger_presentation.create_workout.CreateWorkoutScreen
 import com.example.workout_logger_presentation.search_exercise.SearchExerciseScreen
 import com.example.workout_logger_presentation.start_workout.StartWorkoutScreen
@@ -280,12 +281,12 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                         composable(Route.WORKOUT_OVERVIEW) {
                             Column(modifier = Modifier.padding(bottom = 58.dp)){
                                 WorkoutLoggerOverviewScreen(
-                                    onNavigateToCreate = {
+                                    onNavigateToCreateWorkout = {
                                         navController.navigate(
                                             Route.WORKOUT_CREATE
                                         )
                                     },
-                                    onNavigateToWorkout = { workoutName, day, month, year, workoutIds ->
+                                    onNavigateToStartWorkout = { workoutName, day, month, year, workoutIds ->
                                         navController.navigate(
                                             Route.WORKOUT_START +
                                                     "/$workoutName" +
@@ -293,6 +294,11 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                                     "/$month" +
                                                     "/$year" +
                                                     "/$workoutIds"
+                                        )
+                                    },
+                                    onNavigateToCreateExercise = {
+                                        navController.navigate(
+                                            Route.EXERCISE_CREATE
                                         )
                                     }
                                 )
@@ -369,6 +375,13 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                 }
                             )
                         }
+
+                        composable(Route.EXERCISE_CREATE) {
+                            CreateExerciseScreen(
+
+                            )
+                        }
+
                         composable(Route.APP_SETTINGS) {
                             AppSettingsOverviewScreen(
                                 onNavigateToSignUp = {

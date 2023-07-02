@@ -103,6 +103,9 @@ fun CreateWorkoutScreen(
             Column {
                 Spacer(modifier = Modifier.height(spacing.spaceMedium))
                 NameField(
+                    modifier = Modifier
+                        .padding(spacing.spaceMedium)
+                        .padding(end = spacing.spaceExtraLarge),
                     text = state.workoutName,
                     hint = stringResource(id = R.string.workout_name),
                     onValueChange = {

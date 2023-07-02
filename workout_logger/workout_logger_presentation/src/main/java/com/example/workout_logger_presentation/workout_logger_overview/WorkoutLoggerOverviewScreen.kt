@@ -3,17 +3,14 @@ package com.example.workout_logger_presentation.workout_logger_overview
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -21,7 +18,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -42,14 +38,14 @@ import com.example.workout_logger_presentation.workout_logger_overview.component
 import com.example.workout_logger_presentation.workout_logger_overview.components.WorkoutDialog
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
-import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @ExperimentalCoilApi
 @Composable
 fun WorkoutLoggerOverviewScreen(
-    onNavigateToCreate: () -> Unit,
-    onNavigateToWorkout: (workoutName: String, day: Int, month: Int, year: Int, workoutIds: String) -> Unit,
+    onNavigateToCreateWorkout: () -> Unit,
+    onNavigateToStartWorkout: (workoutName: String, day: Int, month: Int, year: Int, workoutIds: String) -> Unit,
+    onNavigateToCreateExercise: () -> Unit,
     viewModel: WorkoutLoggerOverviewModel = hiltViewModel()
 ) {
     val spacing = LocalSpacing.current
@@ -98,7 +94,7 @@ fun WorkoutLoggerOverviewScreen(
                 WorkoutDialog(
                     onDismiss = { showDialog.value = false },
                     onChooseWorkout = { workoutName, workoutIds ->
-                                        onNavigateToWorkout(
+                                        onNavigateToStartWorkout(
                                             workoutName,
                                             state.date.dayOfMonth,
                                             state.date.monthValue,
@@ -116,7 +112,7 @@ fun WorkoutLoggerOverviewScreen(
                         OptionsHeaderDialog(
                             onDismiss = { showOptionsHeaderDialog.value = false },
                             onClickCreate = {
-                                onNavigateToCreate()
+                                onNavigateToCreateWorkout()
                             },
                             onClickEdit = {
                                 /*TODO*/
@@ -130,7 +126,7 @@ fun WorkoutLoggerOverviewScreen(
                         OptionsHeaderDialog(
                             onDismiss = { showOptionsHeaderDialog.value = false },
                             onClickCreate = {
-                                /*TODO*/
+                                onNavigateToCreateExercise()
                             },
                             onClickEdit = {
                                 /*TODO*/

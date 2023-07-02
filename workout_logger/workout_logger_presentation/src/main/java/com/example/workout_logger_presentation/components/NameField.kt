@@ -3,6 +3,8 @@ package com.example.workout_logger_presentation.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +26,7 @@ import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hbaez.core_ui.LocalSpacing
 
@@ -33,6 +36,8 @@ fun NameField(
     text: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    height: Dp = LocalSpacing.current.spaceMedium,
+    singleLine: Boolean = true,
     hint: String,
     shouldShowHint: Boolean = false,
     onFocusChanged: (FocusState) -> Unit,
@@ -46,7 +51,7 @@ fun NameField(
             value = text,
             label = { Text(text = hint) } ,
             onValueChange = onValueChange,
-            singleLine = true,
+            singleLine = singleLine,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
                 onDone = {
@@ -61,9 +66,8 @@ fun NameField(
                     shape = RoundedCornerShape(5.dp)
                 )
                 .background(MaterialTheme.colors.background)
-                .width(IntrinsicSize.Max)
-                .padding(spacing.spaceMedium)
-                .padding(end = spacing.spaceExtraLarge)
+                .fillMaxWidth()
+                .heightIn(min=height)
                 .onFocusChanged { onFocusChanged(it) }
                 .testTag("workoutname_textfield")
         )
@@ -74,7 +78,7 @@ fun NameField(
                 fontWeight = FontWeight.Light,
                 color = Color.White,
                 modifier = Modifier
-                    .align(Alignment.CenterStart)
+//                    .align(Alignment.CenterStart)
                     .padding(start = spacing.spaceMedium)
             )
         }

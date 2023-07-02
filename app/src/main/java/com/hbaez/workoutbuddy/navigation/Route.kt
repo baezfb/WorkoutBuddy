@@ -20,6 +20,8 @@ object Route {
     const val WORKOUT_CREATE = "workout_create"
     const val WORKOUT_SEARCH = "workout_search"
 
+    const val EXERCISE_CREATE = "exercise_create"
+
     const val APP_SETTINGS = "app_settings"
 
     const val ANALYZER_OVERVIEW = "analyzer_overview"

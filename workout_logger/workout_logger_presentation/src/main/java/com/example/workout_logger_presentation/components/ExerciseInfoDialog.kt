@@ -2,11 +2,8 @@ package com.example.workout_logger_presentation.components
 
 import androidx.compose.material.AlertDialog
 import android.util.Log
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -127,7 +124,7 @@ fun ExerciseInfoDialog(
                 ){
                     Column {
                         Text(
-                            text = stringResource(id = R.string.exercise_descr),
+                            text = stringResource(id = R.string.descr),
                             style = MaterialTheme.typography.body2,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier

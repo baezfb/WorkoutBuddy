@@ -120,7 +120,7 @@ fun TrackableExerciseItem(
             ){
                 Column {
                     Text(
-                        text = stringResource(id = R.string.exercise_descr),
+                        text = stringResource(id = R.string.descr),
                         style = MaterialTheme.typography.body2,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier
