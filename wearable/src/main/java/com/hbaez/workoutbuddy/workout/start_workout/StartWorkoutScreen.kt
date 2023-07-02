@@ -213,7 +213,7 @@ fun StartWorkoutScreen(
                         WearButton(
                             text = stringResource(id = com.hbaez.core.R.string.finish),
                             onClick = {
-                                viewModel.onEvent(StartWorkoutEvent.OnSubmitWorkout(state.workoutName, state.loggerListStates, workoutTemplates.value, dayOfMonth, month, year))
+                                viewModel.onEvent(StartWorkoutEvent.OnSubmitWorkout(workoutName, state.loggerListStates, workoutTemplates.value, dayOfMonth, month, year))
                                       },
                             icon = Icons.Rounded.Done,
                             borderColor = androidx.compose.material.MaterialTheme.colors.primary,
