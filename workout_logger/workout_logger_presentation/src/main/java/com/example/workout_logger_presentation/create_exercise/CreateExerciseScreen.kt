@@ -1,13 +1,21 @@
 package com.example.workout_logger_presentation.create_exercise
 
+import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Checkbox
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
@@ -30,18 +38,27 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
+import coil.compose.ImagePainter.State.Empty.painter
+import coil.compose.rememberImagePainter
+import coil.decode.SvgDecoder
 import com.example.workout_logger_presentation.components.NameField
 import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
 @ExperimentalCoilApi
@@ -54,6 +71,7 @@ fun CreateExerciseScreen() {
     Column(
         modifier = Modifier
             .padding(spacing.spaceMedium)
+            .verticalScroll(rememberScrollState())
             .fillMaxSize()
     ) {
         Row(
@@ -188,19 +206,143 @@ fun CreateExerciseScreen() {
             )
 
             Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = "PRIMARY",
-                    modifier = Modifier.weight(1f),
+//                    modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.subtitle1
                 )
                 Text(
                     text = "SECONDARY",
-                    modifier = Modifier.weight(1f),
+//                    modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.subtitle1
                 )
+            }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .size(spacing.spaceExtraExtraLarge + spacing.spaceExtraExtraLarge)
+                    .background(color = MaterialTheme.colors.surface)
+                    .clip(
+                        RoundedCornerShape(8.dp)
+                    )
+                    .border(3.dp, MaterialTheme.colors.primary, RoundedCornerShape(6.dp))
+            ) {
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = true, /*TODO*/
+                            onCheckedChange = { /*TODO*/ },
+                            modifier = Modifier.padding(end = spacing.spaceSmall)
+                        )
+                        Text(
+                            text = "Biceps Brachii", /*TODO*/
+                            modifier = Modifier.padding(end = spacing.spaceMedium)
+                        )
+
+                        Checkbox(
+                            checked = false, /*TODO*/
+                            onCheckedChange = { /*TODO*/ },
+                            modifier = Modifier.padding(end = spacing.spaceSmall)
+                        )
+                    }
+                    repeat(20) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Checkbox(
+                                checked = false, /*TODO*/
+                                onCheckedChange = { /*TODO*/ },
+                                modifier = Modifier.padding(end = spacing.spaceSmall)
+                            )
+                            Text(
+                                text = "Biceps Brachii", /*TODO*/
+                                modifier = Modifier.padding(end = spacing.spaceMedium)
+                            )
+
+                            Checkbox(
+                                checked = false, /*TODO*/
+                                onCheckedChange = { /*TODO*/ },
+                                modifier = Modifier.padding(end = spacing.spaceSmall)
+                            )
+                        }
+                    }
+                }
+            }
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = if(true /*TODO*/){ painterResource(id = R.drawable.ic_muscular_system_front) } else { painterResource(id = R.drawable.ic_muscular_system_back) },
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .size(300.dp)
+                        .clip(RoundedCornerShape(topStart = 5.dp))
+                )
+                if(true /*TODO*/){
+                    Image(
+                            painter = rememberImagePainter(
+                                data = "https://wger.de/static/images/muscles/main/muscle-1.svg",
+                                builder = {
+                                    crossfade(true)
+                                    decoder(SvgDecoder(context = context))
+                                }
+                            ),
+                            contentDescription = "Biceps Brachii",
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .size(300.dp)
+                                .clip(RoundedCornerShape(topStart = 5.dp))
+                        )
+//                    exercise.image_url_main.onEach {
+//                        Log.println(Log.DEBUG, "!!!!!!!!!!!!", ("https://wger.de$it").toString())
+//                        Image(
+//                            painter = rememberImagePainter(
+//                                data = "https://wger.de$it",
+//                                builder = {
+//                                    crossfade(true)
+//                                    decoder(SvgDecoder(context = context))
+//                                }
+//                            ),
+//                            contentDescription = it ?: exercise.name,
+//                            contentScale = ContentScale.Fit,
+//                            modifier = Modifier
+//                                .size(200.dp)
+//                                .clip(RoundedCornerShape(topStart = 5.dp))
+//                        )
+//                    }
+                }
+                if(true/*TODO*/){
+                    Image(
+                        painter = rememberImagePainter(
+                            data = "https://wger.de/static/images/muscles/secondary/muscle-13.svg",
+                            builder = {
+                                crossfade(true)
+                                decoder(SvgDecoder(context = context))
+                            }
+                        ),
+                        contentDescription = "Brachialis",
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .size(300.dp)
+                            .clip(RoundedCornerShape(topStart = 5.dp))
+                    )
+//                    exercise.image_url_secondary.onEach {
+//                        Log.println(Log.DEBUG, "!!!!!!!!!!!!", ("https://wger.de$it").toString())
+//                    }
+                }
             }
         }
     }
