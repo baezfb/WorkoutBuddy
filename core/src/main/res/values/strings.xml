@@ -96,6 +96,7 @@
     <string name="create_exercise">Create Exercise</string>
     <string name="exercise_name">Exercise Name</string>
     <string name="edit_exercise">Edit Exercise</string>
+    <string name="exercise_name_taken">Exercise name already exists.</string>
     <string name="login_header">Log in to your account</string>
     <string name="login">Login</string>
     <string name="email">Email Address</string>

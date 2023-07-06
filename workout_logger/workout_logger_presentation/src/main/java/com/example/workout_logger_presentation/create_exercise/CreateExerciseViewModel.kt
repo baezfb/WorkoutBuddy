@@ -15,7 +15,11 @@ import com.hbaez.user_auth_presentation.model.ExerciseTemplate
 import com.hbaez.user_auth_presentation.model.service.LogService
 import com.hbaez.user_auth_presentation.model.service.StorageService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,6 +36,7 @@ class CreateExerciseViewModel @Inject constructor(
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
+    private var checkExerciseName: Job? = null
     fun onEvent(event: CreateExerciseEvent) {
         when(event) {
             is CreateExerciseEvent.OnUpdateExerciseName -> {
@@ -83,6 +88,7 @@ class CreateExerciseViewModel @Inject constructor(
                         }
                         return@breaking
                     }
+
                     if(state.primaryMuscles.isEmpty()){
                         viewModelScope.launch {
                             _uiEvent.send(
@@ -93,32 +99,45 @@ class CreateExerciseViewModel @Inject constructor(
                         }
                         return@breaking
                     }
-                    viewModelScope.launch {
-                        val docId = storageService.saveExerciseTemplate(
-                            ExerciseTemplate(
-                                name = state.exerciseName,
-                                description = state.description,
-                                muscle_name_main = state.primaryMuscles.joinToString(",") { it.name },
-                                muscle_name_secondary = state.secondaryMuscles.joinToString(",") { it.name },
-                                image_url_main = state.primaryMuscles.joinToString(",") { it.imageURL },
-                                image_url_secondary = state.secondaryMuscles.joinToString(",") { it.imageURL }
+
+                    checkExerciseName?.cancel()
+                    exerciseTrackerUseCases
+                        .getExerciseForName(state.exerciseName)
+                        .onEach {
+                            if(it.isNotEmpty()) {
+                                _uiEvent.send(
+                                    UiEvent.ShowSnackbar(
+                                        UiText.StringResource(R.string.exercise_name_taken)
+                                    )
+                                )
+                                return@onEach
+                            }
+                            val docId = storageService.saveExerciseTemplate(
+                                ExerciseTemplate(
+                                    name = state.exerciseName,
+                                    description = state.description,
+                                    muscle_name_main = state.primaryMuscles.joinToString(",") { it.name },
+                                    muscle_name_secondary = state.secondaryMuscles.joinToString(",") { it.name },
+                                    image_url_main = state.primaryMuscles.joinToString(",") { it.imageURL },
+                                    image_url_secondary = state.secondaryMuscles.joinToString(",") { it.imageURL }
+                                )
                             )
-                        )
-                        exerciseTrackerUseCases.addExercise(
-                            id = docId,
-                            exerciseName = state.exerciseName,
-                            description = state.description,
-                            primaryMuscles = state.primaryMuscles.joinToString(",") { it.name },
-                            secondaryMuscles = state.secondaryMuscles.joinToString(",") { it.name },
-                            primaryURL = state.primaryMuscles.map { it.imageURL },
-                            secondaryURL = state.secondaryMuscles.map { it.imageURL.replace("main", "secondary") },
-                            image_1 = null,
-                            image_2 = null,
-                            image_3 = null,
-                            image_4 = null,
-                        )
-                        _uiEvent.send(UiEvent.NavigateUp)
-                    }
+                            exerciseTrackerUseCases.addExercise(
+                                id = docId,
+                                exerciseName = state.exerciseName,
+                                description = state.description,
+                                primaryMuscles = state.primaryMuscles.joinToString(",") { it.name },
+                                secondaryMuscles = state.secondaryMuscles.joinToString(",") { it.name },
+                                primaryURL = state.primaryMuscles.map { it.imageURL },
+                                secondaryURL = state.secondaryMuscles.map { it.imageURL.replace("main", "secondary") },
+                                image_1 = null,
+                                image_2 = null,
+                                image_3 = null,
+                                image_4 = null,
+                            )
+                            _uiEvent.send(UiEvent.NavigateUp)
+                        }
+                        .launchIn(viewModelScope)
                 }
             }
         }
