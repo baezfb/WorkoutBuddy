@@ -11,6 +11,7 @@ interface StorageService {
     val userPrefs: Flow<UserInfo>
     val tasks: Flow<List<Task>>
     val workouts: Flow<List<WorkoutTemplate>>
+    val exercises: Flow<List<ExerciseTemplate>>
 
     suspend fun getTask(taskId: String): Task?
     suspend fun getCompletedWorkoutByDate(date: String): List<CompletedWorkout>

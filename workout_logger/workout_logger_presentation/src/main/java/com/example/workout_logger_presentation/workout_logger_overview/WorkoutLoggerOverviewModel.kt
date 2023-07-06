@@ -45,9 +45,11 @@ class WorkoutLoggerOverviewModel @Inject constructor(
     private var getWorkoutNames: Job? = null
 
     val workoutTemplates = storageService.workouts
+    val trackedExercises = storageService.exercises
 
     init {
         refreshWorkouts()
+        refreshExercises()
     }
     fun onEvent(event: WorkoutLoggerOverviewEvent) {
         when(event) {
@@ -99,6 +101,29 @@ class WorkoutLoggerOverviewModel @Inject constructor(
             state = state.copy(
                 completedWorkoutIsExpanded = MutableList(completedWorkouts.size) { false }
             )
+        }
+    }
+
+    private fun refreshExercises(){
+        viewModelScope.launch {
+            trackedExercises.collect{ list ->
+                list.onEach {
+                    Log.println(Log.DEBUG, "tracked exercises ID", it.id)
+                    exerciseTrackerUseCases.addExercise(
+                        id = it.id,
+                        exerciseName = it.name,
+                        description = it.description,
+                        primaryMuscles = it.muscle_name_main,
+                        secondaryMuscles = it.muscle_name_secondary,
+                        primaryURL = it.image_url_main.split(",").map { url -> url.trim() },
+                        secondaryURL = it.image_url_secondary.split(",").map { url -> url.trim() },
+                        image_1 = null,
+                        image_2 = null,
+                        image_3 = null,
+                        image_4 = null,
+                    )
+                }
+            }
         }
     }
 

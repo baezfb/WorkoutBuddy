@@ -103,8 +103,8 @@ class CreateExerciseViewModel @Inject constructor(
                     checkExerciseName?.cancel()
                     exerciseTrackerUseCases
                         .getExerciseForName(state.exerciseName)
-                        .onEach {
-                            if(it.isNotEmpty()) {
+                        .onEach { trackedExerciseList ->
+                            if(trackedExerciseList.isNotEmpty()) {
                                 _uiEvent.send(
                                     UiEvent.ShowSnackbar(
                                         UiText.StringResource(R.string.exercise_name_taken)

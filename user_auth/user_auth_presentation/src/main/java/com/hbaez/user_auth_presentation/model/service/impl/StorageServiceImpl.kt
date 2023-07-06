@@ -60,6 +60,30 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                     }
             }
 
+    override val exercises: Flow<List<ExerciseTemplate>>
+        get() = auth.currentUser.flatMapLatest { user ->
+            exerciseTemplateCollection(user.id)
+                .snapshots()
+                .map { snapshot ->
+                    snapshot.documents.map {
+                        ExerciseTemplate(
+                            id = it.id,
+                            name = it.get("name").toString(),
+                            description = it.get("description").toString(),
+                            muscle_name_main = it.get("muscle_name_main").toString(),
+                            muscle_name_secondary = it.get("muscle_name_secondary").toString(),
+                            image_url_main = it.get("image_url_main").toString(),
+                            image_url_secondary = it.get("image_url_secondary").toString(),
+                            image_url = it.get("image_url").toString(),
+                            is_front = it.get("_front").toString(),
+                            is_main = it.get("_main").toString(),
+                            muscles = it.get("muscles").toString(),
+                            muscles_secondary = it.get("muscles_secondary").toString()
+                        )
+                    }
+                }
+        }
+
     override suspend fun getTask(taskId: String): Task? =
         userInfoCollection(auth.currentUserId).document(taskId).get().await().toObject()
 
