@@ -185,7 +185,7 @@ class DefaultPreferences(
     override fun newTrackedExercise(trackedExercise: TrackedExercise) {
         sharedPref.edit()
             .putInt(Preferences.KEY_ROW_ID, trackedExercise.rowId)
-            .putInt(Preferences.KEY_EXERCISE_ID, trackedExercise.id!!)
+            .putString(Preferences.KEY_EXERCISE_ID, trackedExercise.id!!)
             .putString(Preferences.KEY_EXERCISE_NAME, trackedExercise.name)
             .putInt(Preferences.KEY_EXERCISE_BASE, trackedExercise.exerciseBase)
             .putString(Preferences.KEY_EXERCISE_DESCRIPTION, trackedExercise.description)
@@ -204,7 +204,7 @@ class DefaultPreferences(
 
     override fun loadTrackedExercise(): TrackedExercise {
         val rowId = sharedPref.getInt(Preferences.KEY_ROW_ID, -1)
-        val id = sharedPref.getInt(Preferences.KEY_EXERCISE_ID, -1)
+        val id = sharedPref.getString(Preferences.KEY_EXERCISE_ID, "")
         val name = sharedPref.getString(Preferences.KEY_EXERCISE_NAME, "")
         val exerciseBase = sharedPref.getInt(Preferences.KEY_EXERCISE_BASE, -1)
         val description = sharedPref.getString(Preferences.KEY_EXERCISE_DESCRIPTION, "")

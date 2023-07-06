@@ -2,6 +2,7 @@ package com.example.workout_logger_domain.di
 
 import com.example.workout_logger_domain.repository.ExerciseRepository
 import com.example.workout_logger_domain.use_case.AddCompletedWorkout
+import com.example.workout_logger_domain.use_case.AddExercise
 import com.example.workout_logger_domain.use_case.AddWorkout
 import com.example.workout_logger_domain.use_case.CreateWorkoutUseCases
 import com.example.workout_logger_domain.use_case.ExerciseTrackerUseCases
@@ -30,7 +31,8 @@ object ExerciseDomainModule {
             getWorkouts = GetWorkouts(repository),
             getWorkoutsByName = GetWorkoutsByName(repository),
             addCompletedWorkout = AddCompletedWorkout(repository),
-            getWorkoutsForDate = GetWorkoutsForDate(repository)
+            getWorkoutsForDate = GetWorkoutsForDate(repository),
+            addExercise = AddExercise(repository)
         )
     }
 

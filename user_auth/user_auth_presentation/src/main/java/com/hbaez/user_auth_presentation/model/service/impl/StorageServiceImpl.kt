@@ -14,13 +14,13 @@ import com.hbaez.core.domain.model.Gender
 import com.hbaez.core.domain.model.GoalType
 import com.hbaez.core.domain.model.UserInfo
 import com.hbaez.user_auth_presentation.model.CompletedWorkout
+import com.hbaez.user_auth_presentation.model.ExerciseTemplate
 import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.asDeferred
@@ -48,7 +48,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                                 id = it.get("id").toString(),
                                 name = it.get("name").toString(),
                                 exerciseName = it.get("exerciseName").toString(),
-                                exerciseId = it.get("exerciseId").toString().toInt(),
+                                exerciseId = it.get("exerciseId").toString(),
                                 sets = it.get("sets").toString().toInt(),
                                 rest = it.get("rest").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
                                 reps = it.get("reps").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
@@ -71,7 +71,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                     workoutName = document.get("workoutName").toString(),
                     workoutId = document.get("workoutId").toString().toInt(),
                     exerciseName = document.get("exerciseName").toString(),
-                    exerciseId = document.get("exerciseId").toString().toInt(),
+                    exerciseId = document.get("exerciseId").toString(),
                     sets = document.get("sets").toString().toInt(),
                     rest = document.get("rest").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
                     reps = document.get("reps").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
@@ -122,6 +122,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     override suspend fun saveCompletedWorkout(completedWorkout: CompletedWorkout, date: String): String =
         trace(SAVE_COMPLETED_WORKOUT) { completedWorkoutCollection(auth.currentUserId, date).add(completedWorkout).await().id }
 
+    override suspend fun saveExerciseTemplate(exerciseTemplate: ExerciseTemplate): String =
+        trace(SAVE_EXERCISE_TEMPLATE) { exerciseTemplateCollection(auth.currentUserId).add(exerciseTemplate).await().id;}
+
     override suspend fun save(task: Task): String =
         trace(SAVE_TASK_TRACE) { userInfoCollection(auth.currentUserId).add(task).await().id }
 
@@ -150,6 +153,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     private fun completedWorkoutCollection(uid: String, date: String): CollectionReference =
         firestore.collection(USER_COLLECTION).document(uid).collection(COMPLETED_WORKOUT).document(date).collection(COMPLETED_WORKOUT)
 
+    private fun exerciseTemplateCollection(uid: String): CollectionReference =
+        firestore.collection(USER_COLLECTION).document(uid).collection(EXERCISE_TEMPLATE)
+
     companion object {
         private const val USER_COLLECTION = "users"
         private const val TASK_COLLECTION = "tasks"
@@ -158,8 +164,10 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         private const val SAVE_TASK_TRACE = "saveTask"
         private const val SAVE_WORKOUT_TEMPLATE = "saveWorkoutTemplate"
         private const val SAVE_COMPLETED_WORKOUT = "saveCompletedWorkout"
+        private const val SAVE_EXERCISE_TEMPLATE = "saveExerciseTemplate"
         private const val UPDATE_TASK_TRACE = "updateTask"
         private const val WORKOUT_TEMPLATE = "workouts"
         private const val COMPLETED_WORKOUT = "completed_workouts"
+        private const val EXERCISE_TEMPLATE = "exercises"
     }
 }

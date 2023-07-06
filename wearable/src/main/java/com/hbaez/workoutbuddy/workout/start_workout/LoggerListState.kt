@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 data class LoggerListState(
     val id: Int = 0,
     val exerciseName: String = "",
-    val exerciseId: Int?,
+    val exerciseId: String?,
     val timerStatus: TimerStatus = TimerStatus.START,
     val currentSet: Int = 0,
     val sets: String = "",

@@ -2,7 +2,7 @@ package com.hbaez.core.domain.model
 
 data class TrackedExercise(
     val rowId: Int,
-    val id: Int?,
+    val id: String?,
     val name: String,
     val exerciseBase: Int,
     val description: String?,

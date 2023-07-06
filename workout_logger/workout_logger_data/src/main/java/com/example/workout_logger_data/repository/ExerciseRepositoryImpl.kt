@@ -3,6 +3,7 @@ package com.example.workout_logger_data.repository
 import com.example.workout_logger_data.local.ExerciseDao
 import com.example.workout_logger_data.mapper.toCompletedWorkout
 import com.example.workout_logger_data.mapper.toCompletedWorkoutEntity
+import com.example.workout_logger_data.mapper.toExerciseEntity
 import com.example.workout_logger_data.mapper.toTrackedExercise
 import com.example.workout_logger_data.mapper.toTrackedWorkout
 import com.example.workout_logger_data.mapper.toWorkoutEntity
@@ -57,5 +58,9 @@ class ExerciseRepositoryImpl(
         ).map { entities ->
             entities.map { it.toCompletedWorkout() }
         }
+    }
+
+    override suspend fun insertTrackedExercise(trackedExercise: TrackedExercise) {
+        dao.insertExercise(trackedExercise.toExerciseEntity())
     }
 }

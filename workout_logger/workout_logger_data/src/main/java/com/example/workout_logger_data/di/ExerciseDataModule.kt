@@ -33,12 +33,14 @@ object ExerciseDataModule {
     @Provides
     @Singleton
     fun provideExerciseDatabase(app: Application): ExerciseDatabase {
+
         return Room.databaseBuilder(
             app,
             ExerciseDatabase::class.java,
             "exercise_db"
         )
             .createFromAsset("database/exercise.db")
+            .fallbackToDestructiveMigration()
 //            .createFromAsset("database/muscles.tsv")
             .build()
     }

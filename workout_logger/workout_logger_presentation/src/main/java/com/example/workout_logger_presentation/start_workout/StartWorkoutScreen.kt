@@ -1,7 +1,6 @@
 package com.example.workout_logger_presentation.start_workout
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,7 +39,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.annotation.ExperimentalCoilApi
 import com.example.workout_logger_presentation.components.ExerciseInfoDialog
 import com.example.workout_logger_presentation.components.IconButton
-import com.example.workout_logger_presentation.create_workout.CreateWorkoutEvent
 import com.example.workout_logger_presentation.start_workout.components.Timer
 import com.example.workout_logger_presentation.start_workout.components.ExerciseCard
 import com.example.workout_logger_presentation.start_workout.components.NotificationUtil

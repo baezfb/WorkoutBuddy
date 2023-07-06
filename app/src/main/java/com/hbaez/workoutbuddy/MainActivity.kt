@@ -378,7 +378,10 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
 
                         composable(Route.EXERCISE_CREATE) {
                             CreateExerciseScreen(
-
+                                scaffoldState = scaffoldState,
+                                onNavigateUp = {
+                                    navController.navigateUp()
+                                }
                             )
                         }
 

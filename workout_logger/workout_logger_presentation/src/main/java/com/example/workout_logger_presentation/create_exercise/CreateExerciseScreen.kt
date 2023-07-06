@@ -20,12 +20,14 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -51,22 +53,45 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter.State.Empty.painter
 import coil.compose.rememberImagePainter
 import coil.decode.SvgDecoder
+import com.example.workout_logger_presentation.components.AddButton
 import com.example.workout_logger_presentation.components.NameField
+import com.example.workout_logger_presentation.create_workout.CreateWorkoutEvent
 import com.hbaez.core.R
+import com.hbaez.core.util.UiEvent
 import com.hbaez.core_ui.LocalSpacing
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
 @ExperimentalCoilApi
 @Composable
-fun CreateExerciseScreen() {
+fun CreateExerciseScreen(
+    scaffoldState: ScaffoldState,
+    onNavigateUp: () -> Unit,
+    viewModel: CreateExerciseViewModel = hiltViewModel()
+) {
     val spacing = LocalSpacing.current
+    val state = viewModel.state
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(Unit){
+        viewModel.uiEvent.collect{ event ->
+            when(event) {
+                is UiEvent.ShowSnackbar -> {
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = event.message.asString(context)
+                    )
+                }
+                is UiEvent.NavigateUp -> onNavigateUp()
+                else -> Unit
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -78,7 +103,7 @@ fun CreateExerciseScreen() {
             modifier = Modifier.fillMaxWidth()
         ) {
             OutlinedButton(
-                onClick = { /* Handle add picture button click */ },
+                onClick = { /* TODO Handle add picture button click */ },
                 shape = CircleShape,
                 colors = ButtonDefaults.outlinedButtonColors(backgroundColor = MaterialTheme.colors.background, contentColor = MaterialTheme.colors.primary),
                 modifier = Modifier
@@ -98,10 +123,10 @@ fun CreateExerciseScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(spacing.spaceMedium),
-                text = "", /*TODO*/
+                text = state.exerciseName,
                 hint = stringResource(id = R.string.exercise_name),
                 onValueChange = {
-//                    viewModel.onEvent(CreateWorkoutEvent.OnWorkoutNameChange(it)) /*TODO*/
+                    viewModel.onEvent(CreateExerciseEvent.OnUpdateExerciseName(it))
                 },
                 onFocusChanged = {
 //                    viewModel.onEvent(CreateWorkoutEvent.OnWorkoutNameFocusChange(it.isFocused)) /*TODO*/
@@ -112,14 +137,13 @@ fun CreateExerciseScreen() {
         Spacer(modifier = Modifier.height(spacing.spaceMedium))
         NameField(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(spacing.spaceMedium),
+                .fillMaxWidth(),
             height = spacing.spaceExtraExtraLarge + spacing.spaceLarge,
             singleLine = false,
-            text = "", /*TODO*/
+            text = state.description,
             hint = stringResource(id = R.string.description),
             onValueChange = {
-//                    viewModel.onEvent(CreateWorkoutEvent.OnWorkoutNameChange(it)) /*TODO*/
+                    viewModel.onEvent(CreateExerciseEvent.OnUpdateDescription(it))
             },
             onFocusChanged = {
 //                    viewModel.onEvent(CreateWorkoutEvent.OnWorkoutNameFocusChange(it.isFocused)) /*TODO*/
@@ -225,125 +249,170 @@ fun CreateExerciseScreen() {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .size(spacing.spaceExtraExtraLarge + spacing.spaceExtraExtraLarge)
+                    .size(spacing.spaceExtraExtraLarge + spacing.spaceExtraLarge)
                     .background(color = MaterialTheme.colors.surface)
                     .clip(
                         RoundedCornerShape(8.dp)
                     )
-                    .border(3.dp, MaterialTheme.colors.primary, RoundedCornerShape(6.dp))
+                    .border(4.dp, Color.Gray, RoundedCornerShape(4.dp))
             ) {
-                item {
+                items(state.muscles.size) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = spacing.spaceSmall),
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Checkbox(
-                            checked = true, /*TODO*/
-                            onCheckedChange = { /*TODO*/ },
+                            checked = state.primaryMuscles.contains(state.muscles[it]),
+                            onCheckedChange = { checked ->
+                                  if(checked){
+                                      viewModel.onEvent(CreateExerciseEvent.OnCheckboxAdd(state.muscles[it], true))
+                                  } else {
+                                      viewModel.onEvent(CreateExerciseEvent.OnCheckboxRemove(state.muscles[it], true))
+                                  }
+                              },
+                            enabled = !state.secondaryMuscles.contains(state.muscles[it]),
                             modifier = Modifier.padding(end = spacing.spaceSmall)
                         )
                         Text(
-                            text = "Biceps Brachii", /*TODO*/
+                            text = state.muscles[it].name,
                             modifier = Modifier.padding(end = spacing.spaceMedium)
                         )
 
                         Checkbox(
-                            checked = false, /*TODO*/
-                            onCheckedChange = { /*TODO*/ },
+                            checked = state.secondaryMuscles.contains(state.muscles[it]),
+                            onCheckedChange = { checked ->
+                                if(checked){
+                                    viewModel.onEvent(CreateExerciseEvent.OnCheckboxAdd(state.muscles[it], false))
+                                } else {
+                                    viewModel.onEvent(CreateExerciseEvent.OnCheckboxRemove(state.muscles[it], false))
+                                }
+                            },
+                            enabled = !state.primaryMuscles.contains(state.muscles[it]),
                             modifier = Modifier.padding(end = spacing.spaceSmall)
                         )
                     }
-                    repeat(20) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Checkbox(
-                                checked = false, /*TODO*/
-                                onCheckedChange = { /*TODO*/ },
-                                modifier = Modifier.padding(end = spacing.spaceSmall)
-                            )
-                            Text(
-                                text = "Biceps Brachii", /*TODO*/
-                                modifier = Modifier.padding(end = spacing.spaceMedium)
-                            )
-
-                            Checkbox(
-                                checked = false, /*TODO*/
-                                onCheckedChange = { /*TODO*/ },
-                                modifier = Modifier.padding(end = spacing.spaceSmall)
-                            )
-                        }
-                    }
                 }
             }
-            Box(
+            Spacer(modifier = Modifier.height(spacing.spaceMedium))
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Image(
-                    painter = if(true /*TODO*/){ painterResource(id = R.drawable.ic_muscular_system_front) } else { painterResource(id = R.drawable.ic_muscular_system_back) },
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .size(300.dp)
-                        .clip(RoundedCornerShape(topStart = 5.dp))
-                )
-                if(true /*TODO*/){
+                Box(
+                    modifier = Modifier.fillMaxWidth(.5f),
+                    contentAlignment = Alignment.Center
+                ) {
                     Image(
-                            painter = rememberImagePainter(
-                                data = "https://wger.de/static/images/muscles/main/muscle-1.svg",
-                                builder = {
-                                    crossfade(true)
-                                    decoder(SvgDecoder(context = context))
-                                }
-                            ),
-                            contentDescription = "Biceps Brachii",
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier
-                                .size(300.dp)
-                                .clip(RoundedCornerShape(topStart = 5.dp))
-                        )
-//                    exercise.image_url_main.onEach {
-//                        Log.println(Log.DEBUG, "!!!!!!!!!!!!", ("https://wger.de$it").toString())
-//                        Image(
-//                            painter = rememberImagePainter(
-//                                data = "https://wger.de$it",
-//                                builder = {
-//                                    crossfade(true)
-//                                    decoder(SvgDecoder(context = context))
-//                                }
-//                            ),
-//                            contentDescription = it ?: exercise.name,
-//                            contentScale = ContentScale.Fit,
-//                            modifier = Modifier
-//                                .size(200.dp)
-//                                .clip(RoundedCornerShape(topStart = 5.dp))
-//                        )
-//                    }
-                }
-                if(true/*TODO*/){
-                    Image(
-                        painter = rememberImagePainter(
-                            data = "https://wger.de/static/images/muscles/secondary/muscle-13.svg",
-                            builder = {
-                                crossfade(true)
-                                decoder(SvgDecoder(context = context))
-                            }
-                        ),
-                        contentDescription = "Brachialis",
+                        painter = painterResource(id = R.drawable.ic_muscular_system_front), //else { painterResource(id = R.drawable.ic_muscular_system_back) },
+                        contentDescription = null,
                         contentScale = ContentScale.Fit,
                         modifier = Modifier
                             .size(300.dp)
                             .clip(RoundedCornerShape(topStart = 5.dp))
                     )
-//                    exercise.image_url_secondary.onEach {
-//                        Log.println(Log.DEBUG, "!!!!!!!!!!!!", ("https://wger.de$it").toString())
-//                    }
+                    state.primaryMuscles.forEach {
+                        if(it.isFront){
+                            Image(
+                                painter = rememberImagePainter(
+                                    data = "https://wger.de${it.imageURL}",
+                                    builder = {
+                                        crossfade(true)
+                                        decoder(SvgDecoder(context = context))
+                                    }
+                                ),
+                                contentDescription = it.name,
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier
+                                    .size(300.dp)
+                                    .clip(RoundedCornerShape(topStart = 5.dp))
+                            )
+                        }
+                    }
+                    state.secondaryMuscles.forEach {
+                        if(it.isFront){
+                            Log.println(Log.DEBUG, "test image url","https://wger.de${it.imageURL}")
+                            Image(
+                                painter = rememberImagePainter(
+                                    data = "https://wger.de${it.imageURL}".replace("main", "secondary"),
+                                    builder = {
+                                        crossfade(true)
+                                        decoder(SvgDecoder(context = context))
+                                    }
+                                ),
+                                contentDescription = it.name,
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier
+                                    .size(300.dp)
+                                    .clip(RoundedCornerShape(topStart = 5.dp))
+                            )
+                        }
+                    }
+                }
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_muscular_system_back), //else { painterResource(id = R.drawable.ic_muscular_system_back) },
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .size(300.dp)
+                            .clip(RoundedCornerShape(topStart = 5.dp))
+                    )
+                    state.primaryMuscles.forEach {
+                        if(!it.isFront){
+                            Image(
+                                painter = rememberImagePainter(
+                                    data = "https://wger.de${it.imageURL}",
+                                    builder = {
+                                        crossfade(true)
+                                        decoder(SvgDecoder(context = context))
+                                    }
+                                ),
+                                contentDescription = it.name,
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier
+                                    .size(300.dp)
+                                    .clip(RoundedCornerShape(topStart = 5.dp))
+                            )
+                        }
+                    }
+                    state.secondaryMuscles.forEach {
+                        if(!it.isFront){
+                            Image(
+                                painter = rememberImagePainter(
+                                    data = "https://wger.de${it.imageURL}".replace("main", "secondary"),
+                                    builder = {
+                                        crossfade(true)
+                                        decoder(SvgDecoder(context = context))
+                                    }
+                                ),
+                                contentDescription = it.name,
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier
+                                    .size(300.dp)
+                                    .clip(RoundedCornerShape(topStart = 5.dp))
+                            )
+                        }
+                    }
                 }
             }
+            Spacer(modifier = Modifier.height(spacing.spaceMedium))
+            AddButton(
+                text = stringResource(id = R.string.submit),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(start = spacing.spaceExtraExtraLarge, end = spacing.spaceSmall),
+                onClick = {
+                    viewModel.onEvent(CreateExerciseEvent.OnSubmitExercise)
+                },
+                icon = Icons.Default.Done
+            )
         }
     }
 }

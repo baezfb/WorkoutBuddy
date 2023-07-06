@@ -117,6 +117,7 @@ fun SearchExerciseScreen(
             items(state.trackableExercise) {
                 TrackableExerciseItem(
                     trackableExerciseState = it,
+                    muscles = state.muscles,
                     onClick = {
                               viewModel.onEvent(SearchExerciseEvent.OnToggleTrackableExercise(it))
                     },
