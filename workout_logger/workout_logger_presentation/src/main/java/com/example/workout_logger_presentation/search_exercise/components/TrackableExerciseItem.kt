@@ -202,7 +202,9 @@ fun TrackableExerciseItem(
                     )
                     Spacer(modifier = Modifier.height(spacing.spaceMedium))
                     Row(
-                        modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.CenterHorizontally)
                     ){
                         Log.println(Log.DEBUG, "image urls", exercise.image_url_main.toString())
                         Log.println(Log.DEBUG, "image urls", exercise.image_url_secondary.toString())
@@ -225,7 +227,7 @@ fun TrackableExerciseItem(
                                         Log.println(Log.DEBUG, "image urls", "second if")
                                         Image(
                                             painter = rememberImagePainter(
-                                                data = "https://wger.de$image_url",
+                                                data = "https://wger.de${image_url!!.trim()}",
                                                 builder = {
                                                     crossfade(true)
                                                     decoder(SvgDecoder(context = context))
@@ -247,7 +249,7 @@ fun TrackableExerciseItem(
                                             Log.println(Log.DEBUG, "image urls", "second if")
                                             Image(
                                                 painter = rememberImagePainter(
-                                                    data = "https://wger.de$image_url",
+                                                    data = "https://wger.de${image_url!!.trim()}",
                                                     builder = {
                                                         crossfade(true)
                                                         decoder(SvgDecoder(context = context))
@@ -282,7 +284,7 @@ fun TrackableExerciseItem(
                                             Log.println(Log.DEBUG, "image urls", "second if")
                                             Image(
                                                 painter = rememberImagePainter(
-                                                    data = "https://wger.de$image_url",
+                                                    data = "https://wger.de${image_url!!.trim()}",
                                                     builder = {
                                                         crossfade(true)
                                                         decoder(SvgDecoder(context = context))
@@ -304,7 +306,7 @@ fun TrackableExerciseItem(
                                             Log.println(Log.DEBUG, "image urls", "second if")
                                             Image(
                                                 painter = rememberImagePainter(
-                                                    data = "https://wger.de$image_url",
+                                                    data = "https://wger.de${image_url!!.trim()}",
                                                     builder = {
                                                         crossfade(true)
                                                         decoder(SvgDecoder(context = context))

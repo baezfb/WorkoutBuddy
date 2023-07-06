@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import coil.decode.SvgDecoder
+import com.example.workout_logger_presentation.create_exercise.model.Muscle
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
 
@@ -62,6 +63,24 @@ fun ExerciseInfoDialog(
         0f, 0f, -1f, 0f, 255f,
         0f, 0f, 0f, 1f, 0f
     ) // inverts color
+
+    val muscles: List<Muscle> = listOf(
+        Muscle("Anterior deltoid", "/static/images/muscles/main/muscle-2.svg", true),
+        Muscle("Biceps brachii", "/static/images/muscles/main/muscle-1.svg", true),
+        Muscle("Biceps femoris", "/static/images/muscles/main/muscle-11.svg", false),
+        Muscle("Brachialis", "/static/images/muscles/main/muscle-13.svg", true),
+        Muscle("Gastrocnemius", "/static/images/muscles/main/muscle-7.svg", false),
+        Muscle("Gluteus maximus", "/static/images/muscles/main/muscle-8.svg", false),
+        Muscle("Latissimus dorsi", "/static/images/muscles/main/muscle-12.svg", false),
+        Muscle("Obliquus externus abdominis", "/static/images/muscles/main/muscle-14.svg", true),
+        Muscle("Pectoralis major", "/static/images/muscles/main/muscle-4.svg", true),
+        Muscle("Quadriceps femoris", "/static/images/muscles/main/muscle-10.svg", true),
+        Muscle("Rectus abdominis", "/static/images/muscles/main/muscle-6.svg", true),
+        Muscle("Serratus anterior", "/static/images/muscles/main/muscle-3.svg", true),
+        Muscle("Soleus", "/static/images/muscles/main/muscle-15.svg", false),
+        Muscle("Trapezius", "/static/images/muscles/main/muscle-9.svg", false),
+        Muscle("Triceps brachii", "/static/images/muscles/main/muscle-5.svg", false)
+    )
 
     AlertDialog(
         modifier = modifier
@@ -208,28 +227,34 @@ fun ExerciseInfoDialog(
                                 .fillMaxWidth()
                                 .align(Alignment.CenterHorizontally)
                         ){
-                            if(!exercise.is_front.isNullOrEmpty()){
-                                Box {
-                                    Image(
-                                        painter = if(exercise.is_front.equals("1.0")){ painterResource(id = R.drawable.ic_muscular_system_front) } else { painterResource(id = R.drawable.ic_muscular_system_back) },
-                                        contentDescription = null,
-                                        contentScale = ContentScale.Fit,
-                                        modifier = Modifier
-                                            .size(200.dp)
-                                            .clip(RoundedCornerShape(topStart = 5.dp))
-                                    )
-                                    if(exercise.image_url_main.isNotEmpty()){
-                                        exercise.image_url_main.onEach {
-                                            Log.println(Log.DEBUG, "!!!!!!!!!!!!", ("https://wger.de$it").toString())
+                            Log.println(Log.DEBUG, "image urls", exercise.image_url_main.toString())
+                            Log.println(Log.DEBUG, "image urls", exercise.image_url_secondary.toString())
+                            Box(
+                                modifier = Modifier.fillMaxWidth(.5f),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_muscular_system_front), //else { painterResource(id = R.drawable.ic_muscular_system_back) },
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Fit,
+                                    modifier = Modifier
+                                        .size(200.dp)
+                                        .clip(RoundedCornerShape(topStart = 5.dp))
+                                )
+                                if(exercise.image_url_main.isNotEmpty()){
+                                    Log.println(Log.DEBUG, "image urls", "first if")
+                                    exercise.image_url_main.forEach { image_url ->
+                                        if(muscles.find{ it.imageURL == image_url }!!.isFront){
+                                            Log.println(Log.DEBUG, "image urls", "second if")
                                             Image(
                                                 painter = rememberImagePainter(
-                                                    data = "https://wger.de$it",
+                                                    data = "https://wger.de${image_url!!.trim()}",
                                                     builder = {
                                                         crossfade(true)
                                                         decoder(SvgDecoder(context = context))
                                                     }
                                                 ),
-                                                contentDescription = it ?: exercise.name,
+                                                contentDescription = image_url ?: exercise.name,
                                                 contentScale = ContentScale.Fit,
                                                 modifier = Modifier
                                                     .size(200.dp)
@@ -237,18 +262,78 @@ fun ExerciseInfoDialog(
                                             )
                                         }
                                     }
-                                    if(exercise.image_url_secondary.isNotEmpty()){
-                                        exercise.image_url_secondary.onEach {
-                                            Log.println(Log.DEBUG, "!!!!!!!!!!!!", ("https://wger.de$it").toString())
+                                }
+                                if(exercise.image_url_secondary.isNotEmpty()){
+                                    Log.println(Log.DEBUG, "image urls", "first if")
+                                    exercise.image_url_secondary.onEach { image_url ->
+                                        if(muscles.find{ it.imageURL.replace("main","secondary") == image_url }!!.isFront){
+                                            Log.println(Log.DEBUG, "image urls", "second if")
                                             Image(
                                                 painter = rememberImagePainter(
-                                                    data = "https://wger.de$it",
+                                                    data = "https://wger.de${image_url!!.trim()}",
                                                     builder = {
                                                         crossfade(true)
                                                         decoder(SvgDecoder(context = context))
                                                     }
                                                 ),
-                                                contentDescription = it ?: exercise.name,
+                                                contentDescription = image_url ?: exercise.name,
+                                                contentScale = ContentScale.Fit,
+                                                modifier = Modifier
+                                                    .size(200.dp)
+                                                    .clip(RoundedCornerShape(topStart = 5.dp))
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_muscular_system_back), //else { painterResource(id = R.drawable.ic_muscular_system_back) },
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Fit,
+                                    modifier = Modifier
+                                        .size(200.dp)
+                                        .clip(RoundedCornerShape(topStart = 5.dp))
+                                )
+                                if(exercise.image_url_main.isNotEmpty()){
+                                    Log.println(Log.DEBUG, "image urls", "first if")
+                                    exercise.image_url_main.onEach { image_url ->
+                                        if(!muscles.find{ it.imageURL == image_url }!!.isFront){
+                                            Log.println(Log.DEBUG, "image urls", "second if")
+                                            Image(
+                                                painter = rememberImagePainter(
+                                                    data = "https://wger.de${image_url!!.trim()}",
+                                                    builder = {
+                                                        crossfade(true)
+                                                        decoder(SvgDecoder(context = context))
+                                                    }
+                                                ),
+                                                contentDescription = image_url ?: exercise.name,
+                                                contentScale = ContentScale.Fit,
+                                                modifier = Modifier
+                                                    .size(200.dp)
+                                                    .clip(RoundedCornerShape(topStart = 5.dp))
+                                            )
+                                        }
+                                    }
+                                }
+                                if(exercise.image_url_secondary.isNotEmpty()){
+                                    Log.println(Log.DEBUG, "image urls", "first if")
+                                    exercise.image_url_secondary.onEach { image_url ->
+                                        if(!muscles.find{ it.imageURL.replace("main","secondary") == image_url }!!.isFront){
+                                            Log.println(Log.DEBUG, "image urls", "second if")
+                                            Image(
+                                                painter = rememberImagePainter(
+                                                    data = "https://wger.de${image_url!!.trim()}",
+                                                    builder = {
+                                                        crossfade(true)
+                                                        decoder(SvgDecoder(context = context))
+                                                    }
+                                                ),
+                                                contentDescription = image_url ?: exercise.name,
                                                 contentScale = ContentScale.Fit,
                                                 modifier = Modifier
                                                     .size(200.dp)
