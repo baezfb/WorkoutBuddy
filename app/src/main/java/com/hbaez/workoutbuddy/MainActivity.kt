@@ -282,8 +282,23 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                             Column(modifier = Modifier.padding(bottom = 58.dp)){
                                 WorkoutLoggerOverviewScreen(
                                     onNavigateToCreateWorkout = {
+                                        val createWorkout = true
+                                        val workoutName = null
+                                        val workoutIds = null
                                         navController.navigate(
-                                            Route.WORKOUT_CREATE
+                                            Route.WORKOUT_CREATE +
+                                                    "/$createWorkout" +
+                                                    "/$workoutName" +
+                                                    "/$workoutIds"
+                                        )
+                                    },
+                                    onNavigateToEditWorkout = { workoutName, workoutIds ->
+                                        val createWorkout = false
+                                        navController.navigate(
+                                            Route.WORKOUT_CREATE +
+                                                    "/$createWorkout" +
+                                                    "/$workoutName" +
+                                                    "/$workoutIds"
                                         )
                                     },
                                     onNavigateToStartWorkout = { workoutName, day, month, year, workoutIds ->
@@ -346,16 +361,49 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                         }
 
 
-                        composable(Route.WORKOUT_CREATE) {
-                            CreateWorkoutScreen(
-                                scaffoldState = scaffoldState,
-                                onNavigateToSearchExercise = { page ->
-                                    navController.navigate(Route.WORKOUT_SEARCH + "/$page")
+                        composable(
+                            route = Route.WORKOUT_CREATE +
+                                    "/{createWorkout}" +
+                                    "/{workoutName}" +
+                                    "/{workoutIds}",
+                            arguments = listOf(
+                                navArgument("createWorkout") {
+                                    type = NavType.BoolType
                                 },
-                                onNavigateUp = {
-                                    navController.navigateUp()
+                                navArgument("workoutName") {
+                                    type = NavType.StringType
+                                },
+                                navArgument("workoutIds") {
+                                    type = NavType.StringType
                                 }
                             )
+                        ) {
+                            val createWorkout = it.arguments?.getBoolean("createWorkout")!!
+                            if(createWorkout){
+                                CreateWorkoutScreen(
+                                    scaffoldState = scaffoldState,
+                                    createWorkout = true,
+                                    onNavigateToSearchExercise = { page ->
+                                        navController.navigate(Route.WORKOUT_SEARCH + "/$page")
+                                    },
+                                    onNavigateUp = {
+                                        navController.navigateUp()
+                                    }
+                                )
+                            } else {
+                                val workoutName = it.arguments?.getString("workoutName") ?: ""
+                                val year = it.arguments?.getInt("year")!!
+                                CreateWorkoutScreen(
+                                    scaffoldState = scaffoldState,
+                                    createWorkout = false,
+                                    onNavigateToSearchExercise = { page ->
+                                        navController.navigate(Route.WORKOUT_SEARCH + "/$page")
+                                    },
+                                    onNavigateUp = {
+                                        navController.navigateUp()
+                                    }
+                                )
+                            }
                         }
 
                         composable(

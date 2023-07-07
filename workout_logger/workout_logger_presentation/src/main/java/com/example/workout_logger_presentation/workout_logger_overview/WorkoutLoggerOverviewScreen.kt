@@ -44,6 +44,7 @@ import com.hbaez.core.R
 @Composable
 fun WorkoutLoggerOverviewScreen(
     onNavigateToCreateWorkout: () -> Unit,
+    onNavigateToEditWorkout: (workoutName: String, workoutIds: String) -> Unit,
     onNavigateToStartWorkout: (workoutName: String, day: Int, month: Int, year: Int, workoutIds: String) -> Unit,
     onNavigateToCreateExercise: () -> Unit,
     viewModel: WorkoutLoggerOverviewModel = hiltViewModel()
@@ -53,6 +54,7 @@ fun WorkoutLoggerOverviewScreen(
     val workoutTemplates = viewModel.workoutTemplates.collectAsStateWithLifecycle(emptyList())
     val context = LocalContext.current
     val showDialog = remember { mutableStateOf(false) }
+    val showDialogEdit = remember { mutableStateOf(false) }
     val showOptionsHeaderDialog = remember { mutableStateOf(false) }
     val optionsHeaderType = remember { mutableStateOf("") }
 
@@ -92,15 +94,25 @@ fun WorkoutLoggerOverviewScreen(
 
             if(showDialog.value){
                 WorkoutDialog(
-                    onDismiss = { showDialog.value = false },
+                    onDismiss = {
+                        showDialog.value = false
+                        showDialogEdit.value = false
+                                },
                     onChooseWorkout = { workoutName, workoutIds ->
-                                        onNavigateToStartWorkout(
-                                            workoutName,
-                                            state.date.dayOfMonth,
-                                            state.date.monthValue,
-                                            state.date.year,
-                                            workoutIds
-                                        )
+                        if(showDialogEdit.value){
+                            onNavigateToEditWorkout(
+                                workoutName,
+                                workoutIds
+                            )
+                        } else {
+                            onNavigateToStartWorkout(
+                                workoutName,
+                                state.date.dayOfMonth,
+                                state.date.monthValue,
+                                state.date.year,
+                                workoutIds
+                            )
+                        }
                                       },
                     workoutNames = state.workoutNames,
                     workoutTemplates = workoutTemplates
@@ -115,7 +127,8 @@ fun WorkoutLoggerOverviewScreen(
                                 onNavigateToCreateWorkout()
                             },
                             onClickEdit = {
-                                /*TODO*/
+                                showDialog.value = true
+                                showDialogEdit.value = true
                             },
                             title = R.string.create_edit_workout,
                             text1 = stringResource(id = R.string.create_workout),

@@ -45,7 +45,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                     .map { snapshot -> //snapshot.toObjects(WorkoutTemplate::class.java)
                         snapshot.documents.map {
                             WorkoutTemplate(
-                                id = it.get("id").toString(),
+                                id = it.id,
                                 name = it.get("name").toString(),
                                 exerciseName = it.get("exerciseName").toString(),
                                 exerciseId = it.get("exerciseId").toString(),
@@ -142,6 +142,23 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
     override suspend fun saveWorkoutTemplate(workoutTemplate: WorkoutTemplate): String =
         trace(SAVE_WORKOUT_TEMPLATE) { workoutTemplateCollection(auth.currentUserId).add(workoutTemplate).await().id }
+
+    override suspend fun updateWorkoutTemplate(workoutTemplate: WorkoutTemplate): String =
+        trace(SAVE_WORKOUT_TEMPLATE) {
+            val updateData = mutableMapOf<String, Any>()
+            updateData["currentSet"] = workoutTemplate.currentSet
+            updateData["exerciseId"] = workoutTemplate.exerciseId!!
+            updateData["exerciseName"] = workoutTemplate.exerciseName
+            updateData["lastUsedId"] = workoutTemplate.lastUsedId
+            updateData["name"] = workoutTemplate.name
+            updateData["reps"] = workoutTemplate.reps
+            updateData["rest"] = workoutTemplate.rest
+            updateData["rowId"] = workoutTemplate.rowId
+            updateData["sets"] = workoutTemplate.sets
+            updateData["weight"] = workoutTemplate.weight
+            workoutTemplateCollection(auth.currentUserId).document(workoutTemplate.id).update(updateData).await()
+            return ""
+        }
 
     override suspend fun saveCompletedWorkout(completedWorkout: CompletedWorkout, date: String): String =
         trace(SAVE_COMPLETED_WORKOUT) { completedWorkoutCollection(auth.currentUserId, date).add(completedWorkout).await().id }

@@ -21,6 +21,8 @@ sealed class CreateWorkoutEvent {
 
     data class OnCreateWorkout(val trackableExercise: List<TrackableExerciseUiState>, val workoutName: String, val lastUsedId: Int): CreateWorkoutEvent()
 
+    data class OnUpdateWorkout(val trackableExercise: List<TrackableExerciseUiState>, val workoutName: String, val lastUsedId: Int): CreateWorkoutEvent()
+
     object AddPageCount: CreateWorkoutEvent()
 
     object SubtractPageCount: CreateWorkoutEvent()
@@ -30,6 +32,8 @@ sealed class CreateWorkoutEvent {
     data class OnRemovePage(val page: Int): CreateWorkoutEvent()
 
     data class GetExerciseInfo(val exerciseName: String): CreateWorkoutEvent()
+
+    object GetAllExerciseInfo: CreateWorkoutEvent()
 
     data class OnToggleExerciseDescription(val exercise: TrackableExerciseState): CreateWorkoutEvent()
 

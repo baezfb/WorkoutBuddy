@@ -56,6 +56,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CreateWorkoutScreen(
     scaffoldState: ScaffoldState,
+    createWorkout: Boolean,
     onNavigateUp: () -> Unit,
     onNavigateToSearchExercise: (page: Int) -> Unit,
     viewModel: CreateWorkoutViewModel = hiltViewModel()
@@ -100,7 +101,10 @@ fun CreateWorkoutScreen(
     }
     LaunchedEffect(key1 = pagerState.currentPage, key2 = state.trackableExercises.size){
         if(state.trackableExercises.getOrNull(pagerState.currentPage) != null){
-            viewModel.onEvent(CreateWorkoutEvent.GetExerciseInfo(state.trackableExercises[pagerState.currentPage].exercise!!.name!!))
+            viewModel.onEvent(CreateWorkoutEvent.GetExerciseInfo(state.trackableExercises[pagerState.currentPage].name))
+        }
+        if (!createWorkout){
+            viewModel.onEvent(CreateWorkoutEvent.GetAllExerciseInfo)
         }
     }
 
@@ -142,7 +146,7 @@ fun CreateWorkoutScreen(
                     .fillMaxSize()
                     .padding(padding),
                 verticalAlignment = Alignment.CenterVertically,
-                count = 3,
+                count = 15,
                 contentPadding = PaddingValues(spacing.spaceSmall)
             ) {page ->
                 ExerciseCard(
@@ -229,13 +233,18 @@ fun CreateWorkoutScreen(
                     Modifier.padding(spacing.spaceSmall)
                 ){
                     AddButton(
-                        text = stringResource(id = R.string.submit),
+                        text = stringResource(id = if(createWorkout) R.string.submit else R.string.update),
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentHeight()
                             .padding(start = spacing.spaceExtraExtraLarge, end = spacing.spaceSmall),
                         onClick = {
-                            viewModel.onEvent(CreateWorkoutEvent.OnCreateWorkout(state.trackableExercises.toList(), state.workoutName, state.lastUsedId))
+                            if(createWorkout){
+                                viewModel.onEvent(CreateWorkoutEvent.OnCreateWorkout(state.trackableExercises.toList(), state.workoutName, state.lastUsedId))
+                            }
+                            else {
+                                viewModel.onEvent(CreateWorkoutEvent.OnUpdateWorkout(state.trackableExercises.toList(), state.workoutName, state.lastUsedId))
+                            }
                         },
                         icon = Icons.Default.Done
                     )
