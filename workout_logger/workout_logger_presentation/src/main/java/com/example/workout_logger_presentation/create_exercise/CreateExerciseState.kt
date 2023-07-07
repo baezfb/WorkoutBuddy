@@ -7,6 +7,7 @@ data class CreateExerciseState(
     val description: String = "",
     val primaryMuscles: List<Muscle> = emptyList(),
     val secondaryMuscles: List<Muscle> = emptyList(),
+    val filterText: String = "",
     val muscles: List<Muscle> = listOf(
         Muscle("Anterior deltoid", "/static/images/muscles/main/muscle-2.svg", true),
         Muscle("Biceps brachii", "/static/images/muscles/main/muscle-1.svg", true),

@@ -49,7 +49,16 @@ class CreateExerciseViewModel @Inject constructor(
                     description = event.description
                 )
             }
-
+            is CreateExerciseEvent.OnUpdateFilter -> {
+                state = state.copy(
+                    filterText = event.filter
+                )
+            }
+            is CreateExerciseEvent.OnClearFilter -> {
+                state = state.copy(
+                    filterText = ""
+                )
+            }
             is CreateExerciseEvent.OnCheckboxAdd -> {
                 state = if(event.isPrimary){
                     state.copy(

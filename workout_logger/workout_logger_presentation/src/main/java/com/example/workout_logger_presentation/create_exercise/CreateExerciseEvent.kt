@@ -8,6 +8,10 @@ sealed class CreateExerciseEvent {
 
     data class OnUpdateDescription(val description: String): CreateExerciseEvent()
 
+    data class OnUpdateFilter(val filter: String): CreateExerciseEvent()
+
+    object OnClearFilter: CreateExerciseEvent()
+
     data class OnCheckboxAdd(val muscle: Muscle, val isPrimary: Boolean): CreateExerciseEvent()
 
     data class OnCheckboxRemove(val muscle: Muscle, val isPrimary: Boolean): CreateExerciseEvent()

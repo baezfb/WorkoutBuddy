@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,6 +28,7 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -216,8 +218,10 @@ fun CreateExerciseScreen(
             )
 
             OutlinedTextField(
-                value = "",
-                onValueChange = { /* TODO: Handle filter search bar value change */ },
+                value = state.filterText,
+                onValueChange = {
+                    viewModel.onEvent(CreateExerciseEvent.OnUpdateFilter(it))
+                                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -227,6 +231,16 @@ fun CreateExerciseScreen(
                     unfocusedIndicatorColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent
                 ),
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = null,
+                        modifier = Modifier.clickable {
+                            viewModel.onEvent(CreateExerciseEvent.OnClearFilter)
+                        }
+                    )
+                }
+
             )
 
             Row(
@@ -257,42 +271,44 @@ fun CreateExerciseScreen(
                     .border(4.dp, Color.Gray, RoundedCornerShape(4.dp))
             ) {
                 items(state.muscles.size) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = spacing.spaceSmall),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Checkbox(
-                            checked = state.primaryMuscles.contains(state.muscles[it]),
-                            onCheckedChange = { checked ->
-                                  if(checked){
-                                      viewModel.onEvent(CreateExerciseEvent.OnCheckboxAdd(state.muscles[it], true))
-                                  } else {
-                                      viewModel.onEvent(CreateExerciseEvent.OnCheckboxRemove(state.muscles[it], true))
-                                  }
-                              },
-                            enabled = !state.secondaryMuscles.contains(state.muscles[it]),
-                            modifier = Modifier.padding(end = spacing.spaceSmall)
-                        )
-                        Text(
-                            text = state.muscles[it].name,
-                            modifier = Modifier.padding(end = spacing.spaceMedium)
-                        )
+                    if(state.muscles[it].name.contains(state.filterText, ignoreCase = true)){
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = spacing.spaceSmall),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Checkbox(
+                                checked = state.primaryMuscles.contains(state.muscles[it]),
+                                onCheckedChange = { checked ->
+                                    if(checked){
+                                        viewModel.onEvent(CreateExerciseEvent.OnCheckboxAdd(state.muscles[it], true))
+                                    } else {
+                                        viewModel.onEvent(CreateExerciseEvent.OnCheckboxRemove(state.muscles[it], true))
+                                    }
+                                },
+                                enabled = !state.secondaryMuscles.contains(state.muscles[it]),
+                                modifier = Modifier.padding(end = spacing.spaceSmall)
+                            )
+                            Text(
+                                text = state.muscles[it].name,
+                                modifier = Modifier.padding(end = spacing.spaceMedium)
+                            )
 
-                        Checkbox(
-                            checked = state.secondaryMuscles.contains(state.muscles[it]),
-                            onCheckedChange = { checked ->
-                                if(checked){
-                                    viewModel.onEvent(CreateExerciseEvent.OnCheckboxAdd(state.muscles[it], false))
-                                } else {
-                                    viewModel.onEvent(CreateExerciseEvent.OnCheckboxRemove(state.muscles[it], false))
-                                }
-                            },
-                            enabled = !state.primaryMuscles.contains(state.muscles[it]),
-                            modifier = Modifier.padding(end = spacing.spaceSmall)
-                        )
+                            Checkbox(
+                                checked = state.secondaryMuscles.contains(state.muscles[it]),
+                                onCheckedChange = { checked ->
+                                    if(checked){
+                                        viewModel.onEvent(CreateExerciseEvent.OnCheckboxAdd(state.muscles[it], false))
+                                    } else {
+                                        viewModel.onEvent(CreateExerciseEvent.OnCheckboxRemove(state.muscles[it], false))
+                                    }
+                                },
+                                enabled = !state.primaryMuscles.contains(state.muscles[it]),
+                                modifier = Modifier.padding(end = spacing.spaceSmall)
+                            )
+                        }
                     }
                 }
             }
