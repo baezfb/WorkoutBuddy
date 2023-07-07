@@ -1,5 +1,7 @@
 package com.example.workout_logger_presentation.create_workout
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -8,8 +10,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -23,19 +28,28 @@ import com.hbaez.core.R
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import com.example.workout_logger_presentation.components.ExerciseInfoDialog
+import com.example.workout_logger_presentation.create_exercise.CreateExerciseEvent
 import com.example.workout_logger_presentation.create_workout.components.ExerciseCard
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.hbaez.core.util.UiEvent
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalPagerApi::class)
 @ExperimentalCoilApi
@@ -51,6 +65,8 @@ fun CreateWorkoutScreen(
 
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    val coroutineScope = rememberCoroutineScope()
 
     val pagerState = rememberPagerState()
     val pageCount = remember { mutableStateOf(state.pageCount) }
@@ -78,7 +94,7 @@ fun CreateWorkoutScreen(
         }
     }
     LaunchedEffect(pagerState.isScrollInProgress){
-        if(pagerState.targetPage > state.pageCount - 1){
+        if(pagerState.targetPage > state.pageCount){
             pagerState.scrollToPage(state.pageCount)
         }
     }
@@ -126,7 +142,7 @@ fun CreateWorkoutScreen(
                     .fillMaxSize()
                     .padding(padding),
                 verticalAlignment = Alignment.CenterVertically,
-                count = 10,
+                count = 3,
                 contentPadding = PaddingValues(spacing.spaceSmall)
             ) {page ->
                 ExerciseCard(
@@ -160,21 +176,71 @@ fun CreateWorkoutScreen(
             }
         },
         bottomBar = {
-            Row(
-                Modifier.padding(spacing.spaceSmall)
-            ){
-                AddButton(
-                    text = stringResource(id = R.string.submit),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(start = spacing.spaceExtraExtraLarge, end = spacing.spaceSmall),
-                    onClick = {
-                        viewModel.onEvent(CreateWorkoutEvent.OnCreateWorkout(state.trackableExercises.toList(), state.workoutName, state.lastUsedId))
-                    },
-                    icon = Icons.Default.Done
-                )
-                Spacer(modifier = Modifier.width(spacing.spaceLarge))
+            Column {
+                Row(
+                    Modifier
+                        .padding(horizontal = spacing.spaceMedium)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        contentDescription = null,
+                        tint = if(pagerState.currentPage == 0) MaterialTheme.colors.background else Color.White,
+                        modifier = if(pagerState.currentPage == 0) { Modifier.size(spacing.spaceLarge)
+                        } else {
+                            Modifier
+                                .clickable {
+                                    if (pagerState.currentPage > 0) {
+                                        coroutineScope.launch {
+                                            pagerState.animateScrollToPage(
+                                                pagerState.currentPage - 1,
+                                                0f
+                                            )
+                                        }
+                                    }
+                                }
+                                .size(spacing.spaceLarge)
+                        }
+                    )
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = if((pagerState.currentPage == state.pageCount) || (pagerState.currentPage == (pagerState.pageCount - 1))) MaterialTheme.colors.background else Color.White,
+                        modifier = if((pagerState.currentPage == state.pageCount) || (pagerState.currentPage == (pagerState.pageCount - 1))) { Modifier.size(spacing.spaceLarge)
+                        } else {
+                            Modifier
+                                .clickable {
+                                    if ((pagerState.currentPage + 1) < pagerState.pageCount) {
+                                        coroutineScope.launch {
+                                            pagerState.animateScrollToPage(
+                                                pagerState.currentPage + 1,
+                                                0f
+                                            )
+                                        }
+                                    }
+                                }
+                                .size(spacing.spaceLarge)
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(spacing.spaceMedium))
+                Row(
+                    Modifier.padding(spacing.spaceSmall)
+                ){
+                    AddButton(
+                        text = stringResource(id = R.string.submit),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(start = spacing.spaceExtraExtraLarge, end = spacing.spaceSmall),
+                        onClick = {
+                            viewModel.onEvent(CreateWorkoutEvent.OnCreateWorkout(state.trackableExercises.toList(), state.workoutName, state.lastUsedId))
+                        },
+                        icon = Icons.Default.Done
+                    )
+                    Spacer(modifier = Modifier.width(spacing.spaceLarge))
+                }
             }
         }
     )
