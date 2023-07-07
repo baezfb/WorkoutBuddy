@@ -1,20 +1,28 @@
 package com.hbaez.settings_presentation.settings_overview
 
+import androidx.annotation.StringRes
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -76,45 +84,51 @@ fun AppSettingsOverviewScreen(
     } else {
         Column(
             Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ){
-            Text(text = state.userId, textAlign = TextAlign.Center)
-            Text("Settings placeholder", textAlign = TextAlign.Center)
-            BasicButton(
-                R.string.update_prefs,
-                Modifier
+            Spacer(modifier = Modifier.height(spacing.spaceMedium))
+            Text(
+                "Settings",
+                textAlign = TextAlign.Start,
+                modifier = Modifier
+                    .padding(start = spacing.spaceMedium)
+                    .fillMaxWidth(),
+                style = MaterialTheme.typography.h1
+            )
+            Spacer(modifier = Modifier.height(spacing.spaceMedium))
+            Row(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp, 8.dp)
+                    .clickable { /*TODO: copy user ID to clipboard*/ }
+                    .padding(spacing.spaceMedium),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                Text(
+                    text = "Unique User ID: ${state.userId}",
+                    style = MaterialTheme.typography.h4,
+                    color = MaterialTheme.colors.onPrimary
+                )
+            }
+            Spacer(modifier = Modifier.height(spacing.spaceMedium))
+            SettingsButton(text = R.string.update_prefs) {
                 onNavigateToWelcome()
             }
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
-            BasicButton(
-                R.string.wear_companion,
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp, 8.dp)
-            ) {
-//                context.startActivity(Intent(context, WearMobileActivity::class.java))
+            SettingsButton(text = R.string.wear_companion) {
                 onNavigateToWear()
             }
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
-            BasicButton(
-                R.string.logout,
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp, 8.dp)
-            ) {
-                viewModel.onEvent(AppSettingsEvent.OnLogoutButtonClick)
+            SettingsButton(text = R.string.manage_data) {
+                /*TODO: Feature to export / import CSV data of workouts*/
             }
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
-            BasicButton(
-                R.string.delete_account,
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp, 8.dp)
-            ) {
+            SettingsButton(text = R.string.logout) {
+                viewModel.onEvent(AppSettingsEvent.OnLogoutButtonClick)
+            }
+            Spacer(modifier = Modifier.height(spacing.spaceLarge))
+            SettingsButton(text = R.string.delete_account, horizontalArrangement = Arrangement.Center, color = MaterialTheme.colors.error) {
                 viewModel.onEvent(AppSettingsEvent.OnDeleteButtonClick)
             }
         }
@@ -123,6 +137,33 @@ fun AppSettingsOverviewScreen(
     if(uiState.shouldShowLogoutCard) { LogoutCard(viewModel = viewModel, onNavigateToUserAuthWelcome) }
 
     if(uiState.shouldShowDeleteCard) { DeleteMyAccountCard(viewModel = viewModel, deleteMyAccount = deleteMyAccount) }
+}
+
+@Composable
+fun SettingsButton(
+    @StringRes text: Int,
+    modifier: Modifier = Modifier,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
+    color: Color = MaterialTheme.colors.onBackground,
+    action: () -> Unit
+) {
+    val spacing = LocalSpacing.current
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable {
+                action()
+            }
+            .padding(spacing.spaceMedium),
+        horizontalArrangement = horizontalArrangement,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(text),
+            style = MaterialTheme.typography.button,
+            color = color
+        )
+    }
 }
 
 @ExperimentalMaterialApi
