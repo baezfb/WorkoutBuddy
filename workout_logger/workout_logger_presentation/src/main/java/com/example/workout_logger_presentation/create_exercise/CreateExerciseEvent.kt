@@ -17,4 +17,6 @@ sealed class CreateExerciseEvent {
     data class OnCheckboxRemove(val muscle: Muscle, val isPrimary: Boolean): CreateExerciseEvent()
 
     object OnSubmitExercise: CreateExerciseEvent()
+
+    object OnUpdateExercise: CreateExerciseEvent()
 }

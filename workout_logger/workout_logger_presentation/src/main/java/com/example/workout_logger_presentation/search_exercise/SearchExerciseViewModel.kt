@@ -33,12 +33,17 @@ class SearchExerciseViewModel @Inject constructor(
 
     private var getExerciseJob: Job? = null
 
+    init {
+        executeSearch()
+    }
+
     fun onEvent(event: SearchExerciseEvent) {
         when(event) {
             is SearchExerciseEvent.OnExerciseNameChange -> {
                 state = state.copy(
                     query = event.name
                 )
+                executeSearch()
             }
 
             is SearchExerciseEvent.OnExerciseNameFocusChange -> {

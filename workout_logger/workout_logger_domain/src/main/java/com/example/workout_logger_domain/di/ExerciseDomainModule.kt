@@ -10,6 +10,7 @@ import com.example.workout_logger_domain.use_case.GetExerciseForName
 import com.example.workout_logger_domain.use_case.GetWorkouts
 import com.example.workout_logger_domain.use_case.GetWorkoutsByName
 import com.example.workout_logger_domain.use_case.GetWorkoutsForDate
+import com.example.workout_logger_domain.use_case.UpdateExercise
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,7 +33,8 @@ object ExerciseDomainModule {
             getWorkoutsByName = GetWorkoutsByName(repository),
             addCompletedWorkout = AddCompletedWorkout(repository),
             getWorkoutsForDate = GetWorkoutsForDate(repository),
-            addExercise = AddExercise(repository)
+            addExercise = AddExercise(repository),
+            updateExercise = UpdateExercise(repository)
         )
     }
 

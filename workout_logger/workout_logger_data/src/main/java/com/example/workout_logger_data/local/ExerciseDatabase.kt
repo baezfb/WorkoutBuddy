@@ -8,7 +8,7 @@ import com.example.workout_logger_data.local.entity.WorkoutEntity
 
 @Database(
     entities = [ExerciseEntity::class, WorkoutEntity::class, CompletedWorkoutEntity::class],
-    version = 2
+    version = 3
 )
 abstract class ExerciseDatabase: RoomDatabase() {
 

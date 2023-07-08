@@ -1,6 +1,7 @@
 package com.example.workout_logger_presentation.workout_logger_overview
 
 import com.example.workout_logger_domain.model.CompletedWorkout
+import com.example.workout_logger_presentation.search_exercise.TrackableExerciseState
 import java.time.LocalDate
 
 data class WorkoutLoggerOverviewState(
@@ -9,5 +10,7 @@ data class WorkoutLoggerOverviewState(
     val workoutId: MutableList<Int> = mutableListOf(),
     val showWorkoutDialog: Boolean = false,
     val completedWorkouts: List<CompletedWorkout> = listOf(),
-    val completedWorkoutIsExpanded: List<Boolean> = mutableListOf<Boolean>()
+    val completedWorkoutIsExpanded: List<Boolean> = mutableListOf(),
+    val exerciseFilterText: String = "",
+    val trackableExercise: List<TrackableExerciseState> = emptyList()
 )

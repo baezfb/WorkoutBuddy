@@ -312,8 +312,29 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                         )
                                     },
                                     onNavigateToCreateExercise = {
+                                        val createExercise = true
+                                        val exerciseName = null
+                                        val description = null
+                                        val primaryMuscles = null
+                                        val secondaryMuscles = null
                                         navController.navigate(
-                                            Route.EXERCISE_CREATE
+                                            Route.EXERCISE_CREATE +
+                                                    "/$createExercise" +
+                                                    "/$exerciseName" +
+                                                    "/$description" +
+                                                    "/$primaryMuscles" +
+                                                    "/$secondaryMuscles"
+                                        )
+                                    },
+                                    onNavigateToEditExercise = { exerciseName, description, primaryMuscles, secondaryMuscles ->
+                                        val createExercise = false
+                                        navController.navigate(
+                                            Route.EXERCISE_CREATE +
+                                                    "/$createExercise" +
+                                                    "/$exerciseName" +
+                                                    "/$description" +
+                                                    "/$primaryMuscles" +
+                                                    "/$secondaryMuscles"
                                         )
                                     }
                                 )
@@ -379,31 +400,16 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                             )
                         ) {
                             val createWorkout = it.arguments?.getBoolean("createWorkout")!!
-                            if(createWorkout){
-                                CreateWorkoutScreen(
-                                    scaffoldState = scaffoldState,
-                                    createWorkout = true,
-                                    onNavigateToSearchExercise = { page ->
-                                        navController.navigate(Route.WORKOUT_SEARCH + "/$page")
-                                    },
-                                    onNavigateUp = {
-                                        navController.navigateUp()
-                                    }
-                                )
-                            } else {
-                                val workoutName = it.arguments?.getString("workoutName") ?: ""
-                                val year = it.arguments?.getInt("year")!!
-                                CreateWorkoutScreen(
-                                    scaffoldState = scaffoldState,
-                                    createWorkout = false,
-                                    onNavigateToSearchExercise = { page ->
-                                        navController.navigate(Route.WORKOUT_SEARCH + "/$page")
-                                    },
-                                    onNavigateUp = {
-                                        navController.navigateUp()
-                                    }
-                                )
-                            }
+                            CreateWorkoutScreen(
+                                scaffoldState = scaffoldState,
+                                createWorkout = createWorkout,
+                                onNavigateToSearchExercise = { page ->
+                                    navController.navigate(Route.WORKOUT_SEARCH + "/$page")
+                                },
+                                onNavigateUp = {
+                                    navController.navigateUp()
+                                }
+                            )
                         }
 
                         composable(
@@ -424,9 +430,39 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                             )
                         }
 
-                        composable(Route.EXERCISE_CREATE) {
+                        composable(
+                            route = Route.EXERCISE_CREATE +
+                                    "/{createExercise}" +
+                                    "/{exerciseName}" +
+                                    "/{description}" +
+                                    "/{primaryMuscles}" +
+                                    "/{secondaryMuscles}",
+                            arguments = listOf(
+                                navArgument("createExercise") {
+                                    type = NavType.BoolType
+                                },
+                                navArgument("exerciseName") {
+                                    type = NavType.StringType
+                                },
+                                navArgument("description") {
+                                    type = NavType.StringType
+                                },
+                                navArgument("primaryMuscles") {
+                                    type = NavType.StringType
+                                },
+                                navArgument("secondaryMuscles") {
+                                    type = NavType.StringType
+                                }
+                            )
+                        ) {
+                            val createExercise = it.arguments?.getBoolean("createExercise")!!
+//                            val exerciseName = it.arguments?.getString("exerciseName")!!
+//                            val description = it.arguments?.getString("description")!!
+//                            val primaryMuscles = it.arguments?.getString("primaryMuscles")!!
+//                            val secondaryMuscles = it.arguments?.getString("secondaryMuscles")!!
                             CreateExerciseScreen(
                                 scaffoldState = scaffoldState,
+                                createExercise = createExercise,
                                 onNavigateUp = {
                                     navController.navigateUp()
                                 }

@@ -42,6 +42,7 @@ class WorkoutLoggerOverviewModel @Inject constructor(
 
     private var getWorkoutsForDateJob: Job? = null
     private var getExerciseJob: Job? = null
+    private var getAllExercisesJob: Job? = null
     private var getWorkoutNames: Job? = null
 
     val workoutTemplates = storageService.workouts
@@ -50,6 +51,7 @@ class WorkoutLoggerOverviewModel @Inject constructor(
     init {
         refreshWorkouts()
         refreshExercises()
+        executeSearch()
     }
     fun onEvent(event: WorkoutLoggerOverviewEvent) {
         when(event) {
@@ -87,6 +89,33 @@ class WorkoutLoggerOverviewModel @Inject constructor(
                     completedWorkoutIsExpanded = tmp
                 )
             }
+            is WorkoutLoggerOverviewEvent.OnExerciseSearch -> {
+                state = state.copy(
+                    exerciseFilterText = event.filterText
+                )
+                executeSearch()
+            }
+            is WorkoutLoggerOverviewEvent.OnExerciseItemClick -> {
+                state = state.copy(
+                    trackableExercise = state.trackableExercise.map {
+                        if(it == event.trackableExerciseState){
+                            it.copy(isExpanded = !it.isExpanded)
+                        } else it
+                    }
+                )
+            }
+            is WorkoutLoggerOverviewEvent.OnExerciseDescrClick -> {
+                state = state.copy(
+                    trackableExercise = state.trackableExercise.map {
+                        if(it == event.trackableExerciseState){
+                            it.copy(isDescrExpanded = !it.isDescrExpanded)
+                        } else it
+                    }
+                )
+            }
+            is WorkoutLoggerOverviewEvent.OnChooseExercise -> {
+                /*TODO*/
+            }
         }
     }
 
@@ -109,7 +138,7 @@ class WorkoutLoggerOverviewModel @Inject constructor(
             trackedExercises.collect{ list ->
                 list.onEach {
                     Log.println(Log.DEBUG, "tracked exercises ID", it.id)
-                    exerciseTrackerUseCases.addExercise(
+                    exerciseTrackerUseCases.updateExercise(
                         id = it.id,
                         exerciseName = it.name,
                         description = it.description,
@@ -144,6 +173,26 @@ class WorkoutLoggerOverviewModel @Inject constructor(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun executeSearch() {
+        getAllExercisesJob?.cancel()
+        getAllExercisesJob = exerciseTrackerUseCases
+            .getExerciseForName(state.exerciseFilterText)
+            .onEach { exercises ->
+                if(exercises.isEmpty()) {
+                    _uiEvent.send(
+                        UiEvent.ShowSnackbar(
+                            UiText.StringResource(R.string.empty_results)
+                        )
+                    )
+                }
+                state = state.copy(
+                    trackableExercise = exercises.map {
+                        TrackableExerciseState(exercise = it)
+                    }
+                )
+            }.launchIn(viewModelScope)
     }
 
 }

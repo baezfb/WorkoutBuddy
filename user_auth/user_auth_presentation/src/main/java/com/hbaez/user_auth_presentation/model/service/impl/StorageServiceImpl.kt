@@ -157,14 +157,45 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             updateData["sets"] = workoutTemplate.sets
             updateData["weight"] = workoutTemplate.weight
             workoutTemplateCollection(auth.currentUserId).document(workoutTemplate.id).update(updateData).await()
-            return ""
+            return workoutTemplate.id
         }
 
     override suspend fun saveCompletedWorkout(completedWorkout: CompletedWorkout, date: String): String =
         trace(SAVE_COMPLETED_WORKOUT) { completedWorkoutCollection(auth.currentUserId, date).add(completedWorkout).await().id }
 
     override suspend fun saveExerciseTemplate(exerciseTemplate: ExerciseTemplate): String =
-        trace(SAVE_EXERCISE_TEMPLATE) { exerciseTemplateCollection(auth.currentUserId).add(exerciseTemplate).await().id;}
+        trace(SAVE_EXERCISE_TEMPLATE) {
+            val docId = exerciseTemplateCollection(auth.currentUserId).add(exerciseTemplate).await().id
+            if(exerciseTemplate.id.isEmpty()){
+                val updateData = mutableMapOf<String, Any?>()
+                updateData["docId"] = docId
+                exerciseTemplateCollection(auth.currentUserId).document(docId).update(updateData).await()
+                return docId
+            } else {
+                return exerciseTemplate.id
+            }
+        }
+
+    override suspend fun updateExerciseTemplate(exerciseTemplate: ExerciseTemplate): String =
+        trace(SAVE_EXERCISE_TEMPLATE) {
+            val updateData = mutableMapOf<String, Any?>()
+            updateData["_front"] = exerciseTemplate.is_front
+            updateData["_main"] = exerciseTemplate.is_main
+            updateData["description"] = exerciseTemplate.description
+            updateData["equipment"] = exerciseTemplate.equipment
+            updateData["exerciseBase"] = exerciseTemplate.exerciseBase
+            updateData["image_url"] = exerciseTemplate.image_url
+            updateData["image_url_main"] = exerciseTemplate.image_url_main
+            updateData["image_url_secondary"] = exerciseTemplate.image_url_secondary
+            updateData["muscle_name_main"] = exerciseTemplate.muscle_name_main
+            updateData["muscle_name_secondary"] = exerciseTemplate.muscle_name_secondary
+            updateData["muscles"] = exerciseTemplate.muscles
+            updateData["muscles_secondary"] = exerciseTemplate.muscles_secondary
+            updateData["name"] = exerciseTemplate.name
+            updateData["id"] = exerciseTemplate.id
+            exerciseTemplateCollection(auth.currentUserId).document(exerciseTemplate.docId).update(updateData).await()
+            return exerciseTemplate.id
+        }
 
     override suspend fun save(task: Task): String =
         trace(SAVE_TASK_TRACE) { userInfoCollection(auth.currentUserId).add(task).await().id }

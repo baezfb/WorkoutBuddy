@@ -32,7 +32,9 @@ import coil.annotation.ExperimentalCoilApi
 import com.example.workout_logger_presentation.components.AddButton
 import com.example.workout_logger_presentation.components.DaySelector
 import com.example.workout_logger_presentation.components.OptionsHeader
+import com.example.workout_logger_presentation.create_exercise.model.Muscle
 import com.example.workout_logger_presentation.workout_logger_overview.components.CompletedWorkoutItem
+import com.example.workout_logger_presentation.workout_logger_overview.components.ExerciseDialog
 import com.example.workout_logger_presentation.workout_logger_overview.components.ExerciseRow
 import com.example.workout_logger_presentation.workout_logger_overview.components.OptionsHeaderDialog
 import com.example.workout_logger_presentation.workout_logger_overview.components.WorkoutDialog
@@ -47,6 +49,7 @@ fun WorkoutLoggerOverviewScreen(
     onNavigateToEditWorkout: (workoutName: String, workoutIds: String) -> Unit,
     onNavigateToStartWorkout: (workoutName: String, day: Int, month: Int, year: Int, workoutIds: String) -> Unit,
     onNavigateToCreateExercise: () -> Unit,
+    onNavigateToEditExercise: (exerciseName: String, description: String, primaryMuscles: String?, secondaryMuscles: String?) -> Unit,
     viewModel: WorkoutLoggerOverviewModel = hiltViewModel()
 ) {
     val spacing = LocalSpacing.current
@@ -55,6 +58,8 @@ fun WorkoutLoggerOverviewScreen(
     val context = LocalContext.current
     val showDialog = remember { mutableStateOf(false) }
     val showDialogEdit = remember { mutableStateOf(false) }
+    val showExercise = remember { mutableStateOf(false) }
+    val showExerciseEdit = remember { mutableStateOf(false) }
     val showOptionsHeaderDialog = remember { mutableStateOf(false) }
     val optionsHeaderType = remember { mutableStateOf("") }
 
@@ -118,6 +123,37 @@ fun WorkoutLoggerOverviewScreen(
                     workoutTemplates = workoutTemplates
                 )
             }
+            if(showExercise.value){
+                ExerciseDialog(
+                    filterText = state.exerciseFilterText,
+                    trackableExercises = state.trackableExercise,
+                    onDismiss = {
+                        showExercise.value = false
+                        showExerciseEdit.value = false
+                                },
+                    onChooseExercise = {
+                        if(showExerciseEdit.value){
+                            onNavigateToEditExercise(
+                                it.exercise.name!!,
+                                it.exercise.description ?: "",
+                                it.exercise.muscle_name_main,
+                                it.exercise.muscle_name_secondary
+                            )
+                        } else {
+                            /*TODO*/
+                        }
+                    },
+                    onFilterTextChange = {
+                        viewModel.onEvent(WorkoutLoggerOverviewEvent.OnExerciseSearch(it))
+                    },
+                    onItemClick = {
+                        viewModel.onEvent(WorkoutLoggerOverviewEvent.OnExerciseItemClick(it))
+                    },
+                    onDescrClick = {
+                        viewModel.onEvent(WorkoutLoggerOverviewEvent.OnExerciseDescrClick(it))
+                    }
+                )
+            }
             if(showOptionsHeaderDialog.value){
                 when(optionsHeaderType.value) {
                     "workout" -> {
@@ -142,7 +178,8 @@ fun WorkoutLoggerOverviewScreen(
                                 onNavigateToCreateExercise()
                             },
                             onClickEdit = {
-                                /*TODO*/
+                                showExercise.value = true
+                                showExerciseEdit.value = true
                             },
                             title = R.string.create_edit_exercise,
                             text1 = stringResource(id = R.string.create_exercise),

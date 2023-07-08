@@ -73,6 +73,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CreateExerciseScreen(
     scaffoldState: ScaffoldState,
+    createExercise: Boolean,
     onNavigateUp: () -> Unit,
     viewModel: CreateExerciseViewModel = hiltViewModel()
 ) {
@@ -419,13 +420,14 @@ fun CreateExerciseScreen(
             }
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
             AddButton(
-                text = stringResource(id = R.string.submit),
+                text = stringResource(id = if(createExercise) R.string.submit else R.string.update),
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .padding(start = spacing.spaceExtraExtraLarge, end = spacing.spaceSmall),
                 onClick = {
-                    viewModel.onEvent(CreateExerciseEvent.OnSubmitExercise)
+                    if(createExercise) viewModel.onEvent(CreateExerciseEvent.OnSubmitExercise)
+                    else viewModel.onEvent(CreateExerciseEvent.OnUpdateExercise)
                 },
                 icon = Icons.Default.Done
             )

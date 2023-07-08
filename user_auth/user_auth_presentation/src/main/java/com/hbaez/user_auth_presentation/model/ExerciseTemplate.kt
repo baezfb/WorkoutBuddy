@@ -1,6 +1,7 @@
 package com.hbaez.user_auth_presentation.model
 
 data class ExerciseTemplate(
+    val docId: String = "",
     val id: String = "",
     val name: String,
     val exerciseBase: Int = -1,

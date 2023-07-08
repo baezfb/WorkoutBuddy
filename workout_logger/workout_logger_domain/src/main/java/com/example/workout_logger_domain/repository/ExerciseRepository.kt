@@ -20,4 +20,6 @@ interface ExerciseRepository {
     fun getWorkoutsForDate(localDate: LocalDate): Flow<List<CompletedWorkout>>
 
     suspend fun insertTrackedExercise(trackedExercise: TrackedExercise)
+
+    suspend fun updateTrackedExercise(trackedExercise: TrackedExercise)
 }

@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.workout_logger_data.local.entity.CompletedWorkoutEntity
 import com.example.workout_logger_data.local.entity.ExerciseEntity
 import com.example.workout_logger_data.local.entity.WorkoutEntity
@@ -13,6 +14,9 @@ import kotlinx.coroutines.flow.Flow
 interface ExerciseDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertExercise(exerciseEntity: ExerciseEntity)
+
+    @Update
+    suspend fun updateExercise(exerciseEntity: ExerciseEntity)
 
     @Query(
         """

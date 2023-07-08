@@ -63,4 +63,8 @@ class ExerciseRepositoryImpl(
     override suspend fun insertTrackedExercise(trackedExercise: TrackedExercise) {
         dao.insertExercise(trackedExercise.toExerciseEntity())
     }
+
+    override suspend fun updateTrackedExercise(trackedExercise: TrackedExercise) {
+        dao.updateExercise(trackedExercise.toExerciseEntity())
+    }
 }
