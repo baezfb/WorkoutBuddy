@@ -7,6 +7,7 @@ import com.example.workout_logger_domain.use_case.AddWorkout
 import com.example.workout_logger_domain.use_case.CreateWorkoutUseCases
 import com.example.workout_logger_domain.use_case.ExerciseTrackerUseCases
 import com.example.workout_logger_domain.use_case.GetExerciseForName
+import com.example.workout_logger_domain.use_case.GetUniqueExerciseForName
 import com.example.workout_logger_domain.use_case.GetWorkouts
 import com.example.workout_logger_domain.use_case.GetWorkoutsByName
 import com.example.workout_logger_domain.use_case.GetWorkoutsForDate
@@ -29,6 +30,7 @@ object ExerciseDomainModule {
     ): ExerciseTrackerUseCases {
         return ExerciseTrackerUseCases(
             getExerciseForName = GetExerciseForName(repository),
+            getUniqueExerciseForName = GetUniqueExerciseForName(repository),
             getWorkouts = GetWorkouts(repository),
             getWorkoutsByName = GetWorkoutsByName(repository),
             addCompletedWorkout = AddCompletedWorkout(repository),

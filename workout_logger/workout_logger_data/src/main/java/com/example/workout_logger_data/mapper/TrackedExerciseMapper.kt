@@ -32,10 +32,10 @@ fun TrackedExercise.toExerciseEntity(): ExerciseEntity {
         muscle_name_secondary = muscle_name_secondary,
         image_url_main = image_url_main.joinToString(","),
         image_url_secondary = image_url_secondary.joinToString(","),
-        image_url = null,
+        image_url = image_url.joinToString(","),
         equipment = null,
-        is_front = null,
-        is_main = null,
+        is_front = is_front,
+        is_main = is_main,
         muscles = null,
         muscles_secondary = null
     )

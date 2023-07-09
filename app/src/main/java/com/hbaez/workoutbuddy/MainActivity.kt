@@ -326,7 +326,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                                     "/$secondaryMuscles"
                                         )
                                     },
-                                    onNavigateToEditExercise = { exerciseName, description, primaryMuscles, secondaryMuscles ->
+                                    onNavigateToEditExercise = { exerciseName, description, primaryMuscles, secondaryMuscles, imageURL ->
                                         val createExercise = false
                                         navController.navigate(
                                             Route.EXERCISE_CREATE +
@@ -334,7 +334,8 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                                     "/$exerciseName" +
                                                     "/$description" +
                                                     "/$primaryMuscles" +
-                                                    "/$secondaryMuscles"
+                                                    "/$secondaryMuscles" +
+                                                    "/${if(imageURL.isNotEmpty()) Uri.encode(imageURL.joinToString(",")) else null}"
                                         )
                                     }
                                 )
@@ -436,7 +437,8 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                     "/{exerciseName}" +
                                     "/{description}" +
                                     "/{primaryMuscles}" +
-                                    "/{secondaryMuscles}",
+                                    "/{secondaryMuscles}" +
+                                    "/{imageURL}",
                             arguments = listOf(
                                 navArgument("createExercise") {
                                     type = NavType.BoolType
@@ -452,14 +454,13 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                 },
                                 navArgument("secondaryMuscles") {
                                     type = NavType.StringType
+                                },
+                                navArgument("imageURL") {
+                                    type = NavType.StringType
                                 }
                             )
                         ) {
                             val createExercise = it.arguments?.getBoolean("createExercise")!!
-//                            val exerciseName = it.arguments?.getString("exerciseName")!!
-//                            val description = it.arguments?.getString("description")!!
-//                            val primaryMuscles = it.arguments?.getString("primaryMuscles")!!
-//                            val secondaryMuscles = it.arguments?.getString("secondaryMuscles")!!
                             CreateExerciseScreen(
                                 scaffoldState = scaffoldState,
                                 createExercise = createExercise,

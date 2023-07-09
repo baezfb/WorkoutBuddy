@@ -43,6 +43,7 @@ class CreateExerciseViewModel @Inject constructor(
     val uiEvent = _uiEvent.receiveAsFlow()
 
     private var checkExerciseName: Job? = null
+    private var getExercise: Job? = null
 
     private var exercises = storageService.exercises
 
@@ -51,6 +52,7 @@ class CreateExerciseViewModel @Inject constructor(
     lateinit var initDescr: String
     lateinit var initPrimaryMuscle: List<Muscle?>
     lateinit var initSecondaryMuscle: List<Muscle?>
+    lateinit var initImageURL: String
     init {
         createExercise = savedStateHandle["createExercise"]!!
         if(!createExercise){
@@ -66,6 +68,25 @@ class CreateExerciseViewModel @Inject constructor(
                     it.name == currMuscle
                 }
             }
+            initImageURL = savedStateHandle["imageURL"]!!
+            state = state.copy(
+                image_URL = initImageURL
+            )
+            initImageURL.split(",").forEachIndexed { index, imageUrl ->
+                state = when (index) {
+                    0 -> state.copy(image_1 = imageUrl)
+                    1 -> state.copy(image_2 = imageUrl)
+                    2 -> state.copy(image_3 = imageUrl)
+                    3 -> state.copy(image_4 = imageUrl)
+                    else -> state // No modification for indexes beyond the specified cases
+                }
+            }
+            Log.println(Log.DEBUG, "createexercise image", initImageURL)
+            Log.println(Log.DEBUG, "createexercise image", state.image_1.toString())
+            Log.println(Log.DEBUG, "createexercise image", state.image_2.toString())
+            Log.println(Log.DEBUG, "createexercise image", state.image_3.toString())
+            Log.println(Log.DEBUG, "createexercise image", state.image_4.toString())
+            Log.println(Log.DEBUG, "createexercise image", state.image_URL)
 
             state = state.copy(
                 exerciseName = initExerciseName,
@@ -213,9 +234,9 @@ class CreateExerciseViewModel @Inject constructor(
 
                     checkExerciseName?.cancel()
                     checkExerciseName = exerciseTrackerUseCases
-                        .getExerciseForName(state.exerciseName)
-                        .onEach { trackedExerciseList ->
-                            if(trackedExerciseList.isNotEmpty() && state.exerciseName != initExerciseName) {
+                        .getUniqueExerciseForName(state.exerciseName)
+                        .onEach {
+                            if(state.exerciseName != initExerciseName) {
                                 _uiEvent.send(
                                     UiEvent.ShowSnackbar(
                                         UiText.StringResource(R.string.exercise_name_taken)
@@ -223,8 +244,17 @@ class CreateExerciseViewModel @Inject constructor(
                                 )
                                 return@onEach
                             }
+                        }.launchIn(viewModelScope)
 
-                            Log.println(Log.DEBUG, "trackedExerciseList size", trackedExerciseList.size.toString())
+                    var counter = 0
+                    getExercise?.cancel()
+                    getExercise = exerciseTrackerUseCases
+                        .getUniqueExerciseForName(initExerciseName)
+                        .onEach { trackedExercise ->
+                            if(counter > 0){
+                                return@onEach
+                            }
+                            counter++
 
                             val exerciseTemplates = exercises.first { it.isNotEmpty() }
                             val currExercise = exerciseTemplates.find {
@@ -233,17 +263,19 @@ class CreateExerciseViewModel @Inject constructor(
                             Log.println(Log.DEBUG, "currentExercise 1234", currExercise?.id ?: "null")
                             if(currExercise != null){ // update on firebase
                                 Log.println(Log.DEBUG, "currentExercise 1234", currExercise.id)
-                                Log.println(Log.DEBUG, "currentExercise 1234", trackedExerciseList[0].id!!)
+                                Log.println(Log.DEBUG, "state imageURL", state.image_URL)
+                                Log.println(Log.DEBUG, "state imageURL", state.image_URL.split(",").toString())
                                 val docId = storageService.updateExerciseTemplate(
                                     ExerciseTemplate(
                                         docId = currExercise.id,
-                                        id = trackedExerciseList.first().id!!,
+                                        id = trackedExercise.id!!,
                                         name = state.exerciseName,
                                         description = state.description,
                                         muscle_name_main = state.primaryMuscles.joinToString(",") { it.name },
                                         muscle_name_secondary = state.secondaryMuscles.joinToString(",") { it.name },
                                         image_url_main = state.primaryMuscles.joinToString(",") { it.imageURL },
-                                        image_url_secondary = state.secondaryMuscles.joinToString(",") { it.imageURL }
+                                        image_url_secondary = state.secondaryMuscles.joinToString(",") { it.imageURL },
+                                        image_url = state.image_URL
                                     )
                                 )
                                 exerciseTrackerUseCases.updateExercise(
@@ -254,6 +286,7 @@ class CreateExerciseViewModel @Inject constructor(
                                     secondaryMuscles = state.secondaryMuscles.joinToString(",") { it.name },
                                     primaryURL = state.primaryMuscles.map { it.imageURL },
                                     secondaryURL = state.secondaryMuscles.map { it.imageURL.replace("main", "secondary") },
+                                    image_url = state.image_URL.split(","),
                                     image_1 = null,
                                     image_2 = null,
                                     image_3 = null,
@@ -263,15 +296,17 @@ class CreateExerciseViewModel @Inject constructor(
                             }
                             else { // new on firebase
                                 Log.println(Log.DEBUG, "currentExercise 1234", "reached inside else")
+                                Log.println(Log.DEBUG, "state imageURL", state.image_URL)
                                 val docId = storageService.saveExerciseTemplate(
                                     ExerciseTemplate(
-                                        id = trackedExerciseList.first().id!!,
+                                        id = trackedExercise.id!!,
                                         name = state.exerciseName,
                                         description = state.description,
                                         muscle_name_main = state.primaryMuscles.joinToString(",") { it.name },
                                         muscle_name_secondary = state.secondaryMuscles.joinToString(",") { it.name },
                                         image_url_main = state.primaryMuscles.joinToString(",") { it.imageURL },
-                                        image_url_secondary = state.secondaryMuscles.joinToString(",") { it.imageURL }
+                                        image_url_secondary = state.secondaryMuscles.joinToString(",") { it.imageURL },
+                                        image_url = state.image_URL
                                     )
                                 )
                                 exerciseTrackerUseCases.updateExercise(
@@ -282,6 +317,7 @@ class CreateExerciseViewModel @Inject constructor(
                                     secondaryMuscles = state.secondaryMuscles.joinToString(",") { it.name },
                                     primaryURL = state.primaryMuscles.map { it.imageURL },
                                     secondaryURL = state.secondaryMuscles.map { it.imageURL.replace("main", "secondary") },
+                                    image_url = state.image_URL.split(","),
                                     image_1 = null,
                                     image_2 = null,
                                     image_3 = null,
@@ -289,8 +325,7 @@ class CreateExerciseViewModel @Inject constructor(
                                 )
                                 _uiEvent.send(UiEvent.NavigateUp)
                             }
-                        }
-                        .launchIn(viewModelScope)
+                        }.launchIn(viewModelScope)
                 }
             }
         }

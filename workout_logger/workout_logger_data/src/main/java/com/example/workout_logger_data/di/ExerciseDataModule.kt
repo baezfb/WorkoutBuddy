@@ -40,7 +40,7 @@ object ExerciseDataModule {
             "exercise_db"
         )
             .createFromAsset("database/exercise.db")
-//            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration()
 //            .createFromAsset("database/muscles.tsv")
             .build()
     }

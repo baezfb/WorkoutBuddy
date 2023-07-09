@@ -9,6 +9,8 @@ import java.time.LocalDate
 interface ExerciseRepository {
     fun getExercisesForName(name: String): Flow<List<TrackedExercise>>
 
+    fun getUniqueExerciseForName(name: String): Flow<TrackedExercise>
+
     suspend fun insertTrackedWorkout(trackedWorkout: TrackedWorkout)
 
     fun getWorkouts(): Flow<List<TrackedWorkout>>

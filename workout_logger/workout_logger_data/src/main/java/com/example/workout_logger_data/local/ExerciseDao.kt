@@ -27,6 +27,15 @@ interface ExerciseDao {
     )
     fun getExerciseByName(name: String): Flow<List<ExerciseEntity>>
 
+    @Query(
+        """
+            SELECT *
+            FROM exerciseentity
+            WHERE name IS :name COLLATE NOCASE
+        """
+    )
+    fun getUniqueExerciseByName(name: String): Flow<ExerciseEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkout(workoutEntity: WorkoutEntity)
 

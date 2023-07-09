@@ -26,6 +26,12 @@ class ExerciseRepositoryImpl(
         }
     }
 
+    override fun getUniqueExerciseForName(name: String): Flow<TrackedExercise> {
+        return dao.getUniqueExerciseByName(name).map { entity ->
+            entity.toTrackedExercise()
+        }
+    }
+
     override suspend fun insertTrackedWorkout(trackedWorkout: TrackedWorkout) {
         dao.insertWorkout(trackedWorkout.toWorkoutEntity())
     }

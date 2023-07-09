@@ -49,7 +49,7 @@ fun WorkoutLoggerOverviewScreen(
     onNavigateToEditWorkout: (workoutName: String, workoutIds: String) -> Unit,
     onNavigateToStartWorkout: (workoutName: String, day: Int, month: Int, year: Int, workoutIds: String) -> Unit,
     onNavigateToCreateExercise: () -> Unit,
-    onNavigateToEditExercise: (exerciseName: String, description: String, primaryMuscles: String?, secondaryMuscles: String?) -> Unit,
+    onNavigateToEditExercise: (exerciseName: String, description: String, primaryMuscles: String?, secondaryMuscles: String?, imageURL: List<String>) -> Unit,
     viewModel: WorkoutLoggerOverviewModel = hiltViewModel()
 ) {
     val spacing = LocalSpacing.current
@@ -137,7 +137,9 @@ fun WorkoutLoggerOverviewScreen(
                                 it.exercise.name!!,
                                 it.exercise.description ?: "",
                                 it.exercise.muscle_name_main,
-                                it.exercise.muscle_name_secondary
+                                it.exercise.muscle_name_secondary,
+                                it.exercise.image_url.filterNotNull(),
+
                             )
                         } else {
                             /*TODO*/

@@ -146,6 +146,7 @@ class WorkoutLoggerOverviewModel @Inject constructor(
                         secondaryMuscles = it.muscle_name_secondary,
                         primaryURL = it.image_url_main.split(",").map { url -> url.trim() },
                         secondaryURL = it.image_url_secondary.split(",").map { url -> url.trim() },
+                        image_url = it.image_url?.split(",") ?: emptyList(),
                         image_1 = null,
                         image_2 = null,
                         image_3 = null,
