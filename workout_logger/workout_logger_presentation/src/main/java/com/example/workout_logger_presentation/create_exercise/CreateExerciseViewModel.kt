@@ -198,6 +198,7 @@ class CreateExerciseViewModel @Inject constructor(
                                 secondaryMuscles = state.secondaryMuscles.joinToString(",") { it.name },
                                 primaryURL = state.primaryMuscles.map { it.imageURL },
                                 secondaryURL = state.secondaryMuscles.map { it.imageURL.replace("main", "secondary") },
+                                image_url = state.image_URL.split(","),
                                 image_1 = null,
                                 image_2 = null,
                                 image_3 = null,

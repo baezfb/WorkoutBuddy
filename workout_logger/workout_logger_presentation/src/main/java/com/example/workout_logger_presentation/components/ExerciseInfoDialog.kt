@@ -160,7 +160,7 @@ fun ExerciseInfoDialog(
                                     onDescrClick()
                                 }
                         )
-                        if(exercise.image_url.isNotEmpty()){
+                        if(exercise.image_url.filterNotNull().isNotEmpty() && (exercise.image_url.size == 1 && !exercise.image_url[0].equals("null"))){
                             Spacer(modifier = Modifier.height(spacing.spaceMedium))
                             Text(
                                 text = stringResource(id = R.string.exercise_demonstration),
@@ -169,28 +169,28 @@ fun ExerciseInfoDialog(
                                 modifier = Modifier
                                     .height(IntrinsicSize.Max)
                             )
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            exercise.image_url.forEach {
-                                Image(
-                                    painter = rememberImagePainter(
-                                        data = it,
-                                        builder = {
-                                            crossfade(true)
-                                            error(R.drawable.ic_exercise)
-                                            fallback(R.drawable.ic_exercise)
-                                        }
-                                    ),
-                                    contentDescription = exercise.name,
-                                    contentScale = ContentScale.Fit,
-                                    modifier = Modifier
-                                        .size(100.dp)
-                                        .weight(1f)
-                                        .clip(RoundedCornerShape(topStart = 5.dp)),
-                                    colorFilter = ColorFilter.colorMatrix(ColorMatrix(colorMatrix))
-                                )
+                            Row(
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                exercise.image_url.forEach {
+                                    Image(
+                                        painter = rememberImagePainter(
+                                            data = it,
+                                            builder = {
+                                                crossfade(true)
+                                                error(R.drawable.ic_exercise)
+                                                fallback(R.drawable.ic_exercise)
+                                            }
+                                        ),
+                                        contentDescription = exercise.name,
+                                        contentScale = ContentScale.Fit,
+                                        modifier = Modifier
+                                            .size(100.dp)
+                                            .weight(1f)
+                                            .clip(RoundedCornerShape(topStart = 5.dp)),
+                                        colorFilter = ColorFilter.colorMatrix(ColorMatrix(colorMatrix))
+                                    )
+                                }
                             }
                         }
                         Spacer(modifier = Modifier.height(spacing.spaceMedium))
@@ -266,7 +266,7 @@ fun ExerciseInfoDialog(
                                 if(exercise.image_url_secondary.isNotEmpty()){
                                     Log.println(Log.DEBUG, "image urls", "first if")
                                     exercise.image_url_secondary.onEach { image_url ->
-                                        if(muscles.find{ it.imageURL.replace("main","secondary") == image_url }!!.isFront){
+                                        if(muscles.find{ it.imageURL.replace("main","secondary") == image_url || it.imageURL == image_url}!!.isFront){
                                             Log.println(Log.DEBUG, "image urls", "second if")
                                             Image(
                                                 painter = rememberImagePainter(
@@ -323,7 +323,7 @@ fun ExerciseInfoDialog(
                                 if(exercise.image_url_secondary.isNotEmpty()){
                                     Log.println(Log.DEBUG, "image urls", "first if")
                                     exercise.image_url_secondary.onEach { image_url ->
-                                        if(!muscles.find{ it.imageURL.replace("main","secondary") == image_url }!!.isFront){
+                                        if(!muscles.find{ it.imageURL.replace("main","secondary") == image_url  || it.imageURL == image_url }!!.isFront ){
                                             Log.println(Log.DEBUG, "image urls", "second if")
                                             Image(
                                                 painter = rememberImagePainter(

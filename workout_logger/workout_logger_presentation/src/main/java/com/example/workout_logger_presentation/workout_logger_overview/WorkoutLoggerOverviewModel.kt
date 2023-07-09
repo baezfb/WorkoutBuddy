@@ -136,23 +136,52 @@ class WorkoutLoggerOverviewModel @Inject constructor(
     private fun refreshExercises(){
         viewModelScope.launch {
             trackedExercises.collect{ list ->
-                list.onEach {
-                    Log.println(Log.DEBUG, "tracked exercises ID", it.id)
-                    exerciseTrackerUseCases.updateExercise(
-                        id = it.id,
-                        exerciseName = it.name,
-                        description = it.description,
-                        primaryMuscles = it.muscle_name_main,
-                        secondaryMuscles = it.muscle_name_secondary,
-                        primaryURL = it.image_url_main.split(",").map { url -> url.trim() },
-                        secondaryURL = it.image_url_secondary.split(",").map { url -> url.trim() },
-                        image_url = it.image_url?.split(",") ?: emptyList(),
-                        image_1 = null,
-                        image_2 = null,
-                        image_3 = null,
-                        image_4 = null,
-                    )
-                }
+                var counter = 0
+                getExerciseJob?.cancel()
+                getExerciseJob = exerciseTrackerUseCases
+                    .getExerciseForName("")
+                    .onEach { roomTrackedExercises ->
+                        if(counter > 0){
+                            return@onEach
+                        }
+                        counter++
+                        list.onEach {
+                            /*TODO: check if firestore exercise exists in room db and use insert/update accordingly*/
+                            Log.println(Log.DEBUG, "tracked exercises ID", it.id)
+                            if (roomTrackedExercises.find { elem -> elem.name == it.name } != null){ // element is in room db
+                                exerciseTrackerUseCases.updateExercise(
+                                    id = it.id,
+                                    exerciseName = it.name,
+                                    description = it.description,
+                                    primaryMuscles = it.muscle_name_main,
+                                    secondaryMuscles = it.muscle_name_secondary,
+                                    primaryURL = it.image_url_main.split(",").map { url -> url.trim() },
+                                    secondaryURL = it.image_url_secondary.split(",").map { url -> url.trim() },
+                                    image_url = it.image_url?.split(",") ?: emptyList(),
+                                    image_1 = null,
+                                    image_2 = null,
+                                    image_3 = null,
+                                    image_4 = null,
+                                )
+                            }
+                            else { // element is new to room db
+                                exerciseTrackerUseCases.addExercise(
+                                    id = it.id,
+                                    exerciseName = it.name,
+                                    description = it.description,
+                                    primaryMuscles = it.muscle_name_main,
+                                    secondaryMuscles = it.muscle_name_secondary,
+                                    primaryURL = it.image_url_main.split(",").map { url -> url.trim() },
+                                    secondaryURL = it.image_url_secondary.split(",").map { url -> url.trim() },
+                                    image_url = it.image_url?.split(",") ?: emptyList(),
+                                    image_1 = null,
+                                    image_2 = null,
+                                    image_3 = null,
+                                    image_4 = null,
+                                )
+                            }
+                        }
+                    }.launchIn(viewModelScope)
             }
         }
     }

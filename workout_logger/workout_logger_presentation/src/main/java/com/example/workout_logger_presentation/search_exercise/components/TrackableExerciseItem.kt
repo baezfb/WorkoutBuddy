@@ -156,7 +156,9 @@ fun TrackableExerciseItem(
                                 onDescrClick()
                             }
                     )
-                    if(exercise.image_url.isNotEmpty()){
+                    Log.println(Log.DEBUG, "image urls", exercise.image_url.filterNotNull().toString())
+                    if(exercise.image_url.filterNotNull().isNotEmpty() && (exercise.image_url.size == 1 && !exercise.image_url[0].equals("null"))){
+                        Log.println(Log.DEBUG, "image urls inside if", (exercise.image_url[0].equals("null").toString()))
                         Spacer(modifier = Modifier.height(spacing.spaceMedium))
                         Text(
                             text = stringResource(id = R.string.exercise_demonstration),
@@ -165,28 +167,28 @@ fun TrackableExerciseItem(
                             modifier = Modifier
                                 .height(IntrinsicSize.Max)
                         )
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        exercise.image_url.forEach {
-                            Image(
-                                painter = rememberImagePainter(
-                                    data = it,
-                                    builder = {
-                                        crossfade(true)
-                                        error(R.drawable.ic_exercise)
-                                        fallback(R.drawable.ic_exercise)
-                                    }
-                                ),
-                                contentDescription = exercise.name,
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier
-                                    .size(100.dp)
-                                    .weight(1f)
-                                    .clip(RoundedCornerShape(topStart = 5.dp)),
-                                colorFilter = ColorFilter.colorMatrix(ColorMatrix(colorMatrix))
-                            )
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            exercise.image_url.forEach {
+                                Image(
+                                    painter = rememberImagePainter(
+                                        data = it,
+                                        builder = {
+                                            crossfade(true)
+                                            error(R.drawable.ic_exercise)
+                                            fallback(R.drawable.ic_exercise)
+                                        }
+                                    ),
+                                    contentDescription = exercise.name,
+                                    contentScale = ContentScale.Fit,
+                                    modifier = Modifier
+                                        .size(100.dp)
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(topStart = 5.dp)),
+                                    colorFilter = ColorFilter.colorMatrix(ColorMatrix(colorMatrix))
+                                )
+                            }
                         }
                     }
                     Spacer(modifier = Modifier.height(spacing.spaceMedium))
@@ -223,8 +225,6 @@ fun TrackableExerciseItem(
                             .fillMaxWidth()
                             .align(Alignment.CenterHorizontally)
                     ){
-                        Log.println(Log.DEBUG, "image urls", exercise.image_url_main.toString())
-                        Log.println(Log.DEBUG, "image urls", exercise.image_url_secondary.toString())
                         Box(
                             modifier = Modifier.fillMaxWidth(.5f),
                             contentAlignment = Alignment.Center
@@ -238,13 +238,11 @@ fun TrackableExerciseItem(
                                     .clip(RoundedCornerShape(topStart = 5.dp))
                             )
                             if(exercise.image_url_main.isNotEmpty()){
-                                Log.println(Log.DEBUG, "image urls", "first if")
                                 exercise.image_url_main.forEach { image_url ->
-                                    if(muscles.find{ it.imageURL == image_url }!!.isFront){
-                                        Log.println(Log.DEBUG, "image urls", "second if")
+                                    if(muscles.find{ it.imageURL == image_url }!!.isFront && image_url != null){
                                         Image(
                                             painter = rememberImagePainter(
-                                                data = "https://wger.de${image_url!!.trim()}",
+                                                data = "https://wger.de${image_url.trim()}",
                                                 builder = {
                                                     crossfade(true)
                                                     decoder(SvgDecoder(context = context))
@@ -260,13 +258,11 @@ fun TrackableExerciseItem(
                                 }
                             }
                                 if(exercise.image_url_secondary.isNotEmpty()){
-                                    Log.println(Log.DEBUG, "image urls", "first if")
                                     exercise.image_url_secondary.onEach { image_url ->
-                                        if(muscles.find{ it.imageURL.replace("main","secondary") == image_url }!!.isFront){
-                                            Log.println(Log.DEBUG, "image urls", "second if")
+                                        if(image_url != null && muscles.find{ it.imageURL.replace("main","secondary") == image_url || it.imageURL == image_url }!!.isFront){
                                             Image(
                                                 painter = rememberImagePainter(
-                                                    data = "https://wger.de${image_url!!.trim()}",
+                                                    data = "https://wger.de${image_url.trim()}",
                                                     builder = {
                                                         crossfade(true)
                                                         decoder(SvgDecoder(context = context))
@@ -294,50 +290,46 @@ fun TrackableExerciseItem(
                                     .size(200.dp)
                                     .clip(RoundedCornerShape(topStart = 5.dp))
                             )
-                                if(exercise.image_url_main.isNotEmpty()){
-                                    Log.println(Log.DEBUG, "image urls", "first if")
-                                    exercise.image_url_main.onEach { image_url ->
-                                        if(!muscles.find{ it.imageURL == image_url }!!.isFront){
-                                            Log.println(Log.DEBUG, "image urls", "second if")
-                                            Image(
-                                                painter = rememberImagePainter(
-                                                    data = "https://wger.de${image_url!!.trim()}",
-                                                    builder = {
-                                                        crossfade(true)
-                                                        decoder(SvgDecoder(context = context))
-                                                    }
-                                                ),
-                                                contentDescription = image_url ?: exercise.name,
-                                                contentScale = ContentScale.Fit,
-                                                modifier = Modifier
-                                                    .size(200.dp)
-                                                    .clip(RoundedCornerShape(topStart = 5.dp))
-                                            )
-                                        }
+                            if(exercise.image_url_main.isNotEmpty()){
+                                exercise.image_url_main.onEach { image_url ->
+                                    if(!muscles.find{ it.imageURL == image_url }!!.isFront && image_url != null){
+                                        Image(
+                                            painter = rememberImagePainter(
+                                                data = "https://wger.de${image_url.trim()}",
+                                                builder = {
+                                                    crossfade(true)
+                                                    decoder(SvgDecoder(context = context))
+                                                }
+                                            ),
+                                            contentDescription = image_url ?: exercise.name,
+                                            contentScale = ContentScale.Fit,
+                                            modifier = Modifier
+                                                .size(200.dp)
+                                                .clip(RoundedCornerShape(topStart = 5.dp))
+                                        )
                                     }
                                 }
-                                if(exercise.image_url_secondary.isNotEmpty()){
-                                    Log.println(Log.DEBUG, "image urls", "first if")
-                                    exercise.image_url_secondary.onEach { image_url ->
-                                        if(!muscles.find{ it.imageURL.replace("main","secondary") == image_url }!!.isFront){
-                                            Log.println(Log.DEBUG, "image urls", "second if")
-                                            Image(
-                                                painter = rememberImagePainter(
-                                                    data = "https://wger.de${image_url!!.trim()}",
-                                                    builder = {
-                                                        crossfade(true)
-                                                        decoder(SvgDecoder(context = context))
-                                                    }
-                                                ),
-                                                contentDescription = image_url ?: exercise.name,
-                                                contentScale = ContentScale.Fit,
-                                                modifier = Modifier
-                                                    .size(200.dp)
-                                                    .clip(RoundedCornerShape(topStart = 5.dp))
-                                            )
-                                        }
+                            }
+                            if(exercise.image_url_secondary.isNotEmpty()){
+                                exercise.image_url_secondary.onEach { image_url ->
+                                    if(!muscles.find{ it.imageURL.replace("main","secondary") == image_url || it.imageURL == image_url }!!.isFront && image_url != null){
+                                        Image(
+                                            painter = rememberImagePainter(
+                                                data = "https://wger.de${image_url.trim()}",
+                                                builder = {
+                                                    crossfade(true)
+                                                    decoder(SvgDecoder(context = context))
+                                                }
+                                            ),
+                                            contentDescription = image_url ?: exercise.name,
+                                            contentScale = ContentScale.Fit,
+                                            modifier = Modifier
+                                                .size(200.dp)
+                                                .clip(RoundedCornerShape(topStart = 5.dp))
+                                        )
                                     }
                                 }
+                            }
                         }
                     }
                     IconButton(

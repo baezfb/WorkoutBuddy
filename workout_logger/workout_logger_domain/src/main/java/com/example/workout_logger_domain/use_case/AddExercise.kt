@@ -15,6 +15,7 @@ class AddExercise(
         primaryURL: List<String>,
         secondaryMuscles: String,
         secondaryURL: List<String>,
+        image_url: List<String>,
         image_1: ByteArray?,
         image_2: ByteArray?,
         image_3: ByteArray?,
@@ -29,7 +30,8 @@ class AddExercise(
                 muscle_name_main = primaryMuscles,
                 image_url_main = primaryURL,
                 muscle_name_secondary = secondaryMuscles,
-                image_url_secondary = secondaryURL
+                image_url_secondary = secondaryURL,
+                image_url = image_url
             )
         )
     }
