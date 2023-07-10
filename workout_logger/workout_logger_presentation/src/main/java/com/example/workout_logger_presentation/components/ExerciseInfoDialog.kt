@@ -270,7 +270,7 @@ fun ExerciseInfoDialog(
                                             Log.println(Log.DEBUG, "image urls", "second if")
                                             Image(
                                                 painter = rememberImagePainter(
-                                                    data = "https://wger.de${image_url!!.trim()}",
+                                                    data = "https://wger.de${image_url!!.trim().replace("main","secondary")}",
                                                     builder = {
                                                         crossfade(true)
                                                         decoder(SvgDecoder(context = context))
@@ -327,7 +327,7 @@ fun ExerciseInfoDialog(
                                             Log.println(Log.DEBUG, "image urls", "second if")
                                             Image(
                                                 painter = rememberImagePainter(
-                                                    data = "https://wger.de${image_url!!.trim()}",
+                                                    data = "https://wger.de${image_url!!.trim().replace("main","secondary")}",
                                                     builder = {
                                                         crossfade(true)
                                                         decoder(SvgDecoder(context = context))

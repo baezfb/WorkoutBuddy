@@ -262,7 +262,7 @@ fun TrackableExerciseItem(
                                         if(image_url != null && muscles.find{ it.imageURL.replace("main","secondary") == image_url || it.imageURL == image_url }!!.isFront){
                                             Image(
                                                 painter = rememberImagePainter(
-                                                    data = "https://wger.de${image_url.trim()}",
+                                                    data = "https://wger.de${image_url.trim().replace("main","secondary")}",
                                                     builder = {
                                                         crossfade(true)
                                                         decoder(SvgDecoder(context = context))
@@ -315,7 +315,7 @@ fun TrackableExerciseItem(
                                     if(!muscles.find{ it.imageURL.replace("main","secondary") == image_url || it.imageURL == image_url }!!.isFront && image_url != null){
                                         Image(
                                             painter = rememberImagePainter(
-                                                data = "https://wger.de${image_url.trim()}",
+                                                data = "https://wger.de${image_url.trim().replace("main","secondary")}",
                                                 builder = {
                                                     crossfade(true)
                                                     decoder(SvgDecoder(context = context))
