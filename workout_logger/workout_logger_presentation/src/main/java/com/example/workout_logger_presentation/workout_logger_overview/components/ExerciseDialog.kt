@@ -84,7 +84,8 @@ fun ExerciseDialog(
                                 onValueChange = {
                                     onFilterTextChange(it)
                                 },
-                                onSearch = {
+                                onClear = {
+                                    onFilterTextChange("")
                                     keyboardController?.hide()
                                 },
                                 onFocusChanged = {

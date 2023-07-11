@@ -15,7 +15,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +38,7 @@ import com.hbaez.core.R
 fun SearchTextField(
     text: String,
     onValueChange: (String) -> Unit,
-    onSearch: () -> Unit,
+    onClear: () -> Unit,
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colors.surface,
     hint: String = stringResource(id = R.string.search),
@@ -55,7 +55,7 @@ fun SearchTextField(
             singleLine = true,
             keyboardActions = KeyboardActions(
                 onSearch = {
-                    onSearch()
+                    onClear()
                     defaultKeyboardAction(ImeAction.Search)
                 }
             ),
@@ -90,12 +90,12 @@ fun SearchTextField(
             )
         }
         IconButton(
-            onClick = onSearch,
+            onClick = onClear,
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {
             Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = stringResource(id = R.string.search)
+                imageVector = Icons.Default.Clear,
+                contentDescription = stringResource(id = R.string.clear)
             )
         }
     }

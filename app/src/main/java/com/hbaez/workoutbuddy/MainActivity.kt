@@ -317,13 +317,15 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                         val description = null
                                         val primaryMuscles = null
                                         val secondaryMuscles = null
+                                        val imageURL = null
                                         navController.navigate(
                                             Route.EXERCISE_CREATE +
                                                     "/$createExercise" +
                                                     "/$exerciseName" +
                                                     "/$description" +
                                                     "/$primaryMuscles" +
-                                                    "/$secondaryMuscles"
+                                                    "/$secondaryMuscles" +
+                                                    "/$imageURL"
                                         )
                                     },
                                     onNavigateToEditExercise = { exerciseName, description, primaryMuscles, secondaryMuscles, imageURL ->

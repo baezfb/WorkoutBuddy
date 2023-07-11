@@ -83,8 +83,9 @@ fun SearchExerciseScreen(
                 onValueChange = {
                     viewModel.onEvent(SearchExerciseEvent.OnExerciseNameChange(it))
                 },
-                onSearch = {
+                onClear = {
                     keyboardController?.hide()
+                    viewModel.onEvent(SearchExerciseEvent.OnExerciseNameChange(""))
                     viewModel.onEvent(SearchExerciseEvent.OnSearch)
                            },
                 onFocusChanged = {
