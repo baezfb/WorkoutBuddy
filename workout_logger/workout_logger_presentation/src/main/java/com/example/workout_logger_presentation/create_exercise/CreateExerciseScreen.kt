@@ -44,6 +44,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -82,6 +83,13 @@ fun CreateExerciseScreen(
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    val colorMatrix = floatArrayOf(
+        -1f, 0f, 0f, 0f, 255f,
+        0f, -1f, 0f, 0f, 255f,
+        0f, 0f, -1f, 0f, 255f,
+        0f, 0f, 0f, 1f, 0f
+    ) // inverts color
+
     LaunchedEffect(Unit){
         viewModel.uiEvent.collect{ event ->
             when(event) {
@@ -112,14 +120,38 @@ fun CreateExerciseScreen(
                 modifier = Modifier
                     .size(96.dp)
             ) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .align(Alignment.CenterVertically),
-                    text = "+\nAdd Picture",
-                    style = MaterialTheme.typography.subtitle2,
-                    textAlign = TextAlign.Center,
-                )
+                if(state.image_1 == null){
+                    Text(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .align(Alignment.CenterVertically),
+                        text = "+\nAdd Picture",
+                        style = MaterialTheme.typography.subtitle2,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+                else{
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .align(Alignment.CenterVertically)
+                            .graphicsLayer(shape = CircleShape)
+                    ) {
+                        Image(
+                            modifier = Modifier.fillMaxSize(),
+                            painter = rememberImagePainter(
+                                data = state.image_1,
+                                builder = {
+                                    crossfade(true)
+                                    error(R.drawable.ic_exercise)
+                                    fallback(R.drawable.ic_exercise)
+                                }
+                            ),
+                            contentDescription = "main exercise image",
+                            colorFilter = ColorFilter.colorMatrix(ColorMatrix(colorMatrix))
+                        )
+                    }
+                }
             }
             Spacer(modifier = Modifier.width(spacing.spaceSmall))
             NameField(
@@ -190,7 +222,7 @@ fun CreateExerciseScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ){
-                repeat(3) {
+                repeat(3) { index ->
                     OutlinedButton(
                         onClick = { /* Handle add picture button click */ },
                         shape = CircleShape,
@@ -198,11 +230,41 @@ fun CreateExerciseScreen(
                         modifier = Modifier
                             .size(96.dp)
                     ) {
-                        Icon(
-                            modifier = Modifier.fillMaxSize(.6f),
-                            imageVector = Icons.Default.Add,
-                            contentDescription = stringResource(id = R.string.add)
-                        )
+                        val imageState = when (index) {
+                            0 -> state.image_2
+                            1 -> state.image_3
+                            2 -> state.image_4
+                            else -> null
+                        }
+                        if(imageState == null){
+                            Icon(
+                                modifier = Modifier.fillMaxSize(.6f),
+                                imageVector = Icons.Default.Add,
+                                contentDescription = stringResource(id = R.string.add)
+                            )
+                        }
+                        else {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .align(Alignment.CenterVertically)
+                                    .graphicsLayer(shape = CircleShape)
+                            ) {
+                                Image(
+                                    modifier = Modifier.fillMaxSize(),
+                                    painter = rememberImagePainter(
+                                        data = imageState,
+                                        builder = {
+                                            crossfade(true)
+                                            error(R.drawable.ic_exercise)
+                                            fallback(R.drawable.ic_exercise)
+                                        }
+                                    ),
+                                    contentDescription = "main exercise image",
+                                    colorFilter = ColorFilter.colorMatrix(ColorMatrix(colorMatrix))
+                                )
+                            }
+                        }
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                 }
