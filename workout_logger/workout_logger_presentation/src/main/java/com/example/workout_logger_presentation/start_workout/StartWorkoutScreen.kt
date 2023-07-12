@@ -259,10 +259,7 @@ fun StartWorkoutScreen(
                     timerJump = state.timerJump,
                     handleColor = MaterialTheme.colors.secondary,
                     inactiveBarColor = MaterialTheme.colors.primaryVariant,
-                    activeBarColor = MaterialTheme.colors.primary,
-                    onTimeJump = {
-
-                    }
+                    activeBarColor = MaterialTheme.colors.primary
                 )
             }
         }

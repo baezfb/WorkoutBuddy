@@ -74,7 +74,6 @@ fun Timer(
     modifier: Modifier = Modifier,
     initialValue: Float = 1f,
     strokeWidth: Dp = 5.dp,
-    onTimeJump: (increase: Boolean) -> Unit,
     viewModel: StartWorkoutViewModel = hiltViewModel()
     ){
 
@@ -180,8 +179,8 @@ fun Timer(
                     text = "- ${timerJump}s",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Black,
-                    color = if(state.timerStatus == TimerStatus.RUNNING) MaterialTheme.colors.primaryVariant else Color.Gray,
-                    modifier = Modifier.clickable(enabled = state.timerStatus == TimerStatus.RUNNING) {
+                    color = if(state.timerStatus == TimerStatus.RUNNING && Duration.ofMillis(currentTime) > Duration.ofSeconds(timerJump)) MaterialTheme.colors.primaryVariant else Color.Gray,
+                    modifier = Modifier.clickable(enabled = (state.timerStatus == TimerStatus.RUNNING && Duration.ofMillis(currentTime) > Duration.ofSeconds(timerJump))) {
                         StartWorkoutViewModel.removeAlarm(context)
                         NotificationUtil.hideTimerNotification(context)
                         val remainingTime = state.timeDuration.toMillis() - (Date().time - state.startTime.time)
