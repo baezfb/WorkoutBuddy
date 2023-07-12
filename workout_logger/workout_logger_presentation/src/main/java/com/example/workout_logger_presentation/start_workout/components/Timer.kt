@@ -3,17 +3,25 @@ package com.example.workout_logger_presentation.start_workout.components
 import android.content.Context
 import android.os.Build
 import android.os.VibratorManager
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,11 +49,14 @@ import com.example.workout_logger_presentation.start_workout.TimerStatus
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
 import com.hbaez.core.R
+import com.hbaez.core_ui.LocalSpacing
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.Math.PI
+import java.time.Duration
+import java.util.Date
 import java.util.concurrent.TimeUnit
 import kotlin.math.cos
 import kotlin.math.sin
@@ -59,9 +70,11 @@ fun Timer(
     inactiveBarColor: Color,
     activeBarColor: Color,
     pagerState: PagerState,
+    timerJump: Long,
     modifier: Modifier = Modifier,
     initialValue: Float = 1f,
     strokeWidth: Dp = 5.dp,
+    onTimeJump: (increase: Boolean) -> Unit,
     viewModel: StartWorkoutViewModel = hiltViewModel()
     ){
 
@@ -69,9 +82,10 @@ fun Timer(
     val context = LocalContext.current
     val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
     val vibrator = vibratorManager.defaultVibrator
+    val spacing = LocalSpacing.current
 
     val state = viewModel.state
-    val currentTime = viewModel.currentTime
+    val currentTime by derivedStateOf { viewModel.currentTime }
 
     var size by remember {
         mutableStateOf(IntSize.Zero)
@@ -150,12 +164,51 @@ fun Timer(
             )
         }
         // add value of the timer
-        Text(
-            text = if (state.timerStatus == TimerStatus.RUNNING){ formatTime(currentTime / 1000L) } else { stringResource(R.string.null_time) },
-            fontSize = 44.sp,
-            fontWeight = FontWeight.Bold,
-            color = if (state.timerStatus == TimerStatus.RUNNING){ Color.White } else { Color.Gray }
-        )
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = if (state.timerStatus == TimerStatus.RUNNING){ formatTime(currentTime / 1000L) } else { stringResource(R.string.null_time) },
+                fontSize = 44.sp,
+                fontWeight = FontWeight.Bold,
+                color = if (state.timerStatus == TimerStatus.RUNNING){ Color.White } else { Color.Gray }
+            )
+            Spacer(modifier = Modifier.width(spacing.spaceMedium))
+            Row {
+                Text(
+                    text = "- ${timerJump}s",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Black,
+                    color = if(state.timerStatus == TimerStatus.RUNNING) MaterialTheme.colors.primaryVariant else Color.Gray,
+                    modifier = Modifier.clickable(enabled = state.timerStatus == TimerStatus.RUNNING) {
+                        StartWorkoutViewModel.removeAlarm(context)
+                        NotificationUtil.hideTimerNotification(context)
+                        val remainingTime = state.timeDuration.toMillis() - (Date().time - state.startTime.time)
+                        val wakeupTime = StartWorkoutViewModel.setAlarm(context = context, timeDuration = Duration.ofMillis(remainingTime) - Duration.ofSeconds(timerJump))
+                        NotificationUtil.showTimerRunning(context, wakeupTime)
+                        viewModel.onEvent(StartWorkoutEvent.OnTimeJump(false, timerJump))
+                    }
+                        .padding(spacing.spaceSmall)
+                )
+                Spacer(modifier = Modifier.width(spacing.spaceLarge))
+                Text(
+                    text = "+ ${timerJump}s",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Black,
+                    color = if(state.timerStatus == TimerStatus.RUNNING) MaterialTheme.colors.primaryVariant else Color.Gray,
+                    modifier = Modifier.clickable(enabled = state.timerStatus == TimerStatus.RUNNING) {
+                        StartWorkoutViewModel.removeAlarm(context)
+                        NotificationUtil.hideTimerNotification(context)
+                        val remainingTime = state.timeDuration.toMillis() - (Date().time - state.startTime.time)
+                        val wakeupTime = StartWorkoutViewModel.setAlarm(context = context, timeDuration = Duration.ofMillis(remainingTime) + Duration.ofSeconds(timerJump))
+                        NotificationUtil.showTimerRunning(context, wakeupTime)
+                        viewModel.onEvent(StartWorkoutEvent.OnTimeJump(true, timerJump))
+                    }
+                        .padding(spacing.spaceSmall)
+                )
+            }
+        }
     }
 }
 
