@@ -111,32 +111,48 @@ class StartWorkoutViewModel @Inject constructor(
                 )
             }
             is StartWorkoutEvent.OnCheckboxChange -> {
-                if(state.currRunningIndex != event.currRunningIndex){
+                if(state.currRunningIndex != event.currRunningIndex && state.timerStatus != TimerStatus.RUNNING){
                     state = state.copy(
                         startTime = Date()
                     )
                 }
-                Log.println(Log.DEBUG, "loggerliststates size", state.loggerListStates.size.toString())
                 var counter = 0
-                state = state.copy(
-                    loggerListStates = state.loggerListStates.toList().map {
-                        if(counter == event.page){
-                            counter++
-                            val tmp = it.isCompleted.toMutableList()
-                            tmp[event.index] = event.isChecked
-                            it.copy(isCompleted = tmp, timerStatus = TimerStatus.RUNNING)
-                        } else {
-                            counter++
-                            it
-                        }
-                    }.toMutableList(),
-                    timerStatus = event.timerStatus,
-                    pagerIndex = event.page,
-                    timeDuration = Duration.ofSeconds(state.loggerListStates[event.page].rest[event.index].toLong()),
-                    currRunningIndex = event.currRunningIndex,
-                    currRunningId = event.rowId
-                )
-                currentTime = if(event.isChecked && event.timerStatus == TimerStatus.RUNNING) { state.timeDuration.seconds * 1000L } else currentTime
+                if(event.shouldUpdateTime){
+                    state = state.copy(
+                        loggerListStates = state.loggerListStates.toList().map {
+                            if(counter == event.page){
+                                counter++
+                                val tmp = it.isCompleted.toMutableList()
+                                tmp[event.index] = event.isChecked
+                                it.copy(isCompleted = tmp, timerStatus = TimerStatus.RUNNING)
+                            } else {
+                                counter++
+                                it
+                            }
+                        }.toMutableList(),
+                        timerStatus = event.timerStatus,
+                        pagerIndex = event.page,
+                        timeDuration = Duration.ofSeconds(state.loggerListStates[event.page].rest[event.index].toLong()),
+                        currRunningIndex = event.currRunningIndex,
+                        currRunningId = event.rowId
+                    )
+                    currentTime = if(event.isChecked && event.timerStatus == TimerStatus.RUNNING) { state.timeDuration.seconds * 1000L } else currentTime
+                }
+                else {
+                    state = state.copy(
+                        loggerListStates = state.loggerListStates.toList().map {
+                            if(counter == event.page){
+                                counter++
+                                val tmp = it.isCompleted.toMutableList()
+                                tmp[event.index] = event.isChecked
+                                it.copy(isCompleted = tmp, timerStatus = TimerStatus.RUNNING)
+                            } else {
+                                counter++
+                                it
+                            }
+                        }.toMutableList()
+                    )
+                }
             }
             is StartWorkoutEvent.ChangeRemainingTime -> {
                 val diff = Date().time - state.startTime.time

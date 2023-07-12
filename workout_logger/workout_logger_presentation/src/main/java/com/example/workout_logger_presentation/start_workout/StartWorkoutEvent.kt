@@ -12,7 +12,7 @@ sealed class StartWorkoutEvent {
 
     data class OnWeightChange(val weight: String, val index: Int, val rowId: Int, val page: Int): StartWorkoutEvent()
 
-    data class OnCheckboxChange(val isChecked: Boolean, val timerStatus: TimerStatus, val currRunningIndex: Int, val index: Int, val rowId: Int, val page: Int): StartWorkoutEvent()
+    data class OnCheckboxChange(val isChecked: Boolean, val timerStatus: TimerStatus, val currRunningIndex: Int, val index: Int, val rowId: Int, val page: Int, val shouldUpdateTime: Boolean): StartWorkoutEvent()
 
     object ChangeRemainingTime: StartWorkoutEvent()
 
