@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.workout_logger_domain.use_case.ExerciseTrackerUseCases
@@ -206,7 +207,7 @@ class StartWorkoutViewModel @Inject constructor(
                                     Log.println(Log.DEBUG, "it(loggerlist) exercisename", it.exerciseName)
                                     event.workoutTemplates.forEach { workoutTemplate ->
                                         if(workoutTemplate.name == state.workoutName && workoutTemplate.exerciseName == it.exerciseName){
-                                            repsList.add(workoutTemplate.reps[index])
+                                            repsList.add(workoutTemplate.reps.getOrElse(index) { workoutTemplate.reps.last() })
                                             Log.println(Log.DEBUG, "reached inside", repsList.toString())
                                         }
                                     }
@@ -214,7 +215,7 @@ class StartWorkoutViewModel @Inject constructor(
                                 if(it.weight[index].isBlank()){
                                     event.workoutTemplates.forEach {workoutTemplate ->
                                         if(workoutTemplate.name == state.workoutName && workoutTemplate.exerciseName == it.exerciseName){
-                                            weightList.add(workoutTemplate.weight[index])
+                                            weightList.add(workoutTemplate.weight.getOrElse(index) { workoutTemplate.weight.last() })
                                         }
                                     }
                                 } else weightList.add(it.weight[index])
@@ -223,14 +224,14 @@ class StartWorkoutViewModel @Inject constructor(
                                 if(it.reps[index].isBlank()){
                                     event.workoutTemplates.forEach {workoutTemplate ->
                                         if(workoutTemplate.name == state.workoutName && workoutTemplate.exerciseName == it.exerciseName){
-                                            repsList.add(workoutTemplate.reps[index])
+                                            repsList.add(workoutTemplate.reps.getOrElse(index) { workoutTemplate.reps.last() })
                                         }
                                     }
                                 } else repsList.add(it.reps[index])
                                 if(it.weight[index].isBlank()){
                                     event.workoutTemplates.forEach {workoutTemplate ->
                                         if(workoutTemplate.name == state.workoutName && workoutTemplate.exerciseName == it.exerciseName){
-                                            weightList.add(workoutTemplate.weight[index])
+                                            weightList.add(workoutTemplate.weight.getOrElse(index) { workoutTemplate.weight.last() })
                                         }
                                     }
                                 } else weightList.add(it.weight[index])
@@ -262,16 +263,69 @@ class StartWorkoutViewModel @Inject constructor(
             }
 
             is StartWorkoutEvent.OnTimeJump -> {
-                if(event.increase){
-                    state = state.copy(
+                state = if(event.increase){
+                    state.copy(
                         timeDuration = state.timeDuration + Duration.ofSeconds(event.timeJump)
                     )
-                }
-                else {
-                    state = state.copy(
+                } else {
+                    state.copy(
                         timeDuration = state.timeDuration - Duration.ofSeconds(event.timeJump)
                     )
                 }
+            }
+
+            is StartWorkoutEvent.OnRemoveSet -> {
+                var counter = 0
+                state = state.copy(
+                    loggerListStates = state.loggerListStates.toList().map {
+                        if(counter == event.page){
+                            counter++
+                            val tmpRest = it.rest.toMutableList()
+                            tmpRest.removeAt(it.rest.size - 1)
+                            val tmpReps = it.reps.toMutableList()
+                            tmpReps.removeAt(it.reps.size - 1)
+                            val tmpWeight = it.weight.toMutableList()
+                            tmpWeight.removeAt(it.weight.size - 1)
+                            val tmpCompleted = it.isCompleted.toMutableList()
+                            tmpCompleted.removeAt(it.isCompleted.size - 1)
+                            val tmpColor = it.checkedColor.toMutableList()
+                            tmpColor.removeAt(it.checkedColor.size - 1)
+                            it.copy(
+                                sets = (it.sets.toInt() - 1).toString(),
+                                rest = tmpRest.toList(),
+                                reps = tmpReps.toList(),
+                                weight = tmpWeight.toList(),
+                                isCompleted = tmpCompleted,
+                                checkedColor = tmpColor
+                            )
+                        } else {
+                            counter++
+                            it
+                        }
+                    }.toMutableList()
+                )
+            }
+
+            is StartWorkoutEvent.OnAddSet -> {
+                var counter = 0
+                state = state.copy(
+                    loggerListStates = state.loggerListStates.toList().map {
+                        if(counter == event.page){
+                            counter++
+                            it.copy(
+                                sets = (it.sets.toInt() + 1).toString(),
+                                rest = it.rest + it.rest.last(),
+                                reps = it.reps + it.reps.last(),
+                                weight = it.weight + it.weight.last(),
+                                isCompleted = it.isCompleted + false,
+                                checkedColor = it.checkedColor + Color.DarkGray
+                            )
+                        } else {
+                            counter++
+                            it
+                        }
+                    }.toMutableList()
+                )
             }
         }
     }

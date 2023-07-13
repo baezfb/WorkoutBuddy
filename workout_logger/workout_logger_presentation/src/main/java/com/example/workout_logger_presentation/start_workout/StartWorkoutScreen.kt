@@ -214,6 +214,7 @@ fun StartWorkoutScreen(
                     Spacer(modifier = Modifier.height(spacing.spaceMedium))
                     ExerciseCard(
                         page = page,
+                        timerStatus = state.timerStatus,
                         loggerListState = state.loggerListStates[page],
                         workoutTemplate = currentExercise,
                         onRepsChange = { reps, index, id ->
@@ -229,7 +230,7 @@ fun StartWorkoutScreen(
                             }
                             if(isChecked && (state.timerStatus == TimerStatus.START || state.timerStatus == TimerStatus.FINISHED)){ // non checked clicked while timer not running
                                 viewModel.onEvent(StartWorkoutEvent.OnCheckboxChange(isChecked= true, timerStatus = TimerStatus.RUNNING, currRunningIndex = index, index = index, rowId = id, page = page, shouldUpdateTime = true))
-                                val wakeupTime = StartWorkoutViewModel.setAlarm(context = context, timeDuration = Duration.ofSeconds(currentExercise.rest[index].toLong()))
+                                val wakeupTime = StartWorkoutViewModel.setAlarm(context = context, timeDuration = Duration.ofSeconds((currentExercise.rest.getOrElse(index) { currentExercise.rest.last() }).toLong()))
                                 NotificationUtil.showTimerRunning(context, wakeupTime)
                                 viewModel.onEvent(StartWorkoutEvent.ChangeCheckboxColor(color = Color(255,153,51), id = id, index = index))
                             }
@@ -242,6 +243,12 @@ fun StartWorkoutScreen(
                             else if(!isChecked && state.currRunningIndex != index){ // checked clicked while that row does not have timer running
                                 viewModel.onEvent(StartWorkoutEvent.OnCheckboxChange(isChecked= false, timerStatus = state.timerStatus, currRunningIndex = state.currRunningIndex, index = index, rowId = id, page = page, shouldUpdateTime = false))
                             }
+                        },
+                        onRemoveSet = {
+                            viewModel.onEvent(StartWorkoutEvent.OnRemoveSet(page))
+                        },
+                        onAddSet = {
+                            viewModel.onEvent(StartWorkoutEvent.OnAddSet(page))
                         }
                     )
                 }

@@ -33,4 +33,8 @@ sealed class StartWorkoutEvent {
     data class OnToggleExerciseDescription(val trackableExerciseState: TrackableExerciseState): StartWorkoutEvent()
 
     data class OnTimeJump(val increase: Boolean, val timeJump: Long): StartWorkoutEvent()
+
+    data class OnAddSet(val page: Int): StartWorkoutEvent()
+
+    data class OnRemoveSet(val page: Int): StartWorkoutEvent()
 }
