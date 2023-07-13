@@ -46,8 +46,6 @@ import coil.annotation.ExperimentalCoilApi
 import com.example.workout_logger_presentation.start_workout.StartWorkoutEvent
 import com.example.workout_logger_presentation.start_workout.StartWorkoutViewModel
 import com.example.workout_logger_presentation.start_workout.TimerStatus
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.PagerState
 import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
 import kotlinx.coroutines.CoroutineScope
@@ -62,14 +60,12 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 @RequiresApi(Build.VERSION_CODES.S)
-@OptIn(ExperimentalPagerApi::class)
 @ExperimentalCoilApi
 @Composable
 fun Timer(
     handleColor: Color,
     inactiveBarColor: Color,
     activeBarColor: Color,
-    pagerState: PagerState,
     timerJump: Long,
     modifier: Modifier = Modifier,
     initialValue: Float = 1f,

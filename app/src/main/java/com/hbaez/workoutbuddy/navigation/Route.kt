@@ -21,6 +21,7 @@ object Route {
     const val WORKOUT_SEARCH = "workout_search"
 
     const val EXERCISE_CREATE = "exercise_create"
+    const val EXERCISE_START = "exercise_start"
 
     const val APP_SETTINGS = "app_settings"
 

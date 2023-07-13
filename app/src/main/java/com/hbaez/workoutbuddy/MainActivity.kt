@@ -41,6 +41,7 @@ import com.example.chatbot_presentation.chat_overview.ChatScreen
 import com.example.workout_logger_presentation.create_exercise.CreateExerciseScreen
 import com.example.workout_logger_presentation.create_workout.CreateWorkoutScreen
 import com.example.workout_logger_presentation.search_exercise.SearchExerciseScreen
+import com.example.workout_logger_presentation.start_exercise.StartExerciseScreen
 import com.example.workout_logger_presentation.start_workout.StartWorkoutScreen
 import com.example.workout_logger_presentation.workout_logger_overview.WorkoutLoggerOverviewScreen
 import com.google.android.gms.wearable.CapabilityClient
@@ -339,6 +340,15 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                                     "/$secondaryMuscles" +
                                                     "/${if(imageURL.isNotEmpty()) Uri.encode(imageURL.joinToString(",")) else null}"
                                         )
+                                    },
+                                    onNavigateToStartExercise = { exerciseName, day, month, year ->
+                                        navController.navigate(
+                                            Route.EXERCISE_START +
+                                                    "/$exerciseName" +
+                                                    "/$day" +
+                                                    "/$month" +
+                                                    "/$year"
+                                        )
                                     }
                                 )
                             }
@@ -468,6 +478,42 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                 createExercise = createExercise,
                                 onNavigateUp = {
                                     navController.navigateUp()
+                                }
+                            )
+                        }
+
+                        composable(
+                            route = Route.EXERCISE_START +
+                                    "/{exerciseName}" +
+                                    "/{dayOfMonth}" +
+                                    "/{month}" +
+                                    "/{year}",
+                            arguments = listOf(
+                                navArgument("exerciseName") {
+                                    type = NavType.StringType
+                                },
+                                navArgument("dayOfMonth") {
+                                    type = NavType.IntType
+                                },
+                                navArgument("month") {
+                                    type = NavType.IntType
+                                },
+                                navArgument("year") {
+                                    type = NavType.IntType
+                                }
+                            )
+                        ) {
+                            val exerciseName = it.arguments?.getString("exerciseName") ?: ""
+                            val dayOfMonth = it.arguments?.getInt("dayOfMonth")!!
+                            val month = it.arguments?.getInt("month")!!
+                            val year = it.arguments?.getInt("year")!!
+                            StartExerciseScreen(
+                                exerciseName = exerciseName,
+                                dayOfMonth = dayOfMonth,
+                                month = month,
+                                year = year,
+                                onNavigateUp = {
+                                    /*TODO*/
                                 }
                             )
                         }

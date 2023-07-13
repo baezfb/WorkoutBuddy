@@ -262,7 +262,6 @@ fun StartWorkoutScreen(
                 Timer(
                     modifier = Modifier
                         .size(200.dp),
-                    pagerState = pagerState,
                     timerJump = state.timerJump,
                     handleColor = MaterialTheme.colors.secondary,
                     inactiveBarColor = MaterialTheme.colors.primaryVariant,

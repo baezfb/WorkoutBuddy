@@ -50,6 +50,7 @@ fun WorkoutLoggerOverviewScreen(
     onNavigateToStartWorkout: (workoutName: String, day: Int, month: Int, year: Int, workoutIds: String) -> Unit,
     onNavigateToCreateExercise: () -> Unit,
     onNavigateToEditExercise: (exerciseName: String, description: String, primaryMuscles: String?, secondaryMuscles: String?, imageURL: List<String>) -> Unit,
+    onNavigateToStartExercise: (exerciseName: String, day: Int, month: Int, year: Int) -> Unit,
     viewModel: WorkoutLoggerOverviewModel = hiltViewModel()
 ) {
     val spacing = LocalSpacing.current
@@ -142,7 +143,12 @@ fun WorkoutLoggerOverviewScreen(
 
                             )
                         } else {
-                            /*TODO*/
+                            onNavigateToStartExercise(
+                                it.exercise.name!!,
+                                state.date.dayOfMonth,
+                                state.date.monthValue,
+                                state.date.year,
+                            )
                         }
                     },
                     onFilterTextChange = {
@@ -209,7 +215,10 @@ fun WorkoutLoggerOverviewScreen(
                 Spacer(modifier = Modifier.width(spacing.spaceExtraSmall))
                 AddButton(
                     text = stringResource(id = R.string.start_exercise),
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        showExercise.value = true
+                        showExerciseEdit.value = false
+                              },
                     modifier = Modifier.weight(1f),
                     color = MaterialTheme.colors.primary,
                     icon = Icons.Default.AddCircle
