@@ -172,7 +172,6 @@ class StartWorkoutViewModel @Inject constructor(
                 }
             }
             is StartWorkoutEvent.TimerFinished -> {
-                Log.println(Log.DEBUG, "!!!! current page", state.pagerIndex.toString())
                 state = state.copy(
                     timerStatus = TimerStatus.FINISHED,
                     currRunningIndex = -1,

@@ -2,7 +2,6 @@ package com.example.workout_logger_presentation.start_exercise
 
 import androidx.compose.ui.graphics.Color
 import com.example.workout_logger_presentation.search_exercise.TrackableExerciseState
-import com.example.workout_logger_presentation.start_workout.TimerStatus
 
 sealed class StartExerciseEvent {
     data class OnRepsChange(val reps: String, val index: Int): StartExerciseEvent()
@@ -11,9 +10,9 @@ sealed class StartExerciseEvent {
 
     data class OnCheckboxChange(val isChecked: Boolean, val timerStatus: TimerStatus, val currRunningIndex: Int, val index: Int, val shouldUpdateTime: Boolean): StartExerciseEvent()
 
-    data class ChangeCheckboxColor(val color: Color, val id: Int, val index: Int): StartExerciseEvent()
+    data class ChangeCheckboxColor(val color: Color, val index: Int): StartExerciseEvent()
 
-    data class OnSubmitWorkout(val exerciseName: String, val exerciseID: String, val sets: String, val reps: List<String>, val weight: List<String>, val dayOfMonth: Int, val month: Int, val year: Int): StartExerciseEvent()
+    data class OnSubmitWorkout(val exerciseName: String, val exerciseID: String, val sets: String, val reps: List<String>, val weight: List<String>, val rest: List<String>, val dayOfMonth: Int, val month: Int, val year: Int): StartExerciseEvent()
 
     data class GetExerciseInfo(val exerciseName: String): StartExerciseEvent()
 
@@ -26,4 +25,6 @@ sealed class StartExerciseEvent {
     object OnRemoveSet: StartExerciseEvent()
 
     object ChangeRemainingTime: StartExerciseEvent()
+
+    object TimerFinished: StartExerciseEvent()
 }

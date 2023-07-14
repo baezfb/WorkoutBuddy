@@ -513,7 +513,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                 month = month,
                                 year = year,
                                 onNavigateUp = {
-                                    /*TODO*/
+                                    navController.navigateUp()
                                 }
                             )
                         }
