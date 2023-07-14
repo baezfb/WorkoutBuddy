@@ -114,7 +114,7 @@ fun DraggableRow(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .border(BorderStroke(1.dp, MaterialTheme.colors.onBackground), RoundedCornerShape(4.dp))
+            .border(BorderStroke(1.dp, MaterialTheme.colors.background), RoundedCornerShape(4.dp))
             .padding(horizontal = 2.dp)
     ){
         Row(

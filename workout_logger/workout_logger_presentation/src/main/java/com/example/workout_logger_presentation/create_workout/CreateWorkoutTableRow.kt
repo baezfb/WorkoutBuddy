@@ -38,7 +38,7 @@ fun CreateWorkoutTableRow(
 
     Spacer(modifier = Modifier.height(spacing.spaceMedium))
     Row(
-        modifier = Modifier.background(MaterialTheme.colors.background)
+        modifier = Modifier.background(MaterialTheme.colors.surface)
     ){
         Text(
             text = (sets.toInt() + 1).toString(),
