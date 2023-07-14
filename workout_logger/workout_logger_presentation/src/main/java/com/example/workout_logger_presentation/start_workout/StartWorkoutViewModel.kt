@@ -295,8 +295,8 @@ class StartWorkoutViewModel @Inject constructor(
                                 rest = tmpRest.toList(),
                                 reps = tmpReps.toList(),
                                 weight = tmpWeight.toList(),
-                                isCompleted = tmpCompleted,
-                                checkedColor = tmpColor
+                                isCompleted = tmpCompleted.toList(),
+                                checkedColor = tmpColor.toList()
                             )
                         } else {
                             counter++

@@ -85,7 +85,6 @@ fun StartExerciseScreen(
             }
         },
         content = { padding ->
-            Spacer(modifier = Modifier.height(spacing.spaceSmall))
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -117,10 +116,10 @@ fun StartExerciseScreen(
                     reps = state.reps,
                     weight = state.weight,
                     onRepsChange = { reps, index ->
-//                        viewModel.onEvent(StartWorkoutEvent.OnRepsChange(reps = reps, index = index, rowId = id, page = page))
+                        viewModel.onEvent(StartExerciseEvent.OnRepsChange(reps = reps, index = index))
                     },
                     onWeightChange = { weight, index ->
-//                        viewModel.onEvent(StartWorkoutEvent.OnWeightChange(weight = weight, index = index, rowId = id, page = page))
+                        viewModel.onEvent(StartExerciseEvent.OnWeightChange(weight = weight, index = index))
                     },
                     onCheckboxChange = { isChecked, index ->
 //                        if(isChecked && state.currRunningIndex != index && state.timerStatus == TimerStatus.RUNNING){ // non checked clicked while timer already running
@@ -144,10 +143,10 @@ fun StartExerciseScreen(
 //                        }
                     },
                     onRemoveSet = {
-//                        viewModel.onEvent(StartWorkoutEvent.OnRemoveSet(page))
+                        viewModel.onEvent(StartExerciseEvent.OnRemoveSet)
                     },
                     onAddSet = {
-//                        viewModel.onEvent(StartWorkoutEvent.OnAddSet(page))
+                        viewModel.onEvent(StartExerciseEvent.OnAddSet)
                     }
                 )
             }
