@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -91,7 +92,7 @@ fun ExerciseCard(
                     Spacer(modifier = Modifier.width(spacing.spaceSmall))
                     IconButton(
                         onClick = { onShowInfo() },
-                        icon = Icons.Default.Info,
+                        icon = Icons.Outlined.Info,
                         padding = 0.dp
                     )
                 }

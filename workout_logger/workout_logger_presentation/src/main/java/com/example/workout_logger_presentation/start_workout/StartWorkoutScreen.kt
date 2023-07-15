@@ -19,6 +19,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -207,7 +208,7 @@ fun StartWorkoutScreen(
                             onClick = {
                                       showExerciseInfoDialog.value = true
                                       },
-                            icon = Icons.Default.Info,
+                            icon = Icons.Outlined.Info,
                             padding = 0.dp
                         )
                     }
