@@ -112,6 +112,8 @@ class UserAuthViewModel @Inject constructor(
                     event.openAndPopUp("welcome", "user_auth_signup")
                 }
             }
+
+            UserAuthEvent.OnContinueAsGuestClick -> TODO()
         }
     }
 }

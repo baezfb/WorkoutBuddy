@@ -38,101 +38,113 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.annotation.ExperimentalCoilApi
 import com.example.chatbot_presentation.chat_overview.model.Message
 import com.hbaez.core_ui.LocalSpacing
+import com.hexascribe.chatbotbuilder.ChatBot
+import com.hexascribe.chatbotbuilder.base.RoleEnum
 
 @Composable
-fun ChatScreen(
-    viewModel: ChatViewModel = hiltViewModel()
-){
-    val spacing = LocalSpacing.current
-    val state = viewModel.state
-    Scaffold(
-        topBar = { AppBar(title = "Chatbot") },
-        content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = spacing.spaceExtraLarge + spacing.spaceSmall)
-            ) {
-                MessageList(
-                    modifier = Modifier.weight(1f),
-                    messages = state.messages
-                )
-                UserInputField(
-                    modifier = Modifier.padding(top = 16.dp)
-                )
-            }
-        }
-    )
+fun ChatScreen() {
+    val chatBot = ChatBot.Builder("PLACEHOLDER")
+        .setDarkMode(true)
+        .addMessage(RoleEnum.ASSISTANT, "Hi, how can I help you today?")
+        .addPreSeededMessage(RoleEnum.SYSTEM, "You are a helpful seller car assistant")
+        .setInputFieldBorderWidth(1)
+        .build()
+    chatBot.ComposeScreen()
 }
-
-@Composable
-fun AppBar(title: String) {
-    TopAppBar(
-        title = { Text(text = title) },
-        backgroundColor = MaterialTheme.colors.primary,
-        contentColor = MaterialTheme.colors.onSecondary
-    )
-}
-
-@Composable
-fun MessageList(
-    modifier: Modifier = Modifier,
-    messages: List<Message>
-) {
-    LazyColumn(
-        modifier = modifier,
-        reverseLayout = true
-    ) {
-        messages.forEach{
-            item {
-                ChatBubble(message = it.text, user = it.user)
-            }
-        }
-    }
-}
-
-@Composable
-fun ChatBubble(message: String, user: Boolean) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
-        horizontalArrangement = if(user) Arrangement.End else Arrangement.Start
-    ) {
-        Box(
-            modifier = Modifier
-                .background(
-                    if (user) MaterialTheme.colors.primaryVariant else MaterialTheme.colors.primarySurface,
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .padding(8.dp)
-        ) {
-            Text(text = message, color = MaterialTheme.colors.onSecondary)
-        }
-    }
-}
-
-@Composable
-fun UserInputField(modifier: Modifier = Modifier) {
-    var message by remember { mutableStateOf("") }
-
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        TextField(
-            value = message,
-            onValueChange = { message = it/*TODO*/ },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
-            textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
-            colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.surface),
-            trailingIcon = { Icon(
-                imageVector = Icons.Default.Send,
-                contentDescription = "Send",
-                tint = Color.LightGray
-            ) },
-            placeholder = { Text(text = "Type your message...") },
-        )
-    }
-}
+//@Composable
+//fun ChatScreen(
+//    viewModel: ChatViewModel = hiltViewModel()
+//){
+//    val spacing = LocalSpacing.current
+//    val state = viewModel.state
+//    Scaffold(
+//        topBar = { AppBar(title = "Chatbot") },
+//        content = {
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .padding(bottom = spacing.spaceExtraLarge + spacing.spaceSmall)
+//            ) {
+//                MessageList(
+//                    modifier = Modifier.weight(1f),
+//                    messages = state.messages
+//                )
+//                UserInputField(
+//                    modifier = Modifier.padding(top = 16.dp)
+//                )
+//            }
+//        }
+//    )
+//}
+//
+//@Composable
+//fun AppBar(title: String) {
+//    TopAppBar(
+//        title = { Text(text = title) },
+//        backgroundColor = MaterialTheme.colors.primary,
+//        contentColor = MaterialTheme.colors.onSecondary
+//    )
+//}
+//
+//@Composable
+//fun MessageList(
+//    modifier: Modifier = Modifier,
+//    messages: List<Message>
+//) {
+//    LazyColumn(
+//        modifier = modifier,
+//        reverseLayout = true
+//    ) {
+//        messages.forEach{
+//            item {
+//                ChatBubble(message = it.text, user = it.user)
+//            }
+//        }
+//    }
+//}
+//
+//@Composable
+//fun ChatBubble(message: String, user: Boolean) {
+//    Row(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(bottom = 8.dp),
+//        horizontalArrangement = if(user) Arrangement.End else Arrangement.Start
+//    ) {
+//        Box(
+//            modifier = Modifier
+//                .background(
+//                    if (user) MaterialTheme.colors.primaryVariant else MaterialTheme.colors.primarySurface,
+//                    shape = RoundedCornerShape(8.dp)
+//                )
+//                .padding(8.dp)
+//        ) {
+//            Text(text = message, color = MaterialTheme.colors.onSecondary)
+//        }
+//    }
+//}
+//
+//@Composable
+//fun UserInputField(modifier: Modifier = Modifier) {
+//    var message by remember { mutableStateOf("") }
+//
+//    Box(
+//        modifier = Modifier.fillMaxWidth(),
+//        contentAlignment = Alignment.CenterEnd
+//    ) {
+//        TextField(
+//            value = message,
+//            onValueChange = { message = it/*TODO*/ },
+//            modifier = Modifier.fillMaxWidth(),
+//            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+//            textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
+//            colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.surface),
+//            trailingIcon = { Icon(
+//                imageVector = Icons.Default.Send,
+//                contentDescription = "Send",
+//                tint = Color.LightGray
+//            ) },
+//            placeholder = { Text(text = "Type your message...") },
+//        )
+//    }
+//}
