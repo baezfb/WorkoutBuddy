@@ -147,7 +147,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         trace(SAVE_WORKOUT_TEMPLATE) {
             val updateData = mutableMapOf<String, Any>()
             updateData["currentSet"] = workoutTemplate.currentSet
-            updateData["exerciseId"] = workoutTemplate.exerciseId!!
+            if (workoutTemplate.exerciseId != null) {
+                updateData["exerciseId"] = workoutTemplate.exerciseId!!
+            }
             updateData["exerciseName"] = workoutTemplate.exerciseName
             updateData["lastUsedId"] = workoutTemplate.lastUsedId
             updateData["name"] = workoutTemplate.name
