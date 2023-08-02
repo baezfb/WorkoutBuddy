@@ -2,7 +2,9 @@ package com.example.workout_logger_presentation.start_workout
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,17 +15,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -49,6 +55,7 @@ import com.google.accompanist.pager.rememberPagerState
 import com.hbaez.core.util.UiEvent
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.user_auth_presentation.model.WorkoutTemplate
+import kotlinx.coroutines.launch
 import java.time.Duration
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -69,6 +76,7 @@ fun StartWorkoutScreen(
     val workoutIds = viewModel.workoutIds
     val context = LocalContext.current
     val pagerState = rememberPagerState(initialPage = 0)
+    val coroutineScope = rememberCoroutineScope()
     val workoutTemplates = viewModel.workoutTemplates.collectAsStateWithLifecycle(emptyList())
     var count = 0
     val workoutExerciseNames = ArrayList<String>()
@@ -260,14 +268,66 @@ fun StartWorkoutScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ){
-                Timer(
-                    modifier = Modifier
-                        .size(200.dp),
-                    timerJump = state.timerJump,
-                    handleColor = MaterialTheme.colors.secondary,
-                    inactiveBarColor = MaterialTheme.colors.primaryVariant,
-                    activeBarColor = MaterialTheme.colors.primary
-                )
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    Timer(
+                        modifier = Modifier
+                            .size(200.dp),
+                        timerJump = state.timerJump,
+                        handleColor = MaterialTheme.colors.secondary,
+                        inactiveBarColor = MaterialTheme.colors.primaryVariant,
+                        activeBarColor = MaterialTheme.colors.primary
+                    )
+                    Row(
+                        Modifier
+                            .padding(horizontal = spacing.spaceMedium)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowLeft,
+                            contentDescription = null,
+                            tint = if(pagerState.currentPage == 0) MaterialTheme.colors.background else Color.White,
+                            modifier = if(pagerState.currentPage == 0) { Modifier.size(spacing.spaceLarge)
+                            } else {
+                                Modifier
+                                    .clickable {
+                                        if (pagerState.currentPage > 0) {
+                                            coroutineScope.launch {
+                                                pagerState.animateScrollToPage(
+                                                    pagerState.currentPage - 1,
+                                                    0f
+                                                )
+                                            }
+                                        }
+                                    }
+                                    .size(spacing.spaceLarge)
+                            }
+                        )
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = if((pagerState.currentPage == count) || (pagerState.currentPage == (pagerState.pageCount - 1))) MaterialTheme.colors.background else Color.White,
+                            modifier = if((pagerState.currentPage == count) || (pagerState.currentPage == (pagerState.pageCount - 1))) { Modifier.size(spacing.spaceLarge)
+                            } else {
+                                Modifier
+                                    .clickable {
+                                        if ((pagerState.currentPage + 1) < pagerState.pageCount) {
+                                            coroutineScope.launch {
+                                                pagerState.animateScrollToPage(
+                                                    pagerState.currentPage + 1,
+                                                    0f
+                                                )
+                                            }
+                                        }
+                                    }
+                                    .size(spacing.spaceLarge)
+                            }
+                        )
+                    }
+                }
             }
         }
     )
