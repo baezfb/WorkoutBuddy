@@ -83,12 +83,9 @@ class SearchExerciseViewModel @Inject constructor(
     }
 
     private fun executeSearch() {
-        state = state.copy(
-            query = state.query.trim()
-        )
         getExerciseJob?.cancel()
         getExerciseJob = searchExerciseUseCases
-            .getExerciseForName(state.query)
+            .getExerciseForName(state.query.trim())
             .onEach { exercises ->
                 if(exercises.isEmpty()){
                     _uiEvent.send(

@@ -208,7 +208,7 @@ class WorkoutLoggerOverviewModel @Inject constructor(
     private fun executeSearch() {
         getAllExercisesJob?.cancel()
         getAllExercisesJob = exerciseTrackerUseCases
-            .getExerciseForName(state.exerciseFilterText)
+            .getExerciseForName(state.exerciseFilterText.trim())
             .onEach { exercises ->
                 if(exercises.isEmpty()) {
                     _uiEvent.send(

@@ -60,7 +60,7 @@ fun SearchTextField(
                 }
             ),
             keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search,
+                imeAction = ImeAction.Done,
             ),
             textStyle = TextStyle(MaterialTheme.colors.onBackground),
             modifier = Modifier
