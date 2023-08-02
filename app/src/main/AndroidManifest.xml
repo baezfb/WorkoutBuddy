@@ -28,10 +28,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.hbaez.wear_presentation.wear_overview.WearMobileActivity"
-            android:exported="true"
-            android:theme="@style/Theme.WorkoutBuddy"
-            />
     </application>
 
 </manifest>
