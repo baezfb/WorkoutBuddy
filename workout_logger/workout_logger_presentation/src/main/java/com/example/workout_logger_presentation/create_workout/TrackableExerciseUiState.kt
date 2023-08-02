@@ -10,6 +10,7 @@ data class TrackableExerciseUiState(
     val rest: List<String> = List(0) { "" },
     val weight: List<String> = List(0) { "" },
     val id: Int = 0,
+    val position: Int,
     val exercise: TrackedExercise?,
     val isDeleted: List<Boolean> = List(0) { false }
 )

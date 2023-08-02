@@ -79,12 +79,12 @@ fun StartWorkoutScreen(
     val coroutineScope = rememberCoroutineScope()
     val workoutTemplates = viewModel.workoutTemplates.collectAsStateWithLifecycle(emptyList())
     var count = 0
-    val workoutExerciseNames = ArrayList<String>()
+    val workoutExerciseNames: MutableList<String?> = (List(viewModel.workoutIds.size) { null }).toMutableList()
     val showExerciseInfoDialog = remember { mutableStateOf(false) }
     workoutTemplates.value.forEach {
         if(it.name == workoutName){
             count += 1
-            workoutExerciseNames.add(it.exerciseName)
+            workoutExerciseNames[it.position] = it.exerciseName
         }
         viewModel.onEvent(StartWorkoutEvent.OnUpdateWorkoutName(workoutName))
     }
@@ -150,47 +150,6 @@ fun StartWorkoutScreen(
                 count = count,
                 contentPadding = PaddingValues(spacing.spaceSmall)
             ) {page ->
-                var currExercise: WorkoutTemplate
-                var loggerListState: LoggerListState
-                workoutTemplates.value.forEach {
-                    if(it.name == workoutName){
-                        if (it.rowId == workoutIds[page].toInt()){
-                            currExercise = it
-                            if(state.loggerListStates.size > page && state.loggerListStates[page].id != it.rowId){
-                                loggerListState = LoggerListState(
-                                    id = it.rowId,
-                                    exerciseName = it.exerciseName,
-                                    exerciseId = it.exerciseId,
-                                    timerStatus = TimerStatus.START,
-                                    sets = it.sets.toString(),
-                                    rest = List(it.rest.size) { "" },
-                                    reps = List(it.reps.size) { "" },
-                                    weight = List(it.weight.size) { "" },
-                                    isCompleted = List(it.sets) { false },
-                                    checkedColor = List(it.sets) { Color.DarkGray },
-                                )
-                                viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
-                            }
-                            else if (state.loggerListStates.size == page) {
-                                loggerListState = LoggerListState(
-                                    id = it.rowId,
-                                    exerciseName = it.exerciseName,
-                                    exerciseId = it.exerciseId,
-                                    timerStatus = TimerStatus.START,
-                                    sets = it.sets.toString(),
-                                    rest = it.rest,
-                                    reps = List(it.reps.size) { "" },
-                                    weight = List(it.weight.size) { "" },
-                                    isCompleted = List(it.sets) { false },
-                                    checkedColor = List(it.sets) { Color.DarkGray }
-                                )
-                                viewModel.onEvent(StartWorkoutEvent.AddLoggerList(loggerListState))
-                            }
-                            return@forEach
-                        }
-                    }
-                }
-
                 if(pagerState.targetPage != pagerState.currentPage){
                     viewModel.onEvent(StartWorkoutEvent.OnChangePage(pagerState.targetPage))
                 }

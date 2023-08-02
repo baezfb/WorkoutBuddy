@@ -54,6 +54,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                                 reps = it.get("reps").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
                                 weight = it.get("weight").toString().removeSurrounding("[","]").split(",").map { elem -> elem.trim() },
                                 rowId = it.get("rowId").toString().toInt(),
+                                position = it.get("position").toString().toInt(),
                                 lastUsedId = it.get("lastUsedId").toString().toInt(),
                             )
                         }
@@ -156,6 +157,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             updateData["reps"] = workoutTemplate.reps
             updateData["rest"] = workoutTemplate.rest
             updateData["rowId"] = workoutTemplate.rowId
+            updateData["position"] = workoutTemplate.position
             updateData["sets"] = workoutTemplate.sets
             updateData["weight"] = workoutTemplate.weight
             workoutTemplateCollection(auth.currentUserId).document(workoutTemplate.id).update(updateData).await()

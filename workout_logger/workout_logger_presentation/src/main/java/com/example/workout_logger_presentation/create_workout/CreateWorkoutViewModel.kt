@@ -75,14 +75,15 @@ class CreateWorkoutViewModel @Inject constructor(
                             weight = it.weight,
                             id = it.rowId,
                             exercise = null,
+                            position = it.position,
                             isDeleted = List(it.sets) { false }
                         )
                         lastusedid = it.lastUsedId
-                        initTrackableExercises[page] = currTrackableExercise
+                        initTrackableExercises[it.position] = currTrackableExercise
                     }
                 }
                 state = state.copy(
-                    trackableExercises = initTrackableExercises.toList().filterNotNull(),
+                    trackableExercises = initTrackableExercises.filterNotNull(),
                     lastUsedId = lastusedid,
                     pageCount = initTrackableExercises.size
                 )
@@ -196,6 +197,7 @@ class CreateWorkoutViewModel @Inject constructor(
                         trackableExercises = (state.trackableExercises.toList() + TrackableExerciseUiState(
                                 name = trackedExercise.name,
                                 id = state.lastUsedId,
+                                position = state.trackableExercises.size,
                                 exercise = TrackedExercise(
                                     id = trackedExercise.id,
                                     name = trackedExercise.name,
@@ -410,6 +412,7 @@ class CreateWorkoutViewModel @Inject constructor(
                         reps = it.reps,
                         weight = it.weight,
                         rowId = it.id,
+                        position = it.id,
                         lastUsedId = state.lastUsedId,
                     )
                 )
@@ -432,6 +435,7 @@ class CreateWorkoutViewModel @Inject constructor(
                             reps = it.reps,
                             weight = it.weight,
                             rowId = it.id,
+                            position = it.position,
                             lastUsedId = state.lastUsedId,
                         )
                     )
@@ -448,6 +452,7 @@ class CreateWorkoutViewModel @Inject constructor(
                             reps = it.reps,
                             weight = it.weight,
                             rowId = it.id,
+                            position = it.id,
                             lastUsedId = state.lastUsedId,
                         )
                     )

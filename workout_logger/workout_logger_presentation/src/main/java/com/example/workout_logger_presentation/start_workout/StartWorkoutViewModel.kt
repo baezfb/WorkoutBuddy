@@ -25,6 +25,7 @@ import com.hbaez.user_auth_presentation.model.service.StorageService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -56,11 +57,38 @@ class StartWorkoutViewModel @Inject constructor(
 
     private var getExerciseJob: Job? = null
     private val workoutId: Int
+    private val workoutName: String
 
     init {
+        workoutName = savedStateHandle["workoutName"] ?: ""
         workoutId = savedStateHandle["workoutId"] ?: -1
         workoutIds = (savedStateHandle["workoutIds"] ?: "").trim('[').trim(']').replace(" ","").split(',').toList()
         Log.println(Log.DEBUG, "workoutids viewmodel", workoutIds.toString())
+        
+        val initExercises: MutableList<LoggerListState?> = (List(workoutIds.size) { null }).toMutableList()
+        viewModelScope.launch {
+            workoutTemplates.first().onEach {
+                if(it.name == workoutName){
+                    val currExercise = LoggerListState(
+                        id = it.rowId,
+                        position = it.position,
+                        exerciseName = it.exerciseName,
+                        exerciseId = it.exerciseId,
+                        timerStatus = TimerStatus.START,
+                        sets = it.sets.toString(),
+                        rest = it.rest,
+                        reps = it.reps,
+                        weight = it.weight,
+                        isCompleted = List(it.sets) { false },
+                        checkedColor = List(it.sets) { Color.DarkGray },
+                    )
+                    initExercises[it.position] = currExercise
+                }
+            }
+            state = state.copy(
+                loggerListStates = initExercises.filterNotNull().toMutableList()
+            )
+        }
     }
 
     fun onEvent(event: StartWorkoutEvent) {
