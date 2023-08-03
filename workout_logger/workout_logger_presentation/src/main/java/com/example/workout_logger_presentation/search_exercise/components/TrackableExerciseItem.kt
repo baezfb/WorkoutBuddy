@@ -157,7 +157,7 @@ fun TrackableExerciseItem(
                             }
                     )
                     Log.println(Log.DEBUG, "image urls", exercise.image_url.filterNotNull().toString())
-                    if(exercise.image_url.filterNotNull().isNotEmpty() && (exercise.image_url.size == 1 && !exercise.image_url[0].equals("null"))){
+                    if(exercise.image_url.filterNotNull().isNotEmpty() && (exercise.image_url.filterNotNull().size == 1 && exercise.image_url.filterNotNull()[0] != "null" && exercise.image_url.filterNotNull()[0].isNotEmpty())){
                         Log.println(Log.DEBUG, "image urls inside if", (exercise.image_url[0].equals("null").toString()))
                         Spacer(modifier = Modifier.height(spacing.spaceMedium))
                         Text(
@@ -171,6 +171,7 @@ fun TrackableExerciseItem(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             exercise.image_url.forEach {
+                                Log.println(Log.DEBUG, "image urls for each", it.toString())
                                 Image(
                                     painter = rememberImagePainter(
                                         data = it,
@@ -192,6 +193,7 @@ fun TrackableExerciseItem(
                         }
                     }
                     Spacer(modifier = Modifier.height(spacing.spaceMedium))
+                    Log.println(Log.DEBUG, "trackableExerciseItem logging check", "check")
                     Text(
                         text = stringResource(id = R.string.exercise_muscle),
                         style = MaterialTheme.typography.body2,
@@ -229,6 +231,7 @@ fun TrackableExerciseItem(
                             modifier = Modifier.fillMaxWidth(.5f),
                             contentAlignment = Alignment.Center
                         ) {
+                            Log.println(Log.DEBUG, "trackableExerciseItem logging check", "check 2")
                             Image(
                                 painter = painterResource(id = R.drawable.ic_muscular_system_front), //else { painterResource(id = R.drawable.ic_muscular_system_back) },
                                 contentDescription = null,
@@ -237,7 +240,8 @@ fun TrackableExerciseItem(
                                     .size(200.dp)
                                     .clip(RoundedCornerShape(topStart = 5.dp))
                             )
-                            if(exercise.image_url_main.isNotEmpty()){
+                            Log.println(Log.DEBUG, "trackableExerciseItem logging check", "check 3")
+                            if(exercise.image_url_main.filterNotNull().isNotEmpty() && (exercise.image_url_main.filterNotNull().size == 1 && exercise.image_url_main.filterNotNull()[0] != "null" && exercise.image_url_main.filterNotNull()[0].isNotEmpty())){
                                 exercise.image_url_main.forEach { image_url ->
                                     if(muscles.find{ it.imageURL == image_url }!!.isFront && image_url != null){
                                         Image(
@@ -246,6 +250,7 @@ fun TrackableExerciseItem(
                                                 builder = {
                                                     crossfade(true)
                                                     decoder(SvgDecoder(context = context))
+                                                    fallback(null)
                                                 }
                                             ),
                                             contentDescription = image_url ?: exercise.name,
@@ -257,27 +262,32 @@ fun TrackableExerciseItem(
                                     }
                                 }
                             }
-                                if(exercise.image_url_secondary.isNotEmpty()){
-                                    exercise.image_url_secondary.onEach { image_url ->
-                                        if(image_url != null && muscles.find{ it.imageURL.replace("main","secondary") == image_url || it.imageURL == image_url }!!.isFront){
-                                            Image(
-                                                painter = rememberImagePainter(
-                                                    data = "https://wger.de${image_url.trim().replace("main","secondary")}",
-                                                    builder = {
-                                                        crossfade(true)
-                                                        decoder(SvgDecoder(context = context))
-                                                    }
-                                                ),
-                                                contentDescription = image_url ?: exercise.name,
-                                                contentScale = ContentScale.Fit,
-                                                modifier = Modifier
-                                                    .size(200.dp)
-                                                    .clip(RoundedCornerShape(topStart = 5.dp))
-                                            )
-                                        }
+                            Log.println(Log.DEBUG, "trackableExerciseItem logging check", "check 4")
+                            if(exercise.image_url_secondary.filterNotNull().isNotEmpty() && (exercise.image_url_secondary.filterNotNull().size == 1 && exercise.image_url_secondary.filterNotNull()[0] != "null" && exercise.image_url_secondary.filterNotNull()[0].isNotEmpty())){
+                                exercise.image_url_secondary.onEach { image_url ->
+                                    Log.println(Log.DEBUG, "image url secondary onEach", image_url.toString())
+                                    if(image_url != null && muscles.find{ it.imageURL.replace("main","secondary") == image_url || it.imageURL == image_url }!!.isFront){
+                                        Log.println(Log.DEBUG, "image url secondary onEach", image_url.toString())
+                                        Image(
+                                            painter = rememberImagePainter(
+                                                data = "https://wger.de${image_url.trim().replace("main","secondary")}",
+                                                builder = {
+                                                    crossfade(true)
+                                                    decoder(SvgDecoder(context = context))
+                                                    fallback(null)
+                                                }
+                                            ),
+                                            contentDescription = image_url ?: exercise.name,
+                                            contentScale = ContentScale.Fit,
+                                            modifier = Modifier
+                                                .size(200.dp)
+                                                .clip(RoundedCornerShape(topStart = 5.dp))
+                                        )
                                     }
                                 }
+                            }
                         }
+                        Log.println(Log.DEBUG, "trackableExerciseItem logging check", "check 5")
                         Box(
                             modifier = Modifier.fillMaxWidth(),
                             contentAlignment = Alignment.Center
@@ -290,15 +300,17 @@ fun TrackableExerciseItem(
                                     .size(200.dp)
                                     .clip(RoundedCornerShape(topStart = 5.dp))
                             )
-                            if(exercise.image_url_main.isNotEmpty()){
+                            if(exercise.image_url_main.filterNotNull().isNotEmpty() && (exercise.image_url_main.filterNotNull().size == 1 && exercise.image_url_main.filterNotNull()[0] != "null" && exercise.image_url_main.filterNotNull()[0].isNotEmpty())){
                                 exercise.image_url_main.onEach { image_url ->
                                     if(!muscles.find{ it.imageURL == image_url }!!.isFront && image_url != null){
+                                        Log.println(Log.DEBUG, "image url main onEach", image_url.toString())
                                         Image(
                                             painter = rememberImagePainter(
                                                 data = "https://wger.de${image_url.trim()}",
                                                 builder = {
                                                     crossfade(true)
                                                     decoder(SvgDecoder(context = context))
+                                                    fallback(null)
                                                 }
                                             ),
                                             contentDescription = image_url ?: exercise.name,
@@ -310,7 +322,8 @@ fun TrackableExerciseItem(
                                     }
                                 }
                             }
-                            if(exercise.image_url_secondary.isNotEmpty()){
+                            Log.println(Log.DEBUG, "trackableExerciseItem logging check", "check 6")
+                            if(exercise.image_url_secondary.filterNotNull().isNotEmpty() && (exercise.image_url_secondary.filterNotNull().size == 1 && exercise.image_url_secondary.filterNotNull()[0] != "null" && exercise.image_url_secondary.filterNotNull()[0].isNotEmpty())){
                                 exercise.image_url_secondary.onEach { image_url ->
                                     if(!muscles.find{ it.imageURL.replace("main","secondary") == image_url || it.imageURL == image_url }!!.isFront && image_url != null){
                                         Image(
@@ -319,6 +332,7 @@ fun TrackableExerciseItem(
                                                 builder = {
                                                     crossfade(true)
                                                     decoder(SvgDecoder(context = context))
+                                                    fallback(null)
                                                 }
                                             ),
                                             contentDescription = image_url ?: exercise.name,

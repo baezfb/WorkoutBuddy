@@ -21,7 +21,9 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -107,6 +109,17 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
         nodeClient = Wearable.getNodeClient(this)
         remoteActivityHelper = RemoteActivityHelper(this)
 
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
+                launch{
+                    findWearDevicesWithApp()
+                }
+                launch{
+                    findAllWearDevices()
+                }
+            }
+        }
+
         setContent {
             WorkoutBuddyTheme {
                 navController = rememberNavController()
@@ -114,17 +127,6 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
 
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
-
-                lifecycleScope.launch {
-                    lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
-                        launch{
-                            findWearDevicesWithApp()
-                        }
-                        launch{
-                            findAllWearDevices()
-                        }
-                    }
-                }
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
@@ -336,8 +338,8 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                                     "/$createExercise" +
                                                     "/$exerciseName" +
                                                     "/$description" +
-                                                    "/$primaryMuscles" +
-                                                    "/$secondaryMuscles" +
+                                                    "/${if(!primaryMuscles.isNullOrEmpty()) primaryMuscles else null}" +
+                                                    "/${if(!secondaryMuscles.isNullOrEmpty()) secondaryMuscles else null}" +
                                                     "/${if(imageURL.isNotEmpty()) Uri.encode(imageURL.joinToString(",")) else null}"
                                         )
                                     },
