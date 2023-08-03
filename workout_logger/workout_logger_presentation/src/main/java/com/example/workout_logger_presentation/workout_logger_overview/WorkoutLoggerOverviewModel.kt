@@ -17,7 +17,9 @@ import com.hbaez.user_auth_presentation.model.service.StorageService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -59,12 +61,14 @@ class WorkoutLoggerOverviewModel @Inject constructor(
                 state = state.copy(
                     date = state.date.plusDays(1)
                 )
+                imageUrls.clear()
                 refreshWorkouts()
             }
             is WorkoutLoggerOverviewEvent.OnPreviousDayClick -> {
                 state = state.copy(
                     date = state.date.minusDays(1)
                 )
+                imageUrls.clear()
                 refreshWorkouts()
             }
             is WorkoutLoggerOverviewEvent.OnStartWorkoutClick -> {
@@ -124,7 +128,9 @@ class WorkoutLoggerOverviewModel @Inject constructor(
             Log.println(Log.DEBUG, "current date", state.date.toString())
             completedWorkouts = storageService.getCompletedWorkoutByDate(state.date.toString()).toMutableList()
             completedWorkouts.forEach {
-                getExerciseByName(it.exerciseName)
+                coroutineScope {
+                    getExerciseByName(it.exerciseName)
+                }
             }
             delay(150L)
             state = state.copy(
@@ -186,23 +192,15 @@ class WorkoutLoggerOverviewModel @Inject constructor(
         }
     }
 
-    private fun getExerciseByName(name: String) {
-        getExerciseJob?.cancel()
-        getExerciseJob = exerciseTrackerUseCases
-            .getExerciseForName(name)
-            .onEach { exercises ->
-                if(exercises.isEmpty()){
-                    _uiEvent.send(
-                        UiEvent.ShowSnackbar(
-                            UiText.StringResource(R.string.empty_results)
-                        )
-                    )
-                }
-                exercises.forEach{
-                    imageUrls[name] = if(it.image_url.isNotEmpty()) it.image_url[0]!! else ""
-                }
+    private suspend fun getExerciseByName(name: String) {
+//        getExerciseJob?.cancel()
+        exerciseTrackerUseCases
+            .getUniqueExerciseForName(name)
+            .first()
+            .let { exercise ->
+                imageUrls[name] = if(exercise.image_url.isNotEmpty()) exercise.image_url[0]!! else ""
+                Log.println(Log.DEBUG, "WorkoutLoggerOverview imageURLs", exercise.image_url.toString())
             }
-            .launchIn(viewModelScope)
     }
 
     private fun executeSearch() {

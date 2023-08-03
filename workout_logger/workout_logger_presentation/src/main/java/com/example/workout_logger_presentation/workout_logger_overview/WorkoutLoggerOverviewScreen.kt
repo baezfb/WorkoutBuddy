@@ -229,64 +229,62 @@ fun WorkoutLoggerOverviewScreen(
         if(viewModel.completedWorkouts.size > 0){
 
         }
-        itemsIndexed(viewModel.completedWorkouts){ index, completedWorkout -> //items(state.completedWorkouts){ completedWorkout ->
-            if(index < state.completedWorkoutIsExpanded.size){
-                CompletedWorkoutItem(
-                    workout = completedWorkout,
-                    imageUrl = if(viewModel.imageUrls.containsKey(completedWorkout.exerciseName)) viewModel.imageUrls[completedWorkout.exerciseName]!! else "",
-                    isExpanded = state.completedWorkoutIsExpanded[index],
-                    modifier = Modifier,
-                    onClick = {
-                        viewModel.onEvent(WorkoutLoggerOverviewEvent.OnCompletedWorkoutClick(index))
-                    },
-                    content = {
-                        Column(
+        items(viewModel.imageUrls.keys.size){// index, completedWorkout -> //items(state.completedWorkouts){ completedWorkout ->
+            CompletedWorkoutItem(
+                workout = viewModel.completedWorkouts[it],
+                imageUrl = viewModel.imageUrls[viewModel.completedWorkouts[it].exerciseName],
+                isExpanded = state.completedWorkoutIsExpanded[it],
+                modifier = Modifier,
+                onClick = {
+                    viewModel.onEvent(WorkoutLoggerOverviewEvent.OnCompletedWorkoutClick(it))
+                },
+                content = {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = spacing.spaceSmall)
+                    ) {
+                        Row(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = spacing.spaceSmall)
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text= stringResource(id = R.string.sets),
-                                    style = MaterialTheme.typography.body2
-                                )
-                                Text(
-                                    text= stringResource(id = R.string.weight),
-                                    style = MaterialTheme.typography.body2
-                                )
-                                Text(
-                                    text= stringResource(id = R.string.reps),
-                                    style = MaterialTheme.typography.body2
-                                )
-                                Text(
-                                    text= stringResource(id = R.string.completed_question),
-                                    style = MaterialTheme.typography.body2
-                                )
-                            }
-                            val weight = completedWorkout.weight
-                            val reps = completedWorkout.reps
-                            val isCompleted = completedWorkout.isCompleted
-                            for(i in 1..completedWorkout.sets){
-                                ExerciseRow(
-                                    set = i,
-                                    reps = reps[i-1].toInt(),
-                                    weight = weight[i-1].toInt(),
-                                    completed = isCompleted[i-1].toBoolean()
-                                )
-                                if(i != completedWorkout.sets) Divider(color = MaterialTheme.colors.primaryVariant, thickness = 1.dp)
-                            }
-                            Spacer(modifier = Modifier.height(spacing.spaceExtraSmall))
+                            Text(
+                                text= stringResource(id = R.string.sets),
+                                style = MaterialTheme.typography.body2
+                            )
+                            Text(
+                                text= stringResource(id = R.string.weight),
+                                style = MaterialTheme.typography.body2
+                            )
+                            Text(
+                                text= stringResource(id = R.string.reps),
+                                style = MaterialTheme.typography.body2
+                            )
+                            Text(
+                                text= stringResource(id = R.string.completed_question),
+                                style = MaterialTheme.typography.body2
+                            )
                         }
-                    },
+                        val weight = viewModel.completedWorkouts[it].weight
+                        val reps = viewModel.completedWorkouts[it].reps
+                        val isCompleted = viewModel.completedWorkouts[it].isCompleted
+                        for(i in 1..viewModel.completedWorkouts[it].sets){
+                            ExerciseRow(
+                                set = i,
+                                reps = reps[i-1].toInt(),
+                                weight = weight[i-1].toInt(),
+                                completed = isCompleted[i-1].toBoolean()
+                            )
+                            if(i != viewModel.completedWorkouts[it].sets) Divider(color = MaterialTheme.colors.primaryVariant, thickness = 1.dp)
+                        }
+                        Spacer(modifier = Modifier.height(spacing.spaceExtraSmall))
+                    }
+                },
 //                color = MaterialTheme.colors.primaryVariant
-                )
-                Spacer(modifier = Modifier.height(spacing.spaceMedium))
-            }
+            )
+            Spacer(modifier = Modifier.height(spacing.spaceMedium))
         }
     }
 }

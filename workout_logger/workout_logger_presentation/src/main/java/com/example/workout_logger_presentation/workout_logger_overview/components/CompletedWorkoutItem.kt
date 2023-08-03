@@ -43,7 +43,7 @@ import com.hbaez.user_auth_presentation.model.CompletedWorkout
 @Composable
 fun CompletedWorkoutItem(
     workout: CompletedWorkout,
-    imageUrl: String,
+    imageUrl: String?,
     isExpanded: Boolean,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
