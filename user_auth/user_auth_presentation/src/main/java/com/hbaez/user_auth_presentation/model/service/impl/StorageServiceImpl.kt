@@ -178,12 +178,14 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
     override suspend fun saveExerciseTemplate(exerciseTemplate: ExerciseTemplate): String =
         trace(SAVE_EXERCISE_TEMPLATE) {
-            val docId = exerciseTemplateCollection(auth.currentUserId).add(exerciseTemplate).await().id
+            val documentRef = exerciseTemplateCollection(auth.currentUserId).document()
+            documentRef.set(exerciseTemplate, SetOptions.merge())
+//                .add(exerciseTemplate).await().id
             if(exerciseTemplate.id.isEmpty()){
                 val updateData = mutableMapOf<String, Any?>()
-                updateData["docId"] = docId
-                exerciseTemplateCollection(auth.currentUserId).document(docId).update(updateData).await()
-                return docId
+                updateData["docId"] = documentRef.id
+                exerciseTemplateCollection(auth.currentUserId).document(documentRef.id).update(updateData)
+                return documentRef.id
             } else {
                 return exerciseTemplate.id
             }
