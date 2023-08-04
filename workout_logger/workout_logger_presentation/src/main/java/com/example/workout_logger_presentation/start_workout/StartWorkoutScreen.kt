@@ -78,12 +78,11 @@ fun StartWorkoutScreen(
     val pagerState = rememberPagerState(initialPage = 0)
     val coroutineScope = rememberCoroutineScope()
     val workoutTemplates = viewModel.workoutTemplates.collectAsStateWithLifecycle(emptyList())
-    var count = 0
     val workoutExerciseNames: MutableList<String?> = (List(viewModel.workoutIds.size) { null }).toMutableList()
+    val count = state.routineWorkoutTemplate.size
     val showExerciseInfoDialog = remember { mutableStateOf(false) }
     workoutTemplates.value.forEach {
         if(it.name == workoutName){
-            count += 1
             workoutExerciseNames[it.position] = it.exerciseName
         }
         viewModel.onEvent(StartWorkoutEvent.OnUpdateWorkoutName(workoutName))
@@ -155,12 +154,8 @@ fun StartWorkoutScreen(
                 }
                 // get current exercise from workoutTemplates
                 // using workoutName and exerciseName
-                lateinit var currentExercise: WorkoutTemplate
-                workoutTemplates.value.forEach {
-                    if(it.name == workoutName && it.exerciseName ==  workoutExerciseNames[page]){
-                        currentExercise = it
-                    }
-                }
+                val currentExercise = state.routineWorkoutTemplate[page]
+
                 Column{
                     Row{
                         Text(
