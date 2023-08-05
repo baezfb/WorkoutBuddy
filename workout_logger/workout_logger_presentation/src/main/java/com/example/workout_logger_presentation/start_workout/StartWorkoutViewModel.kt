@@ -20,6 +20,7 @@ import com.hbaez.core.util.UiEvent
 import com.hbaez.core.util.UiText
 import com.hbaez.user_auth_presentation.AuthViewModel
 import com.hbaez.user_auth_presentation.model.CompletedWorkout
+import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 import com.hbaez.user_auth_presentation.model.service.LogService
 import com.hbaez.user_auth_presentation.model.service.StorageService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -66,8 +67,9 @@ class StartWorkoutViewModel @Inject constructor(
         Log.println(Log.DEBUG, "workoutids viewmodel", workoutIds.toString())
         
         val initExercises: MutableList<LoggerListState?> = (List(workoutIds.size) { null }).toMutableList()
+        val initRoutine: MutableList<WorkoutTemplate?> = (List(workoutIds.size) { null }).toMutableList()
         viewModelScope.launch {
-            workoutTemplates.first().onEach {
+            workoutTemplates.first().forEach {
                 if(it.name == workoutName){
                     val currExercise = LoggerListState(
                         id = it.rowId,
@@ -83,10 +85,12 @@ class StartWorkoutViewModel @Inject constructor(
                         checkedColor = List(it.sets) { Color.DarkGray },
                     )
                     initExercises[it.position] = currExercise
+                    initRoutine[it.position] = it
                 }
             }
             state = state.copy(
-                loggerListStates = initExercises.filterNotNull().toMutableList()
+                loggerListStates = initExercises.filterNotNull().toMutableList(),
+                routineWorkoutTemplate = initRoutine.filterNotNull()
             )
         }
     }

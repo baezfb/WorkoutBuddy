@@ -97,7 +97,6 @@ fun ExerciseCard(
             }
             LazyColumn{
                 List(loggerListState.sets.toInt()) { it }.forEach {
-                    Log.println(Log.DEBUG, "exercisecard it index", it.toString())
                     item {
                         ExerciseCardRow(
                             set = it + 1,

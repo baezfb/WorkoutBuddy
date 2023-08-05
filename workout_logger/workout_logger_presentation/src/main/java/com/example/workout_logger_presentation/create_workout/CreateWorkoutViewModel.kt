@@ -65,7 +65,6 @@ class CreateWorkoutViewModel @Inject constructor(
                 val initTrackableExercises: MutableList<TrackableExerciseUiState?> = (List(pageCount) { null }).toMutableList()
                 workoutTemplates.first().onEach{
                     if(it.name == initWorkoutName){
-                        val page = workoutIds.indexOf(it.rowId.toString())
                         val currTrackableExercise = TrackableExerciseUiState(
                             docId = it.id,
                             name = it.exerciseName,
