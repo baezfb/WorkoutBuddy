@@ -102,6 +102,7 @@
     <string name="exercise_name_taken">Exercise name already exists.</string>
     <string name="login_header">Log in to your account</string>
     <string name="login">Login</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
     <string name="email">Email Address</string>
     <string name="password">Password</string>
     <string name="retype_password">Retype Password</string>
@@ -124,6 +125,7 @@
     <string name="delete_account_description">Are you sure you want to delete your account?</string>
     <string name="update_prefs">Update User Info</string>
     <string name="manage_data">Manage Data</string>
+    <string name="welcome">Welcome</string>
     <string name="workout_buddy">Workout Buddy</string>
     <string name="wear_companion">Wear OS Companion</string>
     <string name="female_path">M25.67,7.06a7.06,7.06 0,1 0,-7.06 7.05A7.06,7.06 0,0 0,25.67 7.06ZM2,43.19a2.8,2.8 0,0 0,3.45 -1.92l4.63,-16.22L11.5,25 3,53.59l8.53,0V75.46c0,2.05 1.26,3.72 2.8,3.72h0.06c1.55,0 2.81,-1.67 2.81,-3.72V53.64h2.09V75.46c0,2.05 1.25,3.72 2.8,3.72h0.06c1.55,0 2.8,-1.67 2.8,-3.72V53.66l8.24,0 -8,-28.64h1.26l4.63,16.22a2.79,2.79 0,1 0,5.37 -1.53l-4.94,-17.3c-0.81,-2.84 -3.41,-7.73 -9.23,-7.73 -0.42,0 -6.74,-0.1 -9,-0.1 -5.59,0 -7.45,5.16 -8.21,7.83L0.11,39.74A2.79,2.79 0,0 0,2 43.19Z</string>

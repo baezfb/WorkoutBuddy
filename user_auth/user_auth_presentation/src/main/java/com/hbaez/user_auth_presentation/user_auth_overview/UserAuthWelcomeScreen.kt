@@ -1,8 +1,12 @@
 package com.hbaez.user_auth_presentation.user_auth_overview
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -24,6 +29,7 @@ import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.user_auth_presentation.components.BasicButton
 import com.hbaez.user_auth_presentation.components.BasicTextButton
+import com.hbaez.user_auth_presentation.components.Button
 
 @ExperimentalCoilApi
 @Composable
@@ -43,56 +49,68 @@ fun UserAuthWelcomeScreen(
         Modifier
             .fillMaxSize()
     ) {
-        Spacer(modifier = Modifier.height(spacing.spaceExtraExtraLarge))
-        Spacer(modifier = Modifier.height(spacing.spaceExtraLarge))
         Column(
             modifier = modifier
                 .fillMaxWidth()
+                .fillMaxHeight()
                 .weight(1f)
-                .clip(
-                    RoundedCornerShape(
-                        topStart = 50.dp,
-                        topEnd = 50.dp
-                    )
-                )
                 .background(MaterialTheme.colors.primary)
                 .padding(
-                    horizontal = spacing.spaceSmall
-                )
+                    horizontal = spacing.spaceSmall,
+                    vertical = spacing.spaceSmall
+                ), verticalArrangement = Arrangement.Bottom
         ) {
-            Spacer(modifier = Modifier.height(spacing.spaceExtraLarge))
             Text(
-                stringResource(id = R.string.workout_buddy),
+                "Welcome",
+                textAlign = TextAlign.Left,
+                style = MaterialTheme.typography.subtitle1,
+                modifier = Modifier
+                    .padding(start = 20.dp, bottom = 20.dp)
+            )
+            Text(
+                "Manage your workouts and your progress",
+                textAlign = TextAlign.Left,
+                style = MaterialTheme.typography.h4,
+                modifier = Modifier
+                    .padding(start = 20.dp, bottom = 5.dp)
+            )
+            Text(
+                "seamlessly and intuitively",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.h2,
                 modifier = Modifier
-                    .padding(16.dp, 4.dp)
-                    .align(Alignment.CenterHorizontally)
+                    .padding(start = 20.dp, end = 20.dp, bottom = 30.dp)
             )
-            Spacer(modifier = Modifier.height(spacing.spaceLarge))
-            BasicButton(
-                R.string.login,
+//            Spacer(modifier = Modifier.height(spacing.spaceLarge))
+            Button(
+                R.string.sign_in_with_google,
                 Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp, 8.dp)
+                    .fillMaxWidth(100f)
             ) {
                 onNavigateToLogin()
             }
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
-            BasicButton(
+            Button(
                 R.string.sign_up,
                 Modifier
                     .fillMaxWidth()
-                    .padding(16.dp, 8.dp)
+                    .border(1.dp, MaterialTheme.colors.onPrimary, RoundedCornerShape(10.dp))
             ) {
                 onNavigateToSignUp()
             }
-            Spacer(modifier = Modifier.height(spacing.spaceMedium))
+            Text(
+                "Already have an account?",
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.h5,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(start = 20.dp, end = 20.dp, top = 30.dp)
+            )
             BasicTextButton(
                 R.string.continue_guest,
                 Modifier
-//                            .align(Alignment.CenterVertically)
-                    .padding(16.dp, 4.dp, 16.dp, 0.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .padding(bottom = 30.dp)
             ) {
                 onNavigateToHome()
             }

@@ -1,6 +1,7 @@
 package com.hbaez.user_auth_presentation.components
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +43,25 @@ fun BasicButton(@StringRes text: Int, modifier: Modifier, action: () -> Unit) {
 //                contentColor = MaterialTheme.colors.onPrimary
 //            )
 //        }
+    ) {
+        Text(
+            text = stringResource(text),
+            style = MaterialTheme.typography.button,
+            color = MaterialTheme.colors.onPrimary
+        )
+    }
+}
+
+@Composable
+fun Button(@StringRes text: Int, modifier: Modifier, action: () -> Unit) {
+    val spacing = LocalSpacing.current
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(100f))
+            .clickable { action() }
+            .padding(spacing.spaceSmall),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = stringResource(text),
