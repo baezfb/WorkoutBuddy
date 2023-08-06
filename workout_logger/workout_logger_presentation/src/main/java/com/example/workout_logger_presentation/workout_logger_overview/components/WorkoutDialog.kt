@@ -80,25 +80,28 @@ fun WorkoutDialog(
                         contentPadding = PaddingValues(vertical = spacing.spaceMedium),
                         modifier = Modifier.heightIn(250.dp)
                     ){
-                        val uniqueNames = mutableListOf<String>()
+                        val routineNames = mutableListOf<String>()
                         val workoutId = hashMapOf<String, List<Int>>()
                         workoutTemplates.value.forEach {
-                            if(uniqueNames.contains(it.name)) {
+                            if(routineNames.contains(it.name)) {
                                 val tmp = workoutId[it.name]!!.toMutableList()
-                                tmp.add(it.rowId)
-                                workoutId[it.name] = tmp.toList()
-                                return@forEach
+                                if(!tmp.contains(it.rowId)){
+                                    tmp.add(it.rowId)
+                                    workoutId[it.name] = tmp.toList()
+                                }
                             }
-                            uniqueNames.add(it.name)
-                            val tmp = listOf(it.rowId)
-                            workoutId[it.name] = tmp
+                            else{
+                                routineNames.add(it.name)
+                                val tmp = listOf(it.rowId)
+                                workoutId[it.name] = tmp
+                            }
                         }
-                        Log.println(Log.DEBUG, "workout names", uniqueNames.toString())
+                        Log.println(Log.DEBUG, "workout names", routineNames.toString())
                         Log.println(Log.DEBUG, "workout ids", workoutId.toString())
-                        items(uniqueNames.size){
+                        items(routineNames.size){
                             AddButton(
-                                text = uniqueNames[it],
-                                onClick = { onChooseWorkout(uniqueNames[it], workoutId[uniqueNames[it]]!!.toString()) },
+                                text = routineNames[it],
+                                onClick = { onChooseWorkout(routineNames[it], workoutId[routineNames[it]]!!.toString()) },
                                 icon = Icons.Default.List,
                                 modifier = Modifier
                                     .fillMaxWidth()

@@ -7,6 +7,7 @@ import com.hbaez.user_auth_presentation.model.service.StorageService
 import com.hbaez.user_auth_presentation.model.service.trace
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.snapshots
 import com.google.firebase.firestore.ktx.toObject
 import com.hbaez.core.domain.model.ActivityLevel
@@ -142,14 +143,18 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     }
 
     override suspend fun saveWorkoutTemplate(workoutTemplate: WorkoutTemplate): String =
-        trace(SAVE_WORKOUT_TEMPLATE) { workoutTemplateCollection(auth.currentUserId).add(workoutTemplate).await().id }
+        trace(SAVE_WORKOUT_TEMPLATE) {
+            val documentRef = workoutTemplateCollection(auth.currentUserId).document()
+            documentRef.set(workoutTemplate, SetOptions.merge())
+            documentRef.id
+        }
 
     override suspend fun updateWorkoutTemplate(workoutTemplate: WorkoutTemplate): String =
         trace(SAVE_WORKOUT_TEMPLATE) {
             val updateData = mutableMapOf<String, Any>()
             updateData["currentSet"] = workoutTemplate.currentSet
             if (workoutTemplate.exerciseId != null) {
-                updateData["exerciseId"] = workoutTemplate.exerciseId!!
+                updateData["exerciseId"] = workoutTemplate.exerciseId
             }
             updateData["exerciseName"] = workoutTemplate.exerciseName
             updateData["lastUsedId"] = workoutTemplate.lastUsedId
@@ -165,16 +170,22 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         }
 
     override suspend fun saveCompletedWorkout(completedWorkout: CompletedWorkout, date: String): String =
-        trace(SAVE_COMPLETED_WORKOUT) { completedWorkoutCollection(auth.currentUserId, date).add(completedWorkout).await().id }
+        trace(SAVE_COMPLETED_WORKOUT) {
+            val documentRef = completedWorkoutCollection(auth.currentUserId, date).document()
+            documentRef.set(completedWorkout, SetOptions.merge())
+            documentRef.id
+        }
 
     override suspend fun saveExerciseTemplate(exerciseTemplate: ExerciseTemplate): String =
         trace(SAVE_EXERCISE_TEMPLATE) {
-            val docId = exerciseTemplateCollection(auth.currentUserId).add(exerciseTemplate).await().id
+            val documentRef = exerciseTemplateCollection(auth.currentUserId).document()
+            documentRef.set(exerciseTemplate, SetOptions.merge())
+//                .add(exerciseTemplate).await().id
             if(exerciseTemplate.id.isEmpty()){
                 val updateData = mutableMapOf<String, Any?>()
-                updateData["docId"] = docId
-                exerciseTemplateCollection(auth.currentUserId).document(docId).update(updateData).await()
-                return docId
+                updateData["docId"] = documentRef.id
+                exerciseTemplateCollection(auth.currentUserId).document(documentRef.id).update(updateData)
+                return documentRef.id
             } else {
                 return exerciseTemplate.id
             }
