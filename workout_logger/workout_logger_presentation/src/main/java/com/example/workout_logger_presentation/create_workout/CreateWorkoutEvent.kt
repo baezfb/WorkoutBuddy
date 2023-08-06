@@ -15,7 +15,7 @@ sealed class CreateWorkoutEvent {
 
     data class OnTrackableExerciseUiWeightChange(val weight: String, val page: Int, val index: Int): CreateWorkoutEvent()
 
-    data class OnRemoveSetRow(val id: Int, val exerciseId: Int): CreateWorkoutEvent()
+    data class OnRemoveSetRow(val id: Int, val page: Int): CreateWorkoutEvent()
 
     object CheckTrackedExercise: CreateWorkoutEvent()
 

@@ -157,12 +157,12 @@ fun CreateWorkoutScreen(
                     onAddSet = {
                         viewModel.onEvent(CreateWorkoutEvent.AddSet(page))
                     },
-                    trackableExercises = state.trackableExercises.getOrNull(page),
+                    trackableExercises = state.trackableExercises.firstOrNull { !it.isDeleted && it.position == page },
                     onShowInfo = {
                         showExerciseInfoDialog.value = true
                     },
-                    onDeleteRow = { id, exerciseId ->
-                        viewModel.onEvent(CreateWorkoutEvent.OnRemoveSetRow(id, exerciseId))
+                    onDeleteRow = { id ->
+                        viewModel.onEvent(CreateWorkoutEvent.OnRemoveSetRow(id, page))
                     },
                     onDeletePage = {
                         viewModel.onEvent(CreateWorkoutEvent.OnRemovePage(page))

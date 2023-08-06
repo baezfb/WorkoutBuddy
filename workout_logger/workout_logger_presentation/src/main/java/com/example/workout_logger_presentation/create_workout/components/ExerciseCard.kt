@@ -58,7 +58,7 @@ fun ExerciseCard(
     page: Int,
     trackableExercises: TrackableExerciseUiState?,
     onShowInfo: () -> Unit,
-    onDeleteRow: (id: Int, exerciseId: Int) -> Unit,
+    onDeleteRow: (id: Int) -> Unit,
     onDeletePage: () -> Unit,
     onRepsChange: (text: String, index: Int)  -> Unit,
     onRestChange: (text: String, index: Int)  -> Unit,
@@ -165,7 +165,7 @@ fun ExerciseCard(
                                         onWeightChange(text, it)
                                     },
                                     onDeleteRow = { id ->
-                                        onDeleteRow(id, page)
+                                        onDeleteRow(id)
                                     }
                                 )
                             }

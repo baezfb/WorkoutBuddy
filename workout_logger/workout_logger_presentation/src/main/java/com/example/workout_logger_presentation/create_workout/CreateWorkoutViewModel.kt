@@ -74,8 +74,7 @@ class CreateWorkoutViewModel @Inject constructor(
                             weight = it.weight,
                             id = it.rowId,
                             exercise = null,
-                            position = it.position,
-                            isDeleted = List(it.sets) { false }
+                            position = it.position
                         )
                         lastusedid = it.lastUsedId
                         initTrackableExercises[it.position] = currTrackableExercise
@@ -83,6 +82,7 @@ class CreateWorkoutViewModel @Inject constructor(
                 }
                 state = state.copy(
                     trackableExercises = initTrackableExercises.filterNotNull(),
+                    trackableExercisesSize = initTrackableExercises.size,
                     lastUsedId = lastusedid,
                     pageCount = initTrackableExercises.size
                 )
@@ -107,16 +107,13 @@ class CreateWorkoutViewModel @Inject constructor(
             }
 
             is CreateWorkoutEvent.OnTrackableExerciseUiRepsChange -> {
-                var counter = 0
                 state = state.copy(
                     trackableExercises = state.trackableExercises.toList().map {
-                        if (counter == event.page) {
-                            counter++
+                        if (it.position == event.page) {
                             val tmp = it.reps.toMutableList()
                             tmp[event.index] = event.reps
                             it.copy(reps = tmp.toList())
                         } else{
-                            counter++
                             it
                         }
                     }.toMutableList()
@@ -124,16 +121,13 @@ class CreateWorkoutViewModel @Inject constructor(
             }
 
             is CreateWorkoutEvent.OnTrackableExerciseUiRestChange -> {
-                var counter = 0
                 state = state.copy(
                     trackableExercises = state.trackableExercises.toList().map {
-                        if (counter == event.page) {
-                            counter++
+                        if (it.position == event.page) {
                             val tmp = it.rest.toMutableList()
                             tmp[event.index] = event.rest
                             it.copy(rest = tmp.toList())
                         } else {
-                            counter++
                             it
                         }
                     }.toMutableList()
@@ -141,16 +135,13 @@ class CreateWorkoutViewModel @Inject constructor(
             }
 
             is CreateWorkoutEvent.OnTrackableExerciseUiWeightChange -> {
-                var counter = 0
                 state = state.copy(
                     trackableExercises = state.trackableExercises.toList().map {
-                        if (counter == event.page) {
-                            counter++
+                        if (it.position == event.page) {
                             val tmp = it.weight.toMutableList()
                             tmp[event.index] = event.weight
                             it.copy(weight = tmp.toList())
                         } else {
-                            counter++
                             it
                         }
                     }.toMutableList()
@@ -158,45 +149,52 @@ class CreateWorkoutViewModel @Inject constructor(
             }
 
             is CreateWorkoutEvent.OnRemoveSetRow -> {
-                var counter = 0
                 state = state.copy(
                     trackableExercises = state.trackableExercises.map {
-                        if(counter == event.exerciseId){
-                            counter++
+                        if(it.position == event.page){
                             it.copy(
                                 sets = it.sets - 1,
                                 reps = it.reps.toMutableList().apply { removeAt(event.id) }.toList(),
                                 rest = it.rest.toMutableList().apply { removeAt(event.id) }.toList(),
                                 weight = it.weight.toMutableList().apply { removeAt(event.id) }.toList(),
-                                isDeleted = it.isDeleted.toMutableList().apply { removeAt(event.id) }.toList(),
                             )
                         } else {
-                            counter++
                             it
                         }
                     }.toMutableList()
                 )
-                Log.println(Log.DEBUG, "viewmodel trackablelist", state.trackableExercises[0].isDeleted.toString())
             }
 
             is CreateWorkoutEvent.OnRemovePage -> {
+                //TODO: set exercise's isDeleted at event.page to true
+                //TODO: subtract 1 from position for all exercises after deleted exercise
+                val tmpExercises = state.trackableExercises.toMutableList()
+                tmpExercises.forEachIndexed { index, it ->
+                    if(it.position == event.page) {
+                        tmpExercises[index] = it.copy(
+                            isDeleted = true
+                        )
+                    }
+                    else if (it.position > event.page) {
+                        tmpExercises[index] = it.copy(
+                            position = it.position - 1
+                        )
+                    }
+                }
                 state = state.copy(
-                    trackableExercises = state.trackableExercises.toMutableList().apply {
-                        removeAt(event.page)
-                    }.toList()
+                    trackableExercises = tmpExercises.toList()
                 )
                 onEvent(CreateWorkoutEvent.SubtractPageCount)
             }
 
             is CreateWorkoutEvent.CheckTrackedExercise -> {
                 val trackedExercise = preferences.loadTrackedExercise()
-                Log.println(Log.DEBUG, "create workout init", trackedExercise.name)
                 if (trackedExercise.rowId != -1){
                     state = state.copy(
                         trackableExercises = (state.trackableExercises.toList() + TrackableExerciseUiState(
                                 name = trackedExercise.name,
                                 id = state.lastUsedId,
-                                position = state.trackableExercises.size,
+                                position = state.trackableExercisesSize,
                                 exercise = TrackedExercise(
                                     id = trackedExercise.id,
                                     name = trackedExercise.name,
@@ -214,11 +212,11 @@ class CreateWorkoutViewModel @Inject constructor(
                                     muscle_name_secondary = trackedExercise.muscle_name_secondary
                                 )
                             )).toMutableList(),
-                        lastUsedId = state.lastUsedId + 1
+                        lastUsedId = state.lastUsedId + 1,
+                        trackableExercisesSize = state.trackableExercisesSize + 1
                     )
                     preferences.removeTrackedExercise()
                     onEvent(CreateWorkoutEvent.AddPageCount)
-                    Log.println(Log.DEBUG, "create workout init after", state.trackableExercises.size.toString())
                 }
             }
 
@@ -236,8 +234,10 @@ class CreateWorkoutViewModel @Inject constructor(
                     }
                     var counter = 0
                     event.trackableExercise.forEach { exercise ->
-                        counter += 1
-                        if(exercise.name.isEmpty() || exercise.sets == 0 || exercise.reps.contains("") || exercise.rest.contains("") || exercise.weight.contains("")){
+                        if(!exercise.isDeleted){
+                            counter += 1
+                        }
+                        if((exercise.name.isEmpty() || exercise.sets == 0 || exercise.reps.contains("") || exercise.rest.contains("") || exercise.weight.contains("")) && !exercise.isDeleted){
                             Log.println(Log.DEBUG, "exercise sets", "reached inside if")
                             viewModelScope.launch {
                                 _uiEvent.send(
@@ -277,8 +277,10 @@ class CreateWorkoutViewModel @Inject constructor(
                     }
                     var counter = 0
                     event.trackableExercise.forEach { exercise ->
-                        counter += 1
-                        if(exercise.name.isEmpty() || exercise.sets == 0 || exercise.reps.contains("") || exercise.rest.contains("") || exercise.weight.contains("")){
+                        if(!exercise.isDeleted){
+                            counter += 1
+                        }
+                        if((exercise.name.isEmpty() || exercise.sets == 0 || exercise.reps.contains("") || exercise.rest.contains("") || exercise.weight.contains("")) && !exercise.isDeleted){
                             Log.println(Log.DEBUG, "exercise sets", "reached inside if")
                             viewModelScope.launch {
                                 _uiEvent.send(
@@ -312,25 +314,24 @@ class CreateWorkoutViewModel @Inject constructor(
 
             is CreateWorkoutEvent.SubtractPageCount -> {
                 state = state.copy(
-                    pageCount = state.pageCount - 1
+                    pageCount = state.pageCount - 1,
+                    trackableExercisesSize = state.trackableExercisesSize - 1
                 )
             }
 
             is CreateWorkoutEvent.AddSet -> {
-                var counter = 0
                 state = state.copy(
                     trackableExercises = state.trackableExercises.toList().map {
-                        if(counter == event.page){
-                            counter++
+                        Log.println(Log.DEBUG, "CcreateWOrkoutViewModel AddSet event.page", event.page.toString())
+                        Log.println(Log.DEBUG, "CcreateWOrkoutViewModel AddSet it.position", it.position.toString())
+                        if(it.position == event.page){
                             it.copy(
                                 sets = it.sets + 1,
                                 reps = (it.reps + ""),
                                 rest = (it.rest + ""),
-                                weight = (it.weight + ""),
-                                isDeleted = (it.isDeleted + false)
+                                weight = (it.weight + "")
                             )
                         } else {
-                            counter++
                             it
                         }
                     }.toMutableList()
@@ -400,21 +401,23 @@ class CreateWorkoutViewModel @Inject constructor(
     private fun trackWorkout(event: CreateWorkoutEvent.OnCreateWorkout){
         viewModelScope.launch {
             event.trackableExercise.forEach {
-                storageService.saveWorkoutTemplate(
-                    WorkoutTemplate(
-                        id = it.docId,
-                        name = state.workoutName,
-                        exerciseName = it.name,
-                        exerciseId = it.exercise!!.id,
-                        sets = it.sets,
-                        rest = it.rest,
-                        reps = it.reps,
-                        weight = it.weight,
-                        rowId = it.id,
-                        position = it.id,
-                        lastUsedId = state.lastUsedId,
+                if(!it.isDeleted){
+                    storageService.saveWorkoutTemplate(
+                        WorkoutTemplate(
+                            id = it.docId,
+                            name = state.workoutName,
+                            exerciseName = it.name,
+                            exerciseId = it.exercise!!.id,
+                            sets = it.sets,
+                            rest = it.rest,
+                            reps = it.reps,
+                            weight = it.weight,
+                            rowId = it.id,
+                            position = it.id,
+                            lastUsedId = state.lastUsedId,
+                        )
                     )
-                )
+                }
             }
             _uiEvent.send(UiEvent.NavigateUp)
         }
@@ -422,25 +425,42 @@ class CreateWorkoutViewModel @Inject constructor(
     private fun updateWorkout(event: CreateWorkoutEvent.OnUpdateWorkout){
         viewModelScope.launch {
             event.trackableExercise.forEach {
-                if(it.docId.isEmpty()){
-                    storageService.saveWorkoutTemplate(
-                        WorkoutTemplate(
-                            id = it.docId,
-                            name = state.workoutName,
-                            exerciseName = it.name,
-                            exerciseId = null,
-                            sets = it.sets,
-                            rest = it.rest,
-                            reps = it.reps,
-                            weight = it.weight,
-                            rowId = it.id,
-                            position = it.position,
-                            lastUsedId = state.lastUsedId,
+                if(!it.isDeleted){
+                    if(it.docId.isEmpty()){
+                        storageService.saveWorkoutTemplate(
+                            WorkoutTemplate(
+                                id = it.docId,
+                                name = state.workoutName,
+                                exerciseName = it.name,
+                                exerciseId = null,
+                                sets = it.sets,
+                                rest = it.rest,
+                                reps = it.reps,
+                                weight = it.weight,
+                                rowId = it.id,
+                                position = it.position,
+                                lastUsedId = state.lastUsedId,
+                            )
                         )
-                    )
-                }
-                else {
-                    storageService.updateWorkoutTemplate(
+                    } else {
+                        storageService.updateWorkoutTemplate(
+                            WorkoutTemplate(
+                                id = it.docId,
+                                name = state.workoutName,
+                                exerciseName = it.name,
+                                exerciseId = null,
+                                sets = it.sets,
+                                rest = it.rest,
+                                reps = it.reps,
+                                weight = it.weight,
+                                rowId = it.id,
+                                position = it.id,
+                                lastUsedId = state.lastUsedId,
+                            )
+                        )
+                    }
+                } else if (it.docId.isNotEmpty()) {
+                    storageService.deleteWorkoutTemplate(
                         WorkoutTemplate(
                             id = it.docId,
                             name = state.workoutName,

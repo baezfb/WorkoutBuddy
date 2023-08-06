@@ -19,6 +19,7 @@ interface StorageService {
     suspend fun getUserInfo(): UserInfo?
     suspend fun saveWorkoutTemplate(workoutTemplate: WorkoutTemplate): String
     suspend fun updateWorkoutTemplate(workoutTemplate: WorkoutTemplate): String
+    suspend fun deleteWorkoutTemplate(workoutTemplate: WorkoutTemplate)
     suspend fun saveCompletedWorkout(completedWorkout: CompletedWorkout, date: String): String
     suspend fun saveExerciseTemplate(exerciseTemplate: ExerciseTemplate): String
     suspend fun updateExerciseTemplate(exerciseTemplate: ExerciseTemplate): String
