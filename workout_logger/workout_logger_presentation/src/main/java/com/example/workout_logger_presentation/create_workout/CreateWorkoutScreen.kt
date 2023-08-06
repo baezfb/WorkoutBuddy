@@ -2,6 +2,7 @@ package com.example.workout_logger_presentation.create_workout
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -27,6 +31,7 @@ import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
@@ -34,6 +39,9 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +57,8 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.hbaez.core.util.UiEvent
+import com.hbaez.user_auth_presentation.common.composable.DialogCancelButton
+import com.hbaez.user_auth_presentation.common.composable.DialogConfirmButton
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalPagerApi::class)
@@ -72,6 +82,9 @@ fun CreateWorkoutScreen(
     val pagerState = rememberPagerState()
     val pageCount = remember { mutableStateOf(state.pageCount) }
     val showExerciseInfoDialog = remember { mutableStateOf(false) }
+    val showDeleteRoutineDialog = remember { mutableStateOf(false) }
+
+    var menuExpanded = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit){
         viewModel.onEvent(CreateWorkoutEvent.CheckTrackedExercise)
@@ -118,24 +131,74 @@ fun CreateWorkoutScreen(
         )
     }
 
+    if(showDeleteRoutineDialog.value){
+        AlertDialog(
+            title = { 
+                Text(
+                style = MaterialTheme.typography.h2,
+                text = stringResource(R.string.delete_routine)
+                )
+                    },
+            dismissButton = { DialogCancelButton(R.string.cancel) { showDeleteRoutineDialog.value = false } },
+            confirmButton = {
+                DialogConfirmButton(R.string.delete) {
+                    if(createWorkout){
+                        onNavigateUp()
+                    } else {
+                        viewModel.onEvent(CreateWorkoutEvent.DeleteRoutine)
+                    }
+                }
+            },
+            onDismissRequest = { showDeleteRoutineDialog.value = false }
+        )
+    }
+
     Scaffold(
         topBar = {
             Column {
                 Spacer(modifier = Modifier.height(spacing.spaceMedium))
-                NameField(
-                    modifier = Modifier
-                        .padding(spacing.spaceMedium)
-                        .padding(end = spacing.spaceExtraLarge),
-                    text = state.workoutName,
-                    hint = stringResource(id = R.string.workout_name),
-                    onValueChange = {
-                        viewModel.onEvent(CreateWorkoutEvent.OnWorkoutNameChange(it))
-                    },
-                    onFocusChanged = {
-                        viewModel.onEvent(CreateWorkoutEvent.OnWorkoutNameFocusChange(it.isFocused))
-                    },
-                    keyboardController = keyboardController
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    NameField(
+                        modifier = Modifier
+                            .fillMaxWidth(.8f)
+                            .padding(spacing.spaceMedium),
+//                            .padding(end = spacing.spaceExtraLarge)
+                        text = state.workoutName,
+                        hint = stringResource(id = R.string.workout_name),
+                        onValueChange = {
+                            viewModel.onEvent(CreateWorkoutEvent.OnWorkoutNameChange(it))
+                        },
+                        onFocusChanged = {
+                            viewModel.onEvent(CreateWorkoutEvent.OnWorkoutNameFocusChange(it.isFocused))
+                        },
+                        keyboardController = keyboardController
+                    )
+                    Box {
+                        Icon(
+                            modifier = Modifier
+                                .clickable {
+                                    menuExpanded.value = true
+                                },
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "Create/Edit Workout Screen Option button"
+                        )
+                        DropdownMenu(
+                            expanded = menuExpanded.value,
+                            onDismissRequest = { menuExpanded.value = false }
+                        ) {
+                            DropdownMenuItem(onClick = {
+                                showDeleteRoutineDialog.value = true
+                                menuExpanded.value = false
+                            }) {
+                                Text(text = stringResource(id = R.string.delete))
+                            }
+                        }
+                    }
+                }
                 Spacer(modifier = Modifier.height(spacing.spaceSmall))
             }
         },

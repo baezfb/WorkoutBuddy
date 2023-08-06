@@ -374,6 +374,10 @@ class CreateWorkoutViewModel @Inject constructor(
                     }
                 )
             }
+
+            is CreateWorkoutEvent.DeleteRoutine -> {
+                deleteRoutine()
+            }
         }
     }
 
@@ -460,6 +464,31 @@ class CreateWorkoutViewModel @Inject constructor(
                         )
                     }
                 } else if (it.docId.isNotEmpty()) {
+                    storageService.deleteWorkoutTemplate(
+                        WorkoutTemplate(
+                            id = it.docId,
+                            name = state.workoutName,
+                            exerciseName = it.name,
+                            exerciseId = null,
+                            sets = it.sets,
+                            rest = it.rest,
+                            reps = it.reps,
+                            weight = it.weight,
+                            rowId = it.id,
+                            position = it.id,
+                            lastUsedId = state.lastUsedId,
+                        )
+                    )
+                }
+            }
+            _uiEvent.send(UiEvent.NavigateUp)
+        }
+    }
+
+    private fun deleteRoutine() {
+        viewModelScope.launch {
+            state.trackableExercises.forEach {
+                if(it.docId.isNotEmpty()){
                     storageService.deleteWorkoutTemplate(
                         WorkoutTemplate(
                             id = it.docId,

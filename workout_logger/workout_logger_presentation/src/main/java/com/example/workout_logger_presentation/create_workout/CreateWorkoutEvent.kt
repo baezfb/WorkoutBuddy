@@ -37,4 +37,6 @@ sealed class CreateWorkoutEvent {
 
     data class OnToggleExerciseDescription(val exercise: TrackableExerciseState): CreateWorkoutEvent()
 
+    object DeleteRoutine: CreateWorkoutEvent()
+
 }
