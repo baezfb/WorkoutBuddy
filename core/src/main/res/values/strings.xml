@@ -60,6 +60,7 @@
     <string name="error_not_100_percent">The values must add up to 100%</string>
     <string name="your_goal">Your goal:</string>
     <string name="delete">Delete</string>
+    <string name="delete_routine">Delete Routine?</string>
     <string name="workout_name">Workout Name</string>
     <string name="exercise">Exercise</string>
     <string name="sets">Sets</string>

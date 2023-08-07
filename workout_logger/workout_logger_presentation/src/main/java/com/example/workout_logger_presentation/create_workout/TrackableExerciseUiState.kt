@@ -12,5 +12,6 @@ data class TrackableExerciseUiState(
     val id: Int = 0,
     val position: Int,
     val exercise: TrackedExercise?,
-    val isDeleted: List<Boolean> = List(0) { false }
+    val isDeleted: Boolean = false
+
 )

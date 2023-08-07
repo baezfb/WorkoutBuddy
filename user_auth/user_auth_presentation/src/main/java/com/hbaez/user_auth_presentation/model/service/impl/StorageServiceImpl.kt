@@ -169,6 +169,12 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             return workoutTemplate.id
         }
 
+    override suspend fun deleteWorkoutTemplate(workoutTemplate: WorkoutTemplate) {
+        trace(DELETE_WORKOUT_TEMPLATE) {
+            workoutTemplateCollection(auth.currentUserId).document(workoutTemplate.id).delete().await()
+        }
+    }
+
     override suspend fun saveCompletedWorkout(completedWorkout: CompletedWorkout, date: String): String =
         trace(SAVE_COMPLETED_WORKOUT) {
             val documentRef = completedWorkoutCollection(auth.currentUserId, date).document()
@@ -252,6 +258,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         private const val SAVE_WORKOUT_TEMPLATE = "saveWorkoutTemplate"
         private const val SAVE_COMPLETED_WORKOUT = "saveCompletedWorkout"
         private const val SAVE_EXERCISE_TEMPLATE = "saveExerciseTemplate"
+        private const val DELETE_WORKOUT_TEMPLATE = "deleteWorkoutTemplate"
         private const val UPDATE_TASK_TRACE = "updateTask"
         private const val WORKOUT_TEMPLATE = "workouts"
         private const val COMPLETED_WORKOUT = "completed_workouts"
