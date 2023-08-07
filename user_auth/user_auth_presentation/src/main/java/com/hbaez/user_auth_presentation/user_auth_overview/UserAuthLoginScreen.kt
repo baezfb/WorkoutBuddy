@@ -55,10 +55,8 @@ fun UserAuthLoginScreen(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.primary)
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState(), enabled = true)
     ) {
-//        Spacer(modifier = Modifier.height(spacing.spaceExtraExtraLarge))
-//        Spacer(modifier = Modifier.height(spacing.spaceExtraExtraLarge))
         Spacer(modifier = Modifier.height(spacing.spaceSmall))
         //TODO: add back button
         Text(
@@ -79,7 +77,7 @@ fun UserAuthLoginScreen(
                         topEnd = 15.dp
                     )
                 )
-                .background(Color.Black)
+                .background(Color.White)
                 .padding(
                     horizontal = spacing.spaceMedium
                 )
@@ -136,13 +134,14 @@ fun UserAuthLoginScreen(
                 Spacer(modifier = Modifier.height(spacing.spaceMedium))
 
                 Column(
-                    Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
-                    BasicButton(
+                    Button(
                         R.string.login,
                         Modifier
                             .fillMaxWidth()
-                            .padding(16.dp, 8.dp)
+//                            .padding(16.dp, 8.dp)
                     ) {
                         viewModel.onEvent(
                             UserAuthEvent.OnLoginClick(
@@ -162,13 +161,12 @@ fun UserAuthLoginScreen(
                     ) {
                         Text(
                             text = stringResource(id = R.string.no_account),
-                            modifier = Modifier
-//                            .align(Alignment.CenterVertically)
+                            modifier = Modifier,
+                            color  = Color.Gray
                         )
                         BasicTextButton(
                             R.string.sign_up,
                             Modifier
-//                            .align(Alignment.CenterVertically)
                                 .padding(16.dp, 4.dp, 16.dp, 0.dp)
                         ) {
                             viewModel.onEvent(UserAuthEvent.OnEmailFieldChange(""))
@@ -180,7 +178,6 @@ fun UserAuthLoginScreen(
 
             }
             Spacer(modifier = Modifier.height(spacing.spaceExtraExtraLarge))
-
         }
     }
 }

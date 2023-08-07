@@ -60,7 +60,7 @@ fun Button(@StringRes text: Int, modifier: Modifier, action: () -> Unit) {
     val spacing = LocalSpacing.current
     Row(
         modifier = modifier
-            .background(Color.White, shape = RoundedCornerShape(15.dp))
+            .background(MaterialTheme.colors.primary, shape = RoundedCornerShape(15.dp))
             .clickable { action() }
             .padding(spacing.spaceSmall)
             .fillMaxWidth(1f)
@@ -71,7 +71,7 @@ fun Button(@StringRes text: Int, modifier: Modifier, action: () -> Unit) {
         Text(
             text = stringResource(text),
             style = MaterialTheme.typography.button,
-            color = MaterialTheme.colors.primary
+            color = MaterialTheme.colors.onPrimary
         )
     }
 }
