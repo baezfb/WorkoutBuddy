@@ -18,19 +18,14 @@ import com.hbaez.core_ui.LocalSpacing
 
 @Composable
 fun EmailField(value: String, onNewValue: (String) -> Unit, modifier: Modifier = Modifier) {
-    val spacing = LocalSpacing.current
-    Column(
-        modifier = modifier
-    ) {
-        Text(text = stringResource(id = R.string.email), style = MaterialTheme.typography.body1)
-        Spacer(modifier = Modifier.height(spacing.spaceSmall))
-        OutlinedTextField(
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            value = value,
-            onValueChange = { onNewValue(it) },
-            placeholder = { Text(stringResource(R.string.email)) },
-            leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "Email") }
-        )
-    }
+    OutlinedTextField(
+        singleLine = true,
+        value = value,
+        textStyle = MaterialTheme.typography.body1,
+        label = { Text(stringResource(R.string.email)) },
+        onValueChange = { onNewValue(it) },
+        placeholder = { Text(stringResource(R.string.email)) },
+        leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "Email") },
+        modifier = modifier,
+    )
 }

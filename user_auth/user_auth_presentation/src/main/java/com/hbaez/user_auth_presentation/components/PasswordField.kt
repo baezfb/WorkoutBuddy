@@ -35,14 +35,7 @@ fun PasswordField(
     modifier: Modifier = Modifier,
     @StringRes placeholder: Int
 ) {
-    val spacing = LocalSpacing.current
-    Column(
-        modifier = modifier
-    ) {
-        Text(text = stringResource(id = placeholder), style = MaterialTheme.typography.body1)
-        Spacer(modifier = Modifier.height(spacing.spaceSmall))
-        PasswordField(value, placeholder, onNewValue)
-    }
+    PasswordField(value, placeholder, onNewValue)
 }
 
 @Composable
@@ -59,7 +52,9 @@ private fun PasswordField(
     OutlinedTextField(
         modifier = Modifier.fillMaxWidth(),
         value = value,
+        singleLine = true,
         onValueChange = { onNewValue(it) },
+        label = { Text(text = stringResource(placeholder)) },
         placeholder = { Text(text = stringResource(placeholder)) },
         leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "Lock") },
         trailingIcon = {

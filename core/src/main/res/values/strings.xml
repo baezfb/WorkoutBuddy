@@ -100,10 +100,11 @@
     <string name="exercise_name">Exercise Name</string>
     <string name="edit_exercise">Edit Exercise</string>
     <string name="exercise_name_taken">Exercise name already exists.</string>
-    <string name="login_header">Log in to your account</string>
+    <string name="login_header">Welcome Back</string>
+    <string name="login_subheader">Hello there, sign in to continue</string>
     <string name="login">Login</string>
     <string name="sign_in_with_google">Sign in with Google</string>
-    <string name="email">Email Address</string>
+    <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="retype_password">Retype Password</string>
     <string name="forgot_password">Forgot Password</string>
