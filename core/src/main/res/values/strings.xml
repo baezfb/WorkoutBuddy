@@ -109,6 +109,8 @@
     <string name="retype_password">Retype Password</string>
     <string name="forgot_password">Forgot Password</string>
     <string name="sign_up">Sign up</string>
+    <string name="sign_up_header">Welcome</string>
+    <string name="sign_up_subheader">Sign up to continue</string>
     <string name="sign_in">Sign In</string>
     <string name="continue_guest">Continue as guest</string>
     <string name="no_account">Don\'t have an account?</string>
