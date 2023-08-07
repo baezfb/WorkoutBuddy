@@ -13,6 +13,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -23,6 +24,7 @@ import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.user_auth_presentation.components.Button
 import com.hbaez.user_auth_presentation.components.FlatButton
+import com.hbaez.user_auth_presentation.components.OutlineButton
 
 @ExperimentalCoilApi
 @Composable
@@ -71,7 +73,7 @@ fun UserAuthWelcomeScreen(
                 .padding(start = 20.dp, end = 20.dp, bottom = 40.dp)
         )
 
-        Button(
+        OutlineButton(
             R.string.sign_in_with_google,
             Modifier
                 .fillMaxWidth(.8f)

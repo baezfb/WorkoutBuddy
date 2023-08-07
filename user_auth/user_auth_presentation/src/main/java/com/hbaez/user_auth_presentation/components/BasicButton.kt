@@ -88,6 +88,31 @@ fun FlatButton(@StringRes text: Int, modifier: Modifier, action: () -> Unit) {
         modifier = modifier
             .background(Color.Transparent)
             .clickable { action() }
+//            .border(1.dp, MaterialTheme.colors.onPrimary, RoundedCornerShape(15.dp))
+            .padding(spacing.spaceSmall)
+            .fillMaxWidth(1f),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(text),
+            style = MaterialTheme.typography.button,
+            color = Color.White
+        )
+    }
+}
+
+@Composable
+fun OutlineButton(@StringRes text: Int, modifier: Modifier, action: () -> Unit) {
+    /**
+     * TODO: Add the ability to change the color of the outline
+     * TODO: Add the ability to add an icon
+     */
+    val spacing = LocalSpacing.current
+    Row(
+        modifier = modifier
+            .background(Color.Transparent)
+            .clickable { action() }
             .border(1.dp, MaterialTheme.colors.onPrimary, RoundedCornerShape(15.dp))
             .padding(spacing.spaceSmall)
             .fillMaxWidth(1f),
