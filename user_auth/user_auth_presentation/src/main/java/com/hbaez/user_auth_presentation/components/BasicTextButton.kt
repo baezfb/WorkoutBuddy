@@ -15,7 +15,10 @@ fun BasicTextButton(@StringRes text: Int, modifier: Modifier, action: () -> Unit
         Text(
             text = stringResource(text),
             style = MaterialTheme.typography.body2,
-            color = Color.LightGray
+            color = MaterialTheme.colors.primary,
+            fontWeight = MaterialTheme.typography.h1.fontWeight,
+            fontSize = MaterialTheme.typography.h4.fontSize,
+            letterSpacing = MaterialTheme.typography.body2.letterSpacing,
         )
     }
 }

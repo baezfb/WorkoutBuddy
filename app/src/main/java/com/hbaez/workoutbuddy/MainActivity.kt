@@ -174,7 +174,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                 ){
                     NavHost(
                         navController = navController,
-                        startDestination = Route.SPLASH
+                        startDestination = Route.USER_AUTH_WELCOME
                     ){
                         composable(Route.SPLASH){
                             SplashScreen(

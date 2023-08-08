@@ -1,19 +1,19 @@
 package com.hbaez.user_auth_presentation.user_auth_overview
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -22,8 +22,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.annotation.ExperimentalCoilApi
 import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
-import com.hbaez.user_auth_presentation.components.BasicButton
-import com.hbaez.user_auth_presentation.components.BasicTextButton
+import com.hbaez.user_auth_presentation.components.Button
+import com.hbaez.user_auth_presentation.components.FlatButton
+import com.hbaez.user_auth_presentation.components.OutlineButton
 
 @ExperimentalCoilApi
 @Composable
@@ -35,67 +36,97 @@ fun UserAuthWelcomeScreen(
     modifier: Modifier = Modifier,
     viewModel: UserAuthViewModel = hiltViewModel()
 ) {
+    /**
+     * TODO: Remove unused variables
+     */
     val spacing = LocalSpacing.current
     val state = viewModel.state
     val context = LocalContext.current
 
     Column(
-        Modifier
+        modifier = modifier
             .fillMaxSize()
+            .background(MaterialTheme.colors.primary)
+            .padding(spacing.spaceMedium),
+        verticalArrangement = Arrangement.Bottom
     ) {
-        Spacer(modifier = Modifier.height(spacing.spaceExtraExtraLarge))
-        Spacer(modifier = Modifier.height(spacing.spaceExtraLarge))
-        Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .clip(
-                    RoundedCornerShape(
-                        topStart = 50.dp,
-                        topEnd = 50.dp
-                    )
-                )
-                .background(MaterialTheme.colors.primary)
-                .padding(
-                    horizontal = spacing.spaceSmall
-                )
+        Text(
+            stringResource(id = R.string.welcome_screen_title),
+            textAlign = TextAlign.Left,
+            style = MaterialTheme.typography.subtitle1,
+            modifier = Modifier
+                .padding(start = 20.dp, bottom = 20.dp)
+        )
+        Text(
+            stringResource(id = R.string.welcome_screen_subtitle),
+            textAlign = TextAlign.Left,
+            style = MaterialTheme.typography.h4,
+            modifier = Modifier
+                .padding(start = 20.dp, bottom = 5.dp)
+        )
+
+        Text(
+            stringResource(id = R.string.welcome_screen_subtitle2),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.h2,
+            modifier = Modifier
+                .padding(start = 20.dp, end = 20.dp, bottom = 40.dp)
+        )
+
+        OutlineButton(
+            R.string.sign_in_with_google,
+            Modifier
+                .fillMaxWidth(.8f)
+                .align(Alignment.CenterHorizontally)
+                .padding(bottom = 12.dp)
         ) {
-            Spacer(modifier = Modifier.height(spacing.spaceExtraLarge))
-            Text(
-                stringResource(id = R.string.workout_buddy),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.h2,
-                modifier = Modifier
-                    .padding(16.dp, 4.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.height(spacing.spaceLarge))
-            BasicButton(
-                R.string.login,
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp, 8.dp)
-            ) {
-                onNavigateToLogin()
-            }
-            Spacer(modifier = Modifier.height(spacing.spaceMedium))
-            BasicButton(
-                R.string.sign_up,
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp, 8.dp)
-            ) {
-                onNavigateToSignUp()
-            }
-            Spacer(modifier = Modifier.height(spacing.spaceMedium))
-            BasicTextButton(
-                R.string.continue_guest,
-                Modifier
-//                            .align(Alignment.CenterVertically)
-                    .padding(16.dp, 4.dp, 16.dp, 0.dp)
-            ) {
-                onNavigateToHome()
-            }
+            // TODO: Google sign in implementation
         }
+
+        FlatButton(
+            R.string.sign_up,
+            Modifier
+                .fillMaxWidth(.8f)
+                .align(Alignment.CenterHorizontally)
+        ) {
+            onNavigateToSignUp()
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 30.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                "Already have an account?",
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.h4,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(start = 20.dp, end = 10.dp, top = 30.dp)
+            )
+            Text(
+                stringResource(id = R.string.sign_in),
+                style = MaterialTheme.typography.h4,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .clickable {
+                        onNavigateToLogin()
+                    }
+                    .padding(start = 10.dp, end = 20.dp, top = 30.dp),
+            )
+        }
+
+        Text(
+            stringResource(id = R.string.continue_guest),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.h4,
+            modifier = Modifier
+                .padding(top = 30.dp)
+                .align(Alignment.CenterHorizontally)
+                .clickable {
+                    onNavigateToHome()
+                }
+        )
     }
 }
