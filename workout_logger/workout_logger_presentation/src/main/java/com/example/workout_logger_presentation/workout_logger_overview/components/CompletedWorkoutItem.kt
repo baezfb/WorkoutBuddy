@@ -92,7 +92,7 @@ fun CompletedWorkoutItem(
                     .size(75.dp)
                     .clip(RoundedCornerShape(topStart = 5.dp))
                     .aspectRatio(1f),
-                colorFilter = ColorFilter.colorMatrix(ColorMatrix(colorMatrix))
+                colorFilter = if(MaterialTheme.colorScheme.onBackground.red * 255 > 150 && MaterialTheme.colorScheme.onBackground.blue * 255 > 150 && MaterialTheme.colorScheme.onBackground.green * 255 > 150) ColorFilter.colorMatrix(ColorMatrix(colorMatrix)) else null
             )
             Spacer(modifier = Modifier.width(spacing.spaceSmall))
             Text(

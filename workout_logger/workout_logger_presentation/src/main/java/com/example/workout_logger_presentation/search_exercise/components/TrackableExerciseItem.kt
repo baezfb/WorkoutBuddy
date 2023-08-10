@@ -31,7 +31,9 @@ import coil.annotation.ExperimentalCoilApi
 import com.example.workout_logger_presentation.search_exercise.TrackableExerciseState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
+import androidx.core.graphics.ColorUtils
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
@@ -61,12 +63,16 @@ fun TrackableExerciseItem(
     val spacing = LocalSpacing.current
     val context = LocalContext.current
 
+    Log.println(Log.DEBUG, "MaterialTheme.colorScheme.background.red", (MaterialTheme.colorScheme.onBackground.red * 255).toString())
+    Log.println(Log.DEBUG, "MaterialTheme.colorScheme.background.green", (MaterialTheme.colorScheme.onBackground.green * 255).toString())
+    Log.println(Log.DEBUG, "MaterialTheme.colorScheme.background.blue", (MaterialTheme.colorScheme.onBackground.blue * 255).toString())
     val colorMatrix = floatArrayOf(
-        -1f, 0f, 0f, 0f, 255f,
-        0f, -1f, 0f, 0f, 255f,
-        0f, 0f, -1f, 0f, 255f,
+        -1f, 0f, 0f, 0f, MaterialTheme.colorScheme.onBackground.red * 255,
+        0f, -1f, 0f, 0f, MaterialTheme.colorScheme.onBackground.green * 255,
+        0f, 0f, -1f, 0f, MaterialTheme.colorScheme.onBackground.blue * 255,
         0f, 0f, 0f, 1f, 0f
     ) // inverts color
+
 
     val muscles: List<Muscle> = listOf(
         Muscle("Anterior deltoid", "/static/images/muscles/main/muscle-2.svg", true),
@@ -117,7 +123,7 @@ fun TrackableExerciseItem(
                 modifier = Modifier
                     .size(75.dp)
                     .clip(RoundedCornerShape(topStart = 5.dp)),
-                colorFilter = ColorFilter.colorMatrix(ColorMatrix(colorMatrix))
+                colorFilter = if(MaterialTheme.colorScheme.onBackground.red * 255 > 150 && MaterialTheme.colorScheme.onBackground.blue * 255 > 150 && MaterialTheme.colorScheme.onBackground.green * 255 > 150) ColorFilter.colorMatrix(ColorMatrix(colorMatrix)) else null
             )
             Spacer(modifier = Modifier.width(spacing.spaceSmall))
             Text(
