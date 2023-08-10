@@ -10,9 +10,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -59,22 +60,25 @@ fun NameField(
                     defaultKeyboardAction(ImeAction.Done)
                 }
             ),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedContainerColor = MaterialTheme.colorScheme.inverseOnSurface
+            ),
             modifier = Modifier
                 .clip(RoundedCornerShape(5.dp))
                 .shadow(
                     elevation = 2.dp,
                     shape = RoundedCornerShape(5.dp)
                 )
-                .background(MaterialTheme.colors.background)
+                .background(MaterialTheme.colorScheme.background)
                 .fillMaxWidth()
-                .heightIn(min=height)
+                .heightIn(min = height)
                 .onFocusChanged { onFocusChanged(it) }
                 .testTag("workoutname_textfield")
         )
         if(shouldShowHint) {
             Text(
                 text = hint,
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Light,
                 color = Color.White,
                 modifier = Modifier

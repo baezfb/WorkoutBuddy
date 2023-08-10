@@ -10,10 +10,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
@@ -40,7 +39,7 @@ fun SearchTextField(
     onValueChange: (String) -> Unit,
     onClear: () -> Unit,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colors.surface,
+    backgroundColor: Color = MaterialTheme.colorScheme.surface,
     hint: String = stringResource(id = R.string.search),
     shouldShowHint: Boolean = false,
     onFocusChanged: (FocusState) -> Unit
@@ -62,7 +61,7 @@ fun SearchTextField(
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done,
             ),
-            textStyle = TextStyle(MaterialTheme.colors.onBackground),
+            textStyle = TextStyle(MaterialTheme.colorScheme.onBackground),
             modifier = Modifier
                 .clip(RoundedCornerShape(5.dp))
                 .padding(2.dp)
@@ -71,7 +70,7 @@ fun SearchTextField(
                     shape = RoundedCornerShape(5.dp)
                 )
                 .background(backgroundColor)
-                .border(border = BorderStroke(1.dp, MaterialTheme.colors.onSurface), shape = RectangleShape)
+                .border(border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface), shape = RectangleShape)
                 .fillMaxWidth()
                 .padding(spacing.spaceMedium)
                 .padding(end = spacing.spaceMedium)
@@ -81,7 +80,7 @@ fun SearchTextField(
         if(shouldShowHint) {
             Text(
                 text = hint,
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Light,
                 color = Color.White,
                 modifier = Modifier
@@ -90,13 +89,10 @@ fun SearchTextField(
             )
         }
         IconButton(
+            icon = Icons.Default.Clear,
+            color = MaterialTheme.colorScheme.onBackground,
             onClick = onClear,
             modifier = Modifier.align(Alignment.CenterEnd)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Clear,
-                contentDescription = stringResource(id = R.string.clear)
-            )
-        }
+        )
     }
 }

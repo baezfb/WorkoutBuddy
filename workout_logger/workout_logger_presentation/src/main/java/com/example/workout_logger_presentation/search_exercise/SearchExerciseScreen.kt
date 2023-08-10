@@ -11,8 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
@@ -27,9 +27,9 @@ import coil.annotation.ExperimentalCoilApi
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScaffoldState
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -42,7 +42,7 @@ import com.hbaez.core.util.UiEvent
 @ExperimentalCoilApi
 @Composable
 fun SearchExerciseScreen(
-    scaffoldState: ScaffoldState,
+    snackBarHost: SnackbarHostState,
     onNavigateUp: () -> Unit,
     rowId: Int,
     viewModel: SearchExerciseViewModel  = hiltViewModel()
@@ -56,7 +56,7 @@ fun SearchExerciseScreen(
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is UiEvent.ShowSnackbar -> {
-                    scaffoldState.snackbarHostState.showSnackbar(
+                    snackBarHost.showSnackbar(
                         message = event.message.asString(context)
                     )
                     keyboardController?.hide()
@@ -74,7 +74,7 @@ fun SearchExerciseScreen(
     ) {
         Text(
             text = stringResource(id = com.hbaez.core.R.string.search_exercise),
-            style = MaterialTheme.typography.h2
+            style = MaterialTheme.typography.displayMedium
         )
         Spacer(modifier = Modifier.height(spacing.spaceMedium))
         Row {
@@ -139,7 +139,7 @@ fun SearchExerciseScreen(
                 state.trackableExercise.isEmpty() -> {
                     Text(
                         text = stringResource(id = R.string.no_results),
-                        style = MaterialTheme.typography.body1,
+                        style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center
                     )
                 }

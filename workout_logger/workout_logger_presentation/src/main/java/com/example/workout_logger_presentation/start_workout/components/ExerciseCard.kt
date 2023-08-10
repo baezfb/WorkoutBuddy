@@ -16,14 +16,15 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Card
-import androidx.compose.material.Checkbox
-import androidx.compose.material.CheckboxDefaults
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
@@ -59,12 +60,14 @@ fun ExerciseCard(
     val spacing = LocalSpacing.current
     Card(
         shape = RoundedCornerShape(8.dp),
-        backgroundColor = MaterialTheme.colors.background,
+        colors = CardDefaults.cardColors(
+            MaterialTheme.colorScheme.background
+        ),
         modifier = Modifier
             .clip(
                 RoundedCornerShape(50.dp)
             )
-            .border(2.dp, MaterialTheme.colors.primary, RoundedCornerShape(50.dp))
+            .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(50.dp))
             .padding(spacing.spaceMedium)
             .width(275.dp)
             .height(325.dp)
@@ -80,19 +83,19 @@ fun ExerciseCard(
             ) {
                 Text(
                     text= stringResource(id = R.string.sets),
-                    style = MaterialTheme.typography.body2
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Text(
                     text= stringResource(id = R.string.weight),
-                    style = MaterialTheme.typography.body2
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Text(
                     text= stringResource(id = R.string.reps),
-                    style = MaterialTheme.typography.body2
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Text(
                     text= stringResource(id = R.string.completed_question),
-                    style = MaterialTheme.typography.body2
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
             LazyColumn{
@@ -122,7 +125,7 @@ fun ExerciseCard(
                                 .clickable(enabled = loggerListState.sets.toInt() > workoutTemplate.sets && timerStatus != TimerStatus.RUNNING) { onRemoveSet() }
                                 .border(
                                     width = 1.dp,
-                                    color = MaterialTheme.colors.background,
+                                    color = MaterialTheme.colorScheme.background,
                                     shape = RoundedCornerShape(100f)
                                 )
                                 .padding(spacing.spaceMedium),
@@ -132,8 +135,8 @@ fun ExerciseCard(
                             Text(
                                 text = "Del Set",
                                 maxLines = 2,
-                                style = MaterialTheme.typography.button,
-                                color = if(loggerListState.sets.toInt() > workoutTemplate.sets && timerStatus != TimerStatus.RUNNING) MaterialTheme.colors.primary else Color.DarkGray
+                                style = MaterialTheme.typography.labelLarge,
+                                color = if(loggerListState.sets.toInt() > workoutTemplate.sets && timerStatus != TimerStatus.RUNNING) MaterialTheme.colorScheme.primary else Color.DarkGray
                             )
                         }
                         Row(
@@ -142,7 +145,7 @@ fun ExerciseCard(
                                 .clickable { onAddSet() }
                                 .border(
                                     width = 1.dp,
-                                    color = MaterialTheme.colors.background,
+                                    color = MaterialTheme.colorScheme.background,
                                     shape = RoundedCornerShape(100f)
                                 )
                                 .padding(spacing.spaceMedium),
@@ -152,8 +155,8 @@ fun ExerciseCard(
                             Text(
                                 text = "Add Set",
                                 maxLines = 2,
-                                style = MaterialTheme.typography.button,
-                                color = MaterialTheme.colors.primary
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -183,7 +186,7 @@ fun ExerciseCardRow(
         Text(
             modifier = Modifier.weight(1f),
             text= set.toString(),
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.bodyMedium
         )
         TextField(
             modifier = Modifier.weight(1f),
@@ -198,9 +201,10 @@ fun ExerciseCardRow(
                     defaultKeyboardAction(ImeAction.Next)
                 }
             ),
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = MaterialTheme.colors.background,
-                focusedIndicatorColor = MaterialTheme.colors.primaryVariant,
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
                 unfocusedIndicatorColor = Color.Transparent
             )
         )
@@ -217,9 +221,10 @@ fun ExerciseCardRow(
                     defaultKeyboardAction(ImeAction.Next)
                 }
             ),
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = MaterialTheme.colors.background,
-                focusedIndicatorColor = MaterialTheme.colors.primaryVariant,
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
                 unfocusedIndicatorColor = Color.Transparent
             )
         )

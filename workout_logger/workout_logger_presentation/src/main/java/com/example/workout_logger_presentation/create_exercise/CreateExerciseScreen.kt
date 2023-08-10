@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
@@ -14,66 +13,54 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Checkbox
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Text
-import androidx.compose.material.TextFieldColors
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.ImagePainter.State.Empty.painter
 import coil.compose.rememberImagePainter
 import coil.decode.SvgDecoder
 import com.example.workout_logger_presentation.components.AddButton
 import com.example.workout_logger_presentation.components.NameField
-import com.example.workout_logger_presentation.create_workout.CreateWorkoutEvent
 import com.hbaez.core.R
 import com.hbaez.core.util.UiEvent
 import com.hbaez.core_ui.LocalSpacing
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
 @ExperimentalCoilApi
 @Composable
 fun CreateExerciseScreen(
-    scaffoldState: ScaffoldState,
+    snackBarHost: SnackbarHostState,
     createExercise: Boolean,
     onNavigateUp: () -> Unit,
     viewModel: CreateExerciseViewModel = hiltViewModel()
@@ -94,7 +81,7 @@ fun CreateExerciseScreen(
         viewModel.uiEvent.collect{ event ->
             when(event) {
                 is UiEvent.ShowSnackbar -> {
-                    scaffoldState.snackbarHostState.showSnackbar(
+                    snackBarHost.showSnackbar(
                         message = event.message.asString(context)
                     )
                 }
@@ -116,7 +103,7 @@ fun CreateExerciseScreen(
             OutlinedButton(
                 onClick = { /* TODO Handle add picture button click */ },
                 shape = CircleShape,
-                colors = ButtonDefaults.outlinedButtonColors(backgroundColor = MaterialTheme.colors.background, contentColor = MaterialTheme.colors.primary),
+                colors = ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.background, contentColor = MaterialTheme.colorScheme.primary),
                 modifier = Modifier
                     .size(96.dp)
             ) {
@@ -126,7 +113,7 @@ fun CreateExerciseScreen(
                             .fillMaxSize()
                             .align(Alignment.CenterVertically),
                         text = "+\nAdd Picture",
-                        style = MaterialTheme.typography.subtitle2,
+                        style = MaterialTheme.typography.titleSmall,
                         textAlign = TextAlign.Center,
                     )
                 }
@@ -191,12 +178,17 @@ fun CreateExerciseScreen(
             contentAlignment = Alignment.Center
         ){
             OutlinedTextField(
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color.Gray,
-                    focusedLabelColor = Color.Gray,
-                    unfocusedLabelColor = MaterialTheme.colors.background
+                enabled = false,
+                colors = TextFieldDefaults.colors(
+                    disabledLabelColor = MaterialTheme.colorScheme.onBackground,
+                    disabledTextColor = MaterialTheme.colorScheme.inverseOnSurface,
+                    disabledContainerColor = MaterialTheme.colorScheme.inverseOnSurface,
+                    focusedContainerColor = MaterialTheme.colorScheme.background,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                    focusedLabelColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.background
                 ),
-                value = "",
+                value = "placeholder",
                 label = { Text(text = "Add more pictures") } ,
                 onValueChange = { /*TODO*/ },
                 readOnly = true,
@@ -213,7 +205,7 @@ fun CreateExerciseScreen(
                         elevation = 2.dp,
                         shape = RoundedCornerShape(5.dp)
                     )
-                    .background(MaterialTheme.colors.background)
+                    .background(MaterialTheme.colorScheme.background)
                     .fillMaxWidth()
                     .heightIn(min = spacing.spaceExtraExtraLarge)
             )
@@ -226,7 +218,7 @@ fun CreateExerciseScreen(
                     OutlinedButton(
                         onClick = { /* Handle add picture button click */ },
                         shape = CircleShape,
-                        colors = ButtonDefaults.outlinedButtonColors(backgroundColor = MaterialTheme.colors.background, contentColor = MaterialTheme.colors.primary),
+                        colors = ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.background, contentColor = MaterialTheme.colorScheme.primary),
                         modifier = Modifier
                             .size(96.dp)
                     ) {
@@ -275,9 +267,9 @@ fun CreateExerciseScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "MUSCLES",
+                text = stringResource(id = R.string.muscles).uppercase(),
                 modifier = Modifier.padding(16.dp),
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.titleLarge
             )
 
             OutlinedTextField(
@@ -290,7 +282,7 @@ fun CreateExerciseScreen(
                     .padding(horizontal = 16.dp)
                     .height(56.dp),
                 placeholder = { Text("Filter") },
-                colors = TextFieldDefaults.textFieldColors(
+                colors = TextFieldDefaults.colors(
                     unfocusedIndicatorColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent
                 ),
@@ -308,26 +300,24 @@ fun CreateExerciseScreen(
 
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .padding(spacing.spaceMedium)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "PRIMARY",
-//                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.subtitle1
+                    text = stringResource(id = R.string.primary).uppercase(),
+                    style = MaterialTheme.typography.titleSmall
                 )
                 Text(
-                    text = "SECONDARY",
-//                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.subtitle1
+                    text = stringResource(id = R.string.secondary).uppercase(),
+                    style = MaterialTheme.typography.titleSmall
                 )
             }
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .size(spacing.spaceExtraExtraLarge + spacing.spaceExtraLarge)
-                    .background(color = MaterialTheme.colors.surface)
+                    .background(color = MaterialTheme.colorScheme.inverseOnSurface)
                     .clip(
                         RoundedCornerShape(8.dp)
                     )

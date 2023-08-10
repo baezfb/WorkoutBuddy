@@ -1,9 +1,9 @@
 package com.hbaez.onboarding_presentation.age
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -16,11 +16,10 @@ import com.hbaez.core.util.UiEvent
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.onboarding_presentation.components.ActionButton
 import com.hbaez.onboarding_presentation.components.UnitTextField
-import kotlinx.coroutines.flow.collect
 
 @Composable
 fun AgeScreen(
-    scaffoldState: ScaffoldState,
+    snackBarHost: SnackbarHostState,
     onNextClick: () -> Unit,
     viewModel: AgeViewModel = hiltViewModel()
 ) {
@@ -31,7 +30,7 @@ fun AgeScreen(
             when (event) {
                 is UiEvent.Success -> onNextClick()
                 is UiEvent.ShowSnackbar -> {
-                    scaffoldState.snackbarHostState.showSnackbar(
+                    snackBarHost.showSnackbar(
                         message = event.message.asString(context)
                     )
                 }
@@ -51,7 +50,7 @@ fun AgeScreen(
         ) {
             Text(
                 text = stringResource(id = R.string.whats_your_age),
-                style = MaterialTheme.typography.h3
+                style = MaterialTheme.typography.displaySmall
             )
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
             UnitTextField(

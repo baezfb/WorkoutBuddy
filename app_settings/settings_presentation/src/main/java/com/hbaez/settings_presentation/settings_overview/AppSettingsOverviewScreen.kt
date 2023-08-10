@@ -1,7 +1,6 @@
 package com.hbaez.settings_presentation.settings_overview
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,17 +10,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -35,7 +31,6 @@ import com.hbaez.user_auth_presentation.common.composable.DialogCancelButton
 import com.hbaez.user_auth_presentation.common.composable.DialogConfirmButton
 import com.hbaez.user_auth_presentation.components.BasicButton
 
-@OptIn(ExperimentalMaterialApi::class)
 @ExperimentalCoilApi
 @Composable
 fun AppSettingsOverviewScreen(
@@ -94,7 +89,7 @@ fun AppSettingsOverviewScreen(
                 modifier = Modifier
                     .padding(start = spacing.spaceMedium)
                     .fillMaxWidth(),
-                style = MaterialTheme.typography.h1
+                style = MaterialTheme.typography.displayLarge
             )
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
             Row(
@@ -107,8 +102,8 @@ fun AppSettingsOverviewScreen(
             ) {
                 Text(
                     text = "Unique User ID: ${state.userId}",
-                    style = MaterialTheme.typography.h4,
-                    color = MaterialTheme.colors.onPrimary
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
@@ -128,7 +123,7 @@ fun AppSettingsOverviewScreen(
                 viewModel.onEvent(AppSettingsEvent.OnLogoutButtonClick)
             }
             Spacer(modifier = Modifier.height(spacing.spaceLarge))
-            SettingsButton(text = R.string.delete_account, horizontalArrangement = Arrangement.Center, color = MaterialTheme.colors.error) {
+            SettingsButton(text = R.string.delete_account, horizontalArrangement = Arrangement.Center, color = MaterialTheme.colorScheme.error) {
                 viewModel.onEvent(AppSettingsEvent.OnDeleteButtonClick)
             }
         }
@@ -144,7 +139,7 @@ fun SettingsButton(
     @StringRes text: Int,
     modifier: Modifier = Modifier,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
-    color: Color = MaterialTheme.colors.onBackground,
+    color: Color = MaterialTheme.colorScheme.onBackground,
     action: () -> Unit
 ) {
     val spacing = LocalSpacing.current
@@ -160,13 +155,12 @@ fun SettingsButton(
     ) {
         Text(
             text = stringResource(text),
-            style = MaterialTheme.typography.button,
+            style = MaterialTheme.typography.labelLarge,
             color = color
         )
     }
 }
 
-@ExperimentalMaterialApi
 @Composable
 private fun LogoutCard(viewModel: AppSettingsViewModel, onNavigateToUserAuthWelcome: () -> Unit) {
     AlertDialog(
@@ -184,7 +178,6 @@ private fun LogoutCard(viewModel: AppSettingsViewModel, onNavigateToUserAuthWelc
     )
 }
 
-@ExperimentalMaterialApi
 @Composable
 private fun DeleteMyAccountCard(viewModel: AppSettingsViewModel, deleteMyAccount: () -> Unit) {
     AlertDialog(

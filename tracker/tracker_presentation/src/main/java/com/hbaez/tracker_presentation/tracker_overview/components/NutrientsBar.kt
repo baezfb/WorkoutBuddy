@@ -2,7 +2,7 @@ package com.hbaez.tracker_presentation.tracker_overview.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Canvas
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -22,8 +22,8 @@ fun NutrientsBar(
     calorieGoal: Int,
     modifier: Modifier = Modifier
 ) {
-    val background = MaterialTheme.colors.background
-    val caloriesExceededColor = MaterialTheme.colors.error
+    val background = MaterialTheme.colorScheme.background
+    val caloriesExceededColor = MaterialTheme.colorScheme.error
     val carbWidthRatio = remember {
         Animatable(0f)
     }

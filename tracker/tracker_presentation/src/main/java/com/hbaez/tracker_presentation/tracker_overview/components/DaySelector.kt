@@ -2,10 +2,9 @@ package com.hbaez.tracker_presentation.tracker_overview.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
@@ -28,21 +27,17 @@ fun DaySelector(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = onPreviousDayClick) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = stringResource(id = R.string.previous_day)
-            )
-        }
+        IconButton(
+            onClick = onPreviousDayClick,
+            icon = Icons.Default.ArrowBack
+        )
         Text(
             text = parseDateText(date = date),
-            style = MaterialTheme.typography.h2
+            style = MaterialTheme.typography.displayMedium
         )
-        IconButton(onClick = onNextDayClick) {
-            Icon(
-                imageVector = Icons.Default.ArrowForward,
-                contentDescription = stringResource(id = R.string.next_day)
-            )
-        }
+        IconButton(
+            onClick = onNextDayClick,
+            icon = Icons.Default.ArrowForward
+        )
     }
 }

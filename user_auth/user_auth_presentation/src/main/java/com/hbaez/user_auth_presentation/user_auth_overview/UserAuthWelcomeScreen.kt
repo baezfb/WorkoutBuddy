@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,21 +46,21 @@ fun UserAuthWelcomeScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.primary)
+            .background(MaterialTheme.colorScheme.primary)
             .padding(spacing.spaceMedium),
         verticalArrangement = Arrangement.Bottom
     ) {
         Text(
             stringResource(id = R.string.welcome_screen_title),
             textAlign = TextAlign.Left,
-            style = MaterialTheme.typography.subtitle1,
+            style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
                 .padding(start = 20.dp, bottom = 20.dp)
         )
         Text(
             stringResource(id = R.string.welcome_screen_subtitle),
             textAlign = TextAlign.Left,
-            style = MaterialTheme.typography.h4,
+            style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier
                 .padding(start = 20.dp, bottom = 5.dp)
         )
@@ -68,7 +68,7 @@ fun UserAuthWelcomeScreen(
         Text(
             stringResource(id = R.string.welcome_screen_subtitle2),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.h2,
+            style = MaterialTheme.typography.displayMedium,
             modifier = Modifier
                 .padding(start = 20.dp, end = 20.dp, bottom = 40.dp)
         )
@@ -100,14 +100,14 @@ fun UserAuthWelcomeScreen(
             Text(
                 "Already have an account?",
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.h4,
+                style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .padding(start = 20.dp, end = 10.dp, top = 30.dp)
             )
             Text(
                 stringResource(id = R.string.sign_in),
-                style = MaterialTheme.typography.h4,
+                style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .clickable {
@@ -120,7 +120,7 @@ fun UserAuthWelcomeScreen(
         Text(
             stringResource(id = R.string.continue_guest),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.h4,
+            style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier
                 .padding(top = 30.dp)
                 .align(Alignment.CenterHorizontally)

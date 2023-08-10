@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,11 +38,11 @@ fun CreateWorkoutTableRow(
 
     Spacer(modifier = Modifier.height(spacing.spaceMedium))
     Row(
-        modifier = Modifier.background(MaterialTheme.colors.surface)
+        modifier = Modifier.background(MaterialTheme.colorScheme.surface)
     ){
         Text(
             text = (sets.toInt() + 1).toString(),
-            style = MaterialTheme.typography.h3,
+            style = MaterialTheme.typography.displaySmall,
             modifier = Modifier.padding(spacing.spaceSmall)
         )
         EditTableCell(
@@ -53,8 +53,8 @@ fun CreateWorkoutTableRow(
             onValueChange = {
                 onRepsChange(it)
             },
-            borderColor = MaterialTheme.colors.background,
-            backgroundColor = MaterialTheme.colors.background
+            borderColor = MaterialTheme.colorScheme.background,
+            backgroundColor = MaterialTheme.colorScheme.background
         )
         EditTableCell(
             label = stringResource(id = R.string.rest),
@@ -64,8 +64,8 @@ fun CreateWorkoutTableRow(
             onValueChange = {
                 onRestChange(it)
             },
-            borderColor = MaterialTheme.colors.background,
-            backgroundColor = MaterialTheme.colors.background
+            borderColor = MaterialTheme.colorScheme.background,
+            backgroundColor = MaterialTheme.colorScheme.background
         )
         EditTableCell(
             label = stringResource(id = R.string.weight),
@@ -75,8 +75,8 @@ fun CreateWorkoutTableRow(
             onValueChange = {
                 onWeightChange(it)
             },
-            borderColor = MaterialTheme.colors.background,
-            backgroundColor = MaterialTheme.colors.background
+            borderColor = MaterialTheme.colorScheme.background,
+            backgroundColor = MaterialTheme.colorScheme.background
         )
 
     }
@@ -91,8 +91,8 @@ fun RowScope.EditTableCell(
     weight: Float,
     keyboardType: KeyboardType,
     onValueChange: (String) -> Unit,
-    borderColor: Color = MaterialTheme.colors.onBackground,
-    backgroundColor: Color = MaterialTheme.colors.surface
+    borderColor: Color = MaterialTheme.colorScheme.onBackground,
+    backgroundColor: Color = MaterialTheme.colorScheme.surface
 ){
     OutlinedTextField(
         label = { Text(text = label) },

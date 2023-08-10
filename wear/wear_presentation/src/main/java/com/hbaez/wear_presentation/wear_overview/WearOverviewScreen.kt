@@ -1,5 +1,6 @@
 package com.hbaez.wear_presentation.wear_overview
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -8,9 +9,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,6 +25,7 @@ import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
 import com.hbaez.wear_presentation.wear_overview.components.AddButton
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @ExperimentalCoilApi
 @Composable
 fun WearOverviewScreen(
@@ -81,22 +83,22 @@ fun WearOverviewScreen(
             Text(
                 modifier = Modifier.padding(spacing.spaceMedium),
                 text = stringResource(id = R.string.workout_buddy_mobile_wear_screen),
-                color = MaterialTheme.colors.onBackground,
-                style = MaterialTheme.typography.h2,
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.displayMedium,
             )
         },
         content = {
             Column(
                 Modifier
                     .fillMaxSize()
-                    .background(color = MaterialTheme.colors.background),
+                    .background(color = MaterialTheme.colorScheme.background),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
                 Text(
                     text = textInfo.first,
                     textAlign = TextAlign.Center,
-                    color = MaterialTheme.colors.onBackground
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 if(textInfo.second){
                     Spacer(modifier = Modifier.height(spacing.spaceLarge))

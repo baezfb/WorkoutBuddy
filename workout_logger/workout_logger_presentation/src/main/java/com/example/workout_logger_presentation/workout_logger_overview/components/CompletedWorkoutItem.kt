@@ -15,9 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -48,7 +48,7 @@ fun CompletedWorkoutItem(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     content: @Composable () -> Unit,
-    color: Color = MaterialTheme.colors.primary
+    color: Color = MaterialTheme.colorScheme.primary
 ) {
     val spacing = LocalSpacing.current
     val context = LocalContext.current
@@ -68,7 +68,7 @@ fun CompletedWorkoutItem(
 //                color = color,
 //                shape = RoundedCornerShape(100f)
 //            )
-            .background(color = MaterialTheme.colors.surface)
+            .background(color = MaterialTheme.colorScheme.inversePrimary)
     ) {
         Row(
             modifier = Modifier
@@ -97,7 +97,7 @@ fun CompletedWorkoutItem(
             Spacer(modifier = Modifier.width(spacing.spaceSmall))
             Text(
                 text = workout.exerciseName,
-                style = MaterialTheme.typography.h3,
+                style = MaterialTheme.typography.displaySmall,
                 modifier = Modifier
                     .weight(1f) // Occupy remaining space
                     .wrapContentWidth()
@@ -133,8 +133,8 @@ fun CompletedWorkoutItem(
                 )
                 Text(
                     text = stringResource(id = R.string.sets),
-                    color = MaterialTheme.colors.onBackground,
-                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Light
                 )
             }
@@ -157,8 +157,8 @@ fun CompletedWorkoutItem(
                 )
                 Text(
                     text = stringResource(id = R.string.total_volume),
-                    color = MaterialTheme.colors.onBackground,
-                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Light
                 )
             }
@@ -181,8 +181,8 @@ fun CompletedWorkoutItem(
                 )
                 Text(
                     text = stringResource(id = R.string.reps),
-                    color = MaterialTheme.colors.onBackground,
-                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Light
                 )
             }

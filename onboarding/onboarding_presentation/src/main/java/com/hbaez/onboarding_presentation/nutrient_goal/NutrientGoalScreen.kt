@@ -1,9 +1,9 @@
 package com.hbaez.onboarding_presentation.nutrient_goal
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.collect
 
 @Composable
 fun NutrientGoalScreen(
-    scaffoldState: ScaffoldState,
+    snackBarHost: SnackbarHostState,
     onNextClick: () -> Unit,
     viewModel: NutrientGoalViewModel = hiltViewModel()
 ) {
@@ -31,7 +31,7 @@ fun NutrientGoalScreen(
             when (event) {
                 is UiEvent.Success -> onNextClick()
                 is UiEvent.ShowSnackbar -> {
-                    scaffoldState.snackbarHostState.showSnackbar(
+                    snackBarHost.showSnackbar(
                         message = event.message.asString(context)
                     )
                 }
@@ -51,7 +51,7 @@ fun NutrientGoalScreen(
         ) {
             Text(
                 text = stringResource(id = R.string.what_are_your_nutrient_goals),
-                style = MaterialTheme.typography.h3
+                style = MaterialTheme.typography.displaySmall
             )
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
             UnitTextField(

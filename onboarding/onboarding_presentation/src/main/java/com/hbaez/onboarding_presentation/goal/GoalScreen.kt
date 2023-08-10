@@ -1,8 +1,8 @@
 package com.hbaez.onboarding_presentation.goal
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -45,19 +45,19 @@ fun GoalScreen(
         ) {
             Text(
                 text = stringResource(id = R.string.lose_keep_or_gain_weight),
-                style = MaterialTheme.typography.h3
+                style = MaterialTheme.typography.displaySmall
             )
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
             Row {
                 SelectableButton(
                     text = stringResource(id = R.string.lose),
                     isSelected = viewModel.selectedGoal is GoalType.LoseWeight,
-                    color = MaterialTheme.colors.primaryVariant,
+                    color = MaterialTheme.colorScheme.secondary,
                     selectedTextColor = Color.White,
                     onClick = {
                         viewModel.onGoalTypeSelect(GoalType.LoseWeight)
                     },
-                    textStyle = MaterialTheme.typography.button.copy(
+                    textStyle = MaterialTheme.typography.labelLarge.copy(
                         fontWeight = FontWeight.Normal
                     )
                 )
@@ -65,12 +65,12 @@ fun GoalScreen(
                 SelectableButton(
                     text = stringResource(id = R.string.keep),
                     isSelected = viewModel.selectedGoal is GoalType.KeepWeight,
-                    color = MaterialTheme.colors.primaryVariant,
+                    color = MaterialTheme.colorScheme.secondary,
                     selectedTextColor = Color.White,
                     onClick = {
                         viewModel.onGoalTypeSelect(GoalType.KeepWeight)
                     },
-                    textStyle = MaterialTheme.typography.button.copy(
+                    textStyle = MaterialTheme.typography.labelLarge.copy(
                         fontWeight = FontWeight.Normal
                     )
                 )
@@ -78,12 +78,12 @@ fun GoalScreen(
                 SelectableButton(
                     text = stringResource(id = R.string.gain),
                     isSelected = viewModel.selectedGoal is GoalType.GainWeight,
-                    color = MaterialTheme.colors.primaryVariant,
+                    color = MaterialTheme.colorScheme.secondary,
                     selectedTextColor = Color.White,
                     onClick = {
                         viewModel.onGoalTypeSelect(GoalType.GainWeight)
                     },
-                    textStyle = MaterialTheme.typography.button.copy(
+                    textStyle = MaterialTheme.typography.labelLarge.copy(
                         fontWeight = FontWeight.Normal
                     )
                 )

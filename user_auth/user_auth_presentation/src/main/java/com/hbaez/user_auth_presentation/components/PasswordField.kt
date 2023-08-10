@@ -7,14 +7,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Warning
@@ -58,13 +57,13 @@ private fun PasswordField(
         onValueChange = { onNewValue(it) },
         label = { Text(
             text = stringResource(placeholder),
-            fontSize = MaterialTheme.typography.h6.fontSize,
-            color = MaterialTheme.colors.primary,
+            fontSize = MaterialTheme.typography.titleLarge.fontSize,
+            color = MaterialTheme.colorScheme.primary,
             ) },
         leadingIcon = { Icon(
             imageVector = Icons.Default.Lock,
             contentDescription = "Lock",
-            tint = MaterialTheme.colors.primary
+            tint = MaterialTheme.colorScheme.primary
         ) },
         trailingIcon = {
             IconButton(onClick = { isVisible = !isVisible }) {
@@ -72,10 +71,11 @@ private fun PasswordField(
                     else Icon(imageVector = Icons.Default.List, contentDescription = "Visibility")
             }
         },
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = MaterialTheme.colors.primary,
-            unfocusedBorderColor = Color.Transparent,
-            textColor = MaterialTheme.colors.primary,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            focusedTextColor = MaterialTheme.colorScheme.primary,
+            unfocusedTextColor = MaterialTheme.colorScheme.primary,
         ),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         visualTransformation = visualTransformation

@@ -15,10 +15,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Info
@@ -41,7 +41,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.annotation.ExperimentalCoilApi
 import com.example.workout_logger_presentation.components.ExerciseInfoDialog
@@ -59,8 +58,7 @@ import kotlinx.coroutines.launch
 import java.time.Duration
 
 @RequiresApi(Build.VERSION_CODES.S)
-@OptIn(ExperimentalPagerApi::class, ExperimentalLifecycleComposeApi::class
-)
+@OptIn(ExperimentalPagerApi::class)
 @ExperimentalCoilApi
 @Composable
 fun StartWorkoutScreen(
@@ -126,9 +124,10 @@ fun StartWorkoutScreen(
                     modifier = Modifier
                         .padding(spacing.spaceMedium),
                     text = workoutName.uppercase(),
-                    style = MaterialTheme.typography.h2
+                    style = MaterialTheme.typography.displayMedium
                 )
                 IconButton(
+                    borderColor = MaterialTheme.colorScheme.outline,
                     modifier = Modifier
                         .padding(top = spacing.spaceMedium, end = spacing.spaceMedium),
                     onClick = {
@@ -162,7 +161,7 @@ fun StartWorkoutScreen(
                             text = currentExercise.exerciseName,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
-                            style = MaterialTheme.typography.h3,
+                            style = MaterialTheme.typography.displaySmall,
                             modifier = Modifier.fillMaxWidth(.75f)
                         )
                         Spacer(modifier = Modifier.width(spacing.spaceSmall))
@@ -230,9 +229,9 @@ fun StartWorkoutScreen(
                         modifier = Modifier
                             .size(200.dp),
                         timerJump = state.timerJump,
-                        handleColor = MaterialTheme.colors.secondary,
-                        inactiveBarColor = MaterialTheme.colors.primaryVariant,
-                        activeBarColor = MaterialTheme.colors.primary
+                        handleColor = MaterialTheme.colorScheme.primary,
+                        inactiveBarColor = MaterialTheme.colorScheme.secondary,
+                        activeBarColor = MaterialTheme.colorScheme.inversePrimary
                     )
                     Row(
                         Modifier
@@ -243,8 +242,8 @@ fun StartWorkoutScreen(
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowLeft,
                             contentDescription = null,
-                            tint = if(pagerState.currentPage == 0) MaterialTheme.colors.background else Color.White,
-                            modifier = if(pagerState.currentPage == 0) { Modifier.size(spacing.spaceLarge)
+                            tint = if(pagerState.currentPage == 0 || state.timerStatus == TimerStatus.RUNNING) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.onBackground,
+                            modifier = if(pagerState.currentPage == 0 || state.timerStatus == TimerStatus.RUNNING) { Modifier.size(spacing.spaceLarge)
                             } else {
                                 Modifier
                                     .clickable {
@@ -263,8 +262,8 @@ fun StartWorkoutScreen(
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowRight,
                             contentDescription = null,
-                            tint = if((pagerState.currentPage == count) || (pagerState.currentPage == (pagerState.pageCount - 1))) MaterialTheme.colors.background else Color.White,
-                            modifier = if((pagerState.currentPage == count) || (pagerState.currentPage == (pagerState.pageCount - 1))) { Modifier.size(spacing.spaceLarge)
+                            tint = if(((pagerState.currentPage == count) || (pagerState.currentPage == (pagerState.pageCount - 1))) || state.timerStatus == TimerStatus.RUNNING) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.onBackground,
+                            modifier = if(((pagerState.currentPage == count) || (pagerState.currentPage == (pagerState.pageCount - 1))) || state.timerStatus == TimerStatus.RUNNING) { Modifier.size(spacing.spaceLarge)
                             } else {
                                 Modifier
                                     .clickable {

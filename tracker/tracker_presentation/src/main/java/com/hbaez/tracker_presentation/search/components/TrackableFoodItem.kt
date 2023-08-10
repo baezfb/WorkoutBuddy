@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
@@ -51,7 +51,7 @@ fun TrackableFoodItem(
                 elevation = 1.dp,
                 shape = RoundedCornerShape(5.dp)
             )
-            .background(MaterialTheme.colors.surface)
+            .background(MaterialTheme.colorScheme.inversePrimary)
             .clickable { onClick() }
             .padding(end = spacing.spaceMedium)
     ) {
@@ -87,7 +87,7 @@ fun TrackableFoodItem(
                 Row{
                     Text(
                         text = food.name,
-                        style = MaterialTheme.typography.body1,
+                        style = MaterialTheme.typography.bodyLarge,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -100,7 +100,7 @@ fun TrackableFoodItem(
 //                    unit = stringResource(id = R.string.kcal_per_100g),
                         amountTextSize = 16.sp,
                         unitTextSize = 12.sp,
-                        nameTextStyle = MaterialTheme.typography.body2
+                        nameTextStyle = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(modifier = Modifier.width(spacing.spaceSmall))
                     NutrientInfo(
@@ -109,7 +109,7 @@ fun TrackableFoodItem(
                         unit = stringResource(id = R.string.grams),
                         amountTextSize = 16.sp,
                         unitTextSize = 12.sp,
-                        nameTextStyle = MaterialTheme.typography.body2
+                        nameTextStyle = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(modifier = Modifier.width(spacing.spaceSmall))
                     NutrientInfo(
@@ -118,7 +118,7 @@ fun TrackableFoodItem(
                         unit = stringResource(id = R.string.grams),
                         amountTextSize = 16.sp,
                         unitTextSize = 12.sp,
-                        nameTextStyle = MaterialTheme.typography.body2
+                        nameTextStyle = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(modifier = Modifier.width(spacing.spaceSmall))
                     NutrientInfo(
@@ -127,14 +127,14 @@ fun TrackableFoodItem(
                         unit = stringResource(id = R.string.grams),
                         amountTextSize = 16.sp,
                         unitTextSize = 12.sp,
-                        nameTextStyle = MaterialTheme.typography.body2
+                        nameTextStyle = MaterialTheme.typography.bodyMedium
                     )
                 }
                 Spacer(modifier = Modifier.width(spacing.spaceSmall))
                 Row {
                     Text(
                         text = food.quantity,
-                        style = MaterialTheme.typography.body2,
+                        style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -171,7 +171,7 @@ fun TrackableFoodItem(
                             .border(
                                 shape = RoundedCornerShape(5.dp),
                                 width = 0.5.dp,
-                                color = MaterialTheme.colors.onSurface
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             .alignBy(LastBaseline)
                             .padding(spacing.spaceMedium)
@@ -179,7 +179,7 @@ fun TrackableFoodItem(
                     Spacer(modifier = Modifier.width(spacing.spaceExtraSmall))
                     Text(
                         text = stringResource(id = R.string.servings),
-                        style = MaterialTheme.typography.body1,
+                        style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.alignBy(LastBaseline)
                     )
                 }

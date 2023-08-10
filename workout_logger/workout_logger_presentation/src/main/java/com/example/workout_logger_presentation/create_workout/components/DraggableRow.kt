@@ -20,13 +20,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
@@ -114,7 +111,7 @@ fun DraggableRow(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .border(BorderStroke(1.dp, MaterialTheme.colors.background), RoundedCornerShape(4.dp))
+            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.background), RoundedCornerShape(4.dp))
             .padding(horizontal = 2.dp)
     ){
         Row(
@@ -127,7 +124,7 @@ fun DraggableRow(
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .clip(RectangleShape)
-                .background(MaterialTheme.colors.primaryVariant)
+                .background(MaterialTheme.colorScheme.secondary)
             ){
                 Icon(
                     imageVector = Icons.Default.Delete,

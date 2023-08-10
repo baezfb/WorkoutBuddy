@@ -3,10 +3,10 @@ package com.hbaez.tracker_presentation.tracker_overview.components
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.*
 import com.hbaez.core.R
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +39,7 @@ fun NutrientsHeader(
                     bottomEnd = 50.dp
                 )
             )
-            .background(MaterialTheme.colors.primary)
+            .background(MaterialTheme.colorScheme.primary)
             .padding(
                 horizontal = spacing.spaceLarge,
                 vertical = spacing.spaceExtraLarge
@@ -52,23 +52,23 @@ fun NutrientsHeader(
             UnitDisplay(
                 amount = animatedCalorieCount.value,
                 unit = stringResource(id = R.string.kcal),
-                amountColor = MaterialTheme.colors.onPrimary,
+                amountColor = MaterialTheme.colorScheme.onPrimary,
                 amountTextSize = 40.sp,
-                unitColor = MaterialTheme.colors.onPrimary,
+                unitColor = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.align(Alignment.Bottom)
             )
             Column {
                 Text(
                     text = stringResource(id = R.string.your_goal),
-                    style = MaterialTheme.typography.body2,
-                    color = MaterialTheme.colors.onPrimary
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
                 UnitDisplay(
                     amount = state.caloriesGoal,
                     unit = stringResource(id = R.string.kcal),
-                    amountColor = MaterialTheme.colors.onPrimary,
+                    amountColor = MaterialTheme.colorScheme.onPrimary,
                     amountTextSize = 40.sp,
-                    unitColor = MaterialTheme.colors.onPrimary
+                    unitColor = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }

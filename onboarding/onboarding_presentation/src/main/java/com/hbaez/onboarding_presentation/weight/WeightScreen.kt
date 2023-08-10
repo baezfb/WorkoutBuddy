@@ -6,11 +6,9 @@ import android.graphics.Paint
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,7 +43,7 @@ import com.hbaez.onboarding_presentation.components.ActionButton
 
 @Composable
 fun WeightScreen(
-    scaffoldState: ScaffoldState,
+    snackBarHost: SnackbarHostState,
     onNextClick: () -> Unit,
     viewModel: WeightViewModel = hiltViewModel()
 ) {
@@ -57,7 +55,7 @@ fun WeightScreen(
             when (event) {
                 is UiEvent.Success -> onNextClick()
                 is UiEvent.ShowSnackbar -> {
-                    scaffoldState.snackbarHostState.showSnackbar(
+                    snackBarHost.showSnackbar(
                         message = event.message.asString(context)
                     )
                 }
@@ -78,15 +76,15 @@ fun WeightScreen(
         ) {
             Text(
                 text = stringResource(id = R.string.whats_your_weight),
-                style = MaterialTheme.typography.h2
+                style = MaterialTheme.typography.displayMedium
             )
             Row(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = viewModel.weight,
-                    style = MaterialTheme.typography.h1,
-                    color = MaterialTheme.colors.primaryVariant,
+                    style = MaterialTheme.typography.displayLarge,
+                    color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier
                         .alignBy(LastBaseline)
                 )
@@ -102,9 +100,9 @@ fun WeightScreen(
                     scaleWidth = 150.dp,
                     scaleColor = ColorG.BLACK,
                     fiveStepLineColor = Color.White,
-                    tenStepLineColor = MaterialTheme.colors.primary,
+                    tenStepLineColor = MaterialTheme.colorScheme.primary,
                     textColor = ColorG.WHITE,
-                    scaleIndicatorColor = MaterialTheme.colors.primaryVariant
+                    scaleIndicatorColor = MaterialTheme.colorScheme.secondary
                 ),
                 modifier = Modifier
                     .fillMaxWidth()

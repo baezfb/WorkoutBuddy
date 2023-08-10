@@ -14,20 +14,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -47,7 +46,6 @@ import com.example.workout_logger_presentation.components.IconButton
 import com.example.workout_logger_presentation.create_workout.TrackableExerciseUiState
 import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @ExperimentalCoilApi
@@ -86,8 +84,10 @@ fun ExerciseCard(
                         text = trackableExercises.name.uppercase(),
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
-                        style = MaterialTheme.typography.h3,
-                        modifier = Modifier.padding(spacing.spaceExtraSmall).weight(.8f)
+                        style = MaterialTheme.typography.displaySmall,
+                        modifier = Modifier
+                            .padding(spacing.spaceExtraSmall)
+                            .weight(.8f)
                     )
                     Spacer(modifier = Modifier.width(spacing.spaceSmall))
                     IconButton(
@@ -100,12 +100,14 @@ fun ExerciseCard(
             }
             Card(
                 shape = RoundedCornerShape(8.dp),
-                backgroundColor = if(isLongPressed && trackableExercises != null) MaterialTheme.colors.primaryVariant else MaterialTheme.colors.background,
+                colors = CardDefaults.cardColors(
+                    containerColor = if(isLongPressed && trackableExercises != null) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.background
+                ),
                 modifier = Modifier
                     .clip(
                         RoundedCornerShape(50.dp)
                     )
-                    .border(2.dp, MaterialTheme.colors.primary, RoundedCornerShape(50.dp))
+                    .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(50.dp))
                     .width(325.dp)
                     .height(375.dp)
                     .padding(if (isLongPressed) 0.dp else spacing.spaceMedium)
@@ -121,21 +123,20 @@ fun ExerciseCard(
             ) {
 
                 if(trackableExercises == null){
-                    LazyColumn(
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        item {
-                            AddButton(
-                                text = stringResource(id = R.string.add_exercise),
-                                onClick = {
-                                    onAddCard()
-                                },
-                                icon = Icons.Default.Search,
-                                color = MaterialTheme.colors.primary,
-                                borderColor = MaterialTheme.colors.background
-                            )
-                        }
+                        AddButton(
+                            text = stringResource(id = R.string.add_exercise),
+                            onClick = {
+                                onAddCard()
+                            },
+                            icon = Icons.Default.Search,
+                            color = MaterialTheme.colorScheme.primary,
+                            borderColor = MaterialTheme.colorScheme.background
+                        )
                     }
                 }
                 else if (!isLongPressed) {
@@ -175,8 +176,8 @@ fun ExerciseCard(
                                     onClick = {
                                         onAddSet()
                                     },
-                                    color = MaterialTheme.colors.primary,
-                                    borderColor = MaterialTheme.colors.background
+                                    color = MaterialTheme.colorScheme.primary,
+                                    borderColor = MaterialTheme.colorScheme.background
                                 )
                             }
                         }
@@ -195,13 +196,13 @@ fun ExerciseCard(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = stringResource(id = R.string.delete).uppercase(),
-                                style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.Bold),
-                                color = MaterialTheme.colors.onSecondary
+                                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onSecondary
                             )
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Delete",
-                                tint = MaterialTheme.colors.onSecondary
+                                tint = MaterialTheme.colorScheme.onSecondary
                             )
                         }
                     }

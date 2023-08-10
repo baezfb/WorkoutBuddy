@@ -58,6 +58,10 @@ android {
     }
 }
 
+kapt {
+    correctErrorTypes = true
+}
+
 dependencies {
     implementation(Compose.compiler)
     implementation(Compose.ui)

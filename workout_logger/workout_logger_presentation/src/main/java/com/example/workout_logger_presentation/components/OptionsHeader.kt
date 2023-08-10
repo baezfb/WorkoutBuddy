@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Build
@@ -37,7 +37,7 @@ fun OptionsHeader(
                     bottomEnd = 50.dp
                 )
             )
-            .background(MaterialTheme.colors.primary)
+            .background(MaterialTheme.colorScheme.primary)
             .padding(
                 vertical = spacing.spaceExtraLarge,
                 horizontal = spacing.spaceSmall
@@ -45,6 +45,7 @@ fun OptionsHeader(
     ) {
         Spacer(modifier = Modifier.height(spacing.spaceMedium))
         AddButton(
+            color = MaterialTheme.colorScheme.onPrimary,
             text = stringResource(id = R.string.create_edit_workout),
             onClick = {
                 optionsHeaderDialog("workout")
@@ -56,6 +57,7 @@ fun OptionsHeader(
 //        AddButton(text = stringResource(id = R.string.edit_workout), onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth(), icon = Icons.Default.Edit)
 //        Spacer(modifier = Modifier.height(spacing.spaceMedium))
         AddButton(
+            color = MaterialTheme.colorScheme.onPrimary,
             text = stringResource(id = R.string.create_edit_exercise),
             onClick = {
                       optionsHeaderDialog("exercise")

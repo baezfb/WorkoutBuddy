@@ -5,9 +5,9 @@ import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,7 +38,7 @@ import android.graphics.Color as ColorG
 
 @Composable
 fun HeightScreen(
-    scaffoldState: ScaffoldState,
+    snackBarHost: SnackbarHostState,
     onNextClick: () -> Unit,
     viewModel: HeightViewModel = hiltViewModel()
 ) {
@@ -49,7 +49,7 @@ fun HeightScreen(
             when (event) {
                 is UiEvent.Success -> onNextClick()
                 is UiEvent.ShowSnackbar -> {
-                    scaffoldState.snackbarHostState.showSnackbar(
+                    snackBarHost.showSnackbar(
                         message = event.message.asString(context)
                     )
                 }
@@ -69,15 +69,15 @@ fun HeightScreen(
         ) {
             Text(
                 text = stringResource(id = R.string.whats_your_height),
-                style = MaterialTheme.typography.h2
+                style = MaterialTheme.typography.displayMedium
             )
             Row(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = "${viewModel.height.toInt() / 12} ft ${viewModel.height.toInt() % 12} in",
-                    style = MaterialTheme.typography.h1,
-                    color = MaterialTheme.colors.primaryVariant,
+                    style = MaterialTheme.typography.displayLarge,
+                    color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier
                         .alignBy(LastBaseline)
                 )
@@ -89,9 +89,9 @@ fun HeightScreen(
                     rulerColor = ColorG.BLACK,
                     normalLineColor = Color.White,
                     fiveStepLineColor = Color.White,
-                    tenStepLineColor = MaterialTheme.colors.primary,
+                    tenStepLineColor = MaterialTheme.colorScheme.primary,
                     textColor = ColorG.WHITE,
-                    heightIndicatorColor = MaterialTheme.colors.primaryVariant
+                    heightIndicatorColor = MaterialTheme.colorScheme.secondary
                 ),
                 modifier = Modifier
                     .fillMaxWidth()

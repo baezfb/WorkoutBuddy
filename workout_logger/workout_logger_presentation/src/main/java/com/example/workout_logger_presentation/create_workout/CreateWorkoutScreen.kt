@@ -14,11 +14,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -29,26 +33,16 @@ import com.example.workout_logger_presentation.components.AddButton
 import com.example.workout_logger_presentation.components.NameField
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
-import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import com.example.workout_logger_presentation.components.ExerciseInfoDialog
 import com.example.workout_logger_presentation.create_exercise.CreateExerciseEvent
@@ -65,7 +59,7 @@ import kotlinx.coroutines.launch
 @ExperimentalCoilApi
 @Composable
 fun CreateWorkoutScreen(
-    scaffoldState: ScaffoldState,
+    snackBarHost: SnackbarHostState,
     createWorkout: Boolean,
     onNavigateUp: () -> Unit,
     onNavigateToSearchExercise: (page: Int) -> Unit,
@@ -92,7 +86,7 @@ fun CreateWorkoutScreen(
         viewModel.uiEvent.collect{ event ->
             when(event) {
                 is UiEvent.ShowSnackbar -> {
-                    scaffoldState.snackbarHostState.showSnackbar(
+                    snackBarHost.showSnackbar(
                         message = event.message.asString(context)
                     )
                 }
@@ -135,7 +129,7 @@ fun CreateWorkoutScreen(
         AlertDialog(
             title = { 
                 Text(
-                style = MaterialTheme.typography.h2,
+                style = MaterialTheme.typography.displayMedium,
                 text = stringResource(R.string.delete_routine)
                 )
                     },
@@ -190,12 +184,14 @@ fun CreateWorkoutScreen(
                             expanded = menuExpanded.value,
                             onDismissRequest = { menuExpanded.value = false }
                         ) {
-                            DropdownMenuItem(onClick = {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(text = stringResource(id = R.string.delete))
+                                },
+                                onClick = {
                                 showDeleteRoutineDialog.value = true
                                 menuExpanded.value = false
-                            }) {
-                                Text(text = stringResource(id = R.string.delete))
-                            }
+                            })
                         }
                     }
                 }
@@ -253,7 +249,7 @@ fun CreateWorkoutScreen(
                     Icon(
                         imageVector = Icons.Default.KeyboardArrowLeft,
                         contentDescription = null,
-                        tint = if(pagerState.currentPage == 0) MaterialTheme.colors.background else Color.White,
+                        tint = if(pagerState.currentPage == 0) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.onBackground,
                         modifier = if(pagerState.currentPage == 0) { Modifier.size(spacing.spaceLarge)
                         } else {
                             Modifier
@@ -273,7 +269,7 @@ fun CreateWorkoutScreen(
                     Icon(
                         imageVector = Icons.Default.KeyboardArrowRight,
                         contentDescription = null,
-                        tint = if((pagerState.currentPage == state.pageCount) || (pagerState.currentPage == (pagerState.pageCount - 1))) MaterialTheme.colors.background else Color.White,
+                        tint = if((pagerState.currentPage == state.pageCount) || (pagerState.currentPage == (pagerState.pageCount - 1))) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.onBackground,
                         modifier = if((pagerState.currentPage == state.pageCount) || (pagerState.currentPage == (pagerState.pageCount - 1))) { Modifier.size(spacing.spaceLarge)
                         } else {
                             Modifier

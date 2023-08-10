@@ -19,10 +19,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
@@ -94,7 +94,7 @@ fun TrackableExerciseItem(
                 elevation = 1.dp,
                 shape = RoundedCornerShape(5.dp)
             )
-            .background(MaterialTheme.colors.surface)
+            .background(MaterialTheme.colorScheme.surface)
             .clickable { onClick() }
 //            .padding(end = spacing.spaceExtraSmall)
     ) {
@@ -122,7 +122,7 @@ fun TrackableExerciseItem(
             Spacer(modifier = Modifier.width(spacing.spaceSmall))
             Text(
                 text = exercise.name!!,
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.bodyLarge,
                 maxLines = 2,
                 overflow = TextOverflow.Visible,
                 modifier = Modifier
@@ -140,14 +140,14 @@ fun TrackableExerciseItem(
                 Column {
                     Text(
                         text = stringResource(id = R.string.descr),
-                        style = MaterialTheme.typography.body2,
+                        style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier
                             .height(IntrinsicSize.Max)
                     )
                     Text(
                         text = exercise.description ?: "N/A",
-                        style = MaterialTheme.typography.body2,
+                        style = MaterialTheme.typography.bodyMedium,
                         maxLines = if(trackableExerciseState.isDescrExpanded) 100 else 2,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
@@ -162,7 +162,7 @@ fun TrackableExerciseItem(
                         Spacer(modifier = Modifier.height(spacing.spaceMedium))
                         Text(
                             text = stringResource(id = R.string.exercise_demonstration),
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
                                 .height(IntrinsicSize.Max)
@@ -196,28 +196,28 @@ fun TrackableExerciseItem(
                     Log.println(Log.DEBUG, "trackableExerciseItem logging check", "check")
                     Text(
                         text = stringResource(id = R.string.exercise_muscle),
-                        style = MaterialTheme.typography.body2,
+                        style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier
                             .height(IntrinsicSize.Max)
                     )
                     Text(
                         text = exercise.muscle_name_main ?: "N/A",
-                        style = MaterialTheme.typography.body2,
+                        style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier
                             .height(IntrinsicSize.Max)
                     )
                     Spacer(modifier = Modifier.height(spacing.spaceExtraSmall))
                     Text(
                         text = stringResource(id = R.string.exercise_muscle_secondary),
-                        style = MaterialTheme.typography.body2,
+                        style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier
                             .height(IntrinsicSize.Max)
                     )
                     Text(
                         text = exercise.muscle_name_secondary ?: "N/A",
-                        style = MaterialTheme.typography.body2,
+                        style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier
                             .height(IntrinsicSize.Max)
                     )

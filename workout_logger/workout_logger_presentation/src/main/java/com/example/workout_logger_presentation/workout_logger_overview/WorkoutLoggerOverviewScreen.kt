@@ -11,10 +11,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.runtime.Composable
@@ -26,13 +25,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.annotation.ExperimentalCoilApi
 import com.example.workout_logger_presentation.components.AddButton
 import com.example.workout_logger_presentation.components.DaySelector
 import com.example.workout_logger_presentation.components.OptionsHeader
-import com.example.workout_logger_presentation.create_exercise.model.Muscle
 import com.example.workout_logger_presentation.workout_logger_overview.components.CompletedWorkoutItem
 import com.example.workout_logger_presentation.workout_logger_overview.components.ExerciseDialog
 import com.example.workout_logger_presentation.workout_logger_overview.components.ExerciseRow
@@ -41,7 +38,6 @@ import com.example.workout_logger_presentation.workout_logger_overview.component
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @ExperimentalCoilApi
 @Composable
 fun WorkoutLoggerOverviewScreen(
@@ -209,7 +205,7 @@ fun WorkoutLoggerOverviewScreen(
                         showDialog.value = true
                     },
                     modifier = Modifier.weight(1f),
-                    color = MaterialTheme.colors.primary,
+                    color = MaterialTheme.colorScheme.primary,
                     icon = Icons.Default.AddCircle
                 )
                 Spacer(modifier = Modifier.width(spacing.spaceExtraSmall))
@@ -220,14 +216,11 @@ fun WorkoutLoggerOverviewScreen(
                         showExerciseEdit.value = false
                               },
                     modifier = Modifier.weight(1f),
-                    color = MaterialTheme.colors.primary,
+                    color = MaterialTheme.colorScheme.primary,
                     icon = Icons.Default.AddCircle
                 )
             }
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
-        }
-        if(viewModel.completedWorkouts.size > 0){
-
         }
         items(viewModel.imageUrls.keys.size){// index, completedWorkout -> //items(state.completedWorkouts){ completedWorkout ->
             CompletedWorkoutItem(
@@ -252,19 +245,19 @@ fun WorkoutLoggerOverviewScreen(
                         ) {
                             Text(
                                 text= stringResource(id = R.string.sets),
-                                style = MaterialTheme.typography.body2
+                                style = MaterialTheme.typography.bodyMedium
                             )
                             Text(
                                 text= stringResource(id = R.string.weight),
-                                style = MaterialTheme.typography.body2
+                                style = MaterialTheme.typography.bodyMedium
                             )
                             Text(
                                 text= stringResource(id = R.string.reps),
-                                style = MaterialTheme.typography.body2
+                                style = MaterialTheme.typography.bodyMedium
                             )
                             Text(
                                 text= stringResource(id = R.string.completed_question),
-                                style = MaterialTheme.typography.body2
+                                style = MaterialTheme.typography.bodyMedium
                             )
                         }
                         val weight = viewModel.completedWorkouts[it].weight
@@ -277,7 +270,7 @@ fun WorkoutLoggerOverviewScreen(
                                 weight = weight[i-1].toInt(),
                                 completed = isCompleted[i-1].toBoolean()
                             )
-                            if(i != viewModel.completedWorkouts[it].sets) Divider(color = MaterialTheme.colors.primaryVariant, thickness = 1.dp)
+                            if(i != viewModel.completedWorkouts[it].sets) Divider(color = MaterialTheme.colorScheme.secondary, thickness = 1.dp)
                         }
                         Spacer(modifier = Modifier.height(spacing.spaceExtraSmall))
                     }

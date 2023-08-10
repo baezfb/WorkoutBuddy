@@ -1,4 +1,4 @@
-package com.example.workout_logger_presentation.components
+package com.hbaez.tracker_presentation.tracker_overview.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable

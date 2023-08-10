@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,7 +29,7 @@ fun BasicButton(@StringRes text: Int, modifier: Modifier, action: () -> Unit) {
             .clickable { action() }
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colors.onPrimary,
+                color = MaterialTheme.colorScheme.onPrimary,
                 shape = RoundedCornerShape(100f)
             )
             .padding(spacing.spaceMedium),
@@ -45,8 +45,8 @@ fun BasicButton(@StringRes text: Int, modifier: Modifier, action: () -> Unit) {
     ) {
         Text(
             text = stringResource(text),
-            style = MaterialTheme.typography.button,
-            color = MaterialTheme.colors.onPrimary
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onPrimary
         )
     }
 }
@@ -60,7 +60,7 @@ fun Button(@StringRes text: Int, modifier: Modifier, action: () -> Unit) {
     val spacing = LocalSpacing.current
     Row(
         modifier = modifier
-            .background(MaterialTheme.colors.primary, shape = RoundedCornerShape(15.dp))
+            .background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(15.dp))
             .clickable { action() }
             .padding(spacing.spaceSmall)
             .fillMaxWidth(1f)
@@ -70,8 +70,8 @@ fun Button(@StringRes text: Int, modifier: Modifier, action: () -> Unit) {
     ) {
         Text(
             text = stringResource(text),
-            style = MaterialTheme.typography.button,
-            color = MaterialTheme.colors.onPrimary
+            style = MaterialTheme.typography.labelLarge,
+//            color = MaterialTheme.colorScheme.onPrimary
         )
     }
 }
@@ -96,8 +96,8 @@ fun FlatButton(@StringRes text: Int, modifier: Modifier, action: () -> Unit) {
     ) {
         Text(
             text = stringResource(text),
-            style = MaterialTheme.typography.button,
-            color = Color.White
+            style = MaterialTheme.typography.labelLarge,
+//            color = Color.White
         )
     }
 }
@@ -113,7 +113,7 @@ fun OutlineButton(@StringRes text: Int, modifier: Modifier, action: () -> Unit) 
         modifier = modifier
             .background(Color.Transparent)
             .clickable { action() }
-            .border(1.dp, MaterialTheme.colors.onPrimary, RoundedCornerShape(15.dp))
+            .border(1.dp, MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(15.dp))
             .padding(spacing.spaceSmall)
             .fillMaxWidth(1f),
         horizontalArrangement = Arrangement.Center,
@@ -121,8 +121,8 @@ fun OutlineButton(@StringRes text: Int, modifier: Modifier, action: () -> Unit) 
     ) {
         Text(
             text = stringResource(text),
-            style = MaterialTheme.typography.button,
-            color = Color.White
+            style = MaterialTheme.typography.labelLarge,
+//            color = Color.White
         )
     }
 }

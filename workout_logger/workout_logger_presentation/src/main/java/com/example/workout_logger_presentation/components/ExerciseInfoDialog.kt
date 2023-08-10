@@ -1,6 +1,6 @@
 package com.example.workout_logger_presentation.components
 
-import androidx.compose.material.AlertDialog
+import androidx.compose.material3.AlertDialog
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,8 +21,9 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import coil.annotation.ExperimentalCoilApi
@@ -45,6 +46,7 @@ import com.example.workout_logger_presentation.create_exercise.model.Muscle
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalCoilApi
 @Composable
 fun ExerciseInfoDialog(
@@ -89,9 +91,7 @@ fun ExerciseInfoDialog(
             .wrapContentHeight(align = Alignment.CenterVertically)
             .clip( RoundedCornerShape(50.dp) ),
         onDismissRequest = { onDismiss() },
-        title = null,
-        text = null,
-        buttons = {
+        content = {
             Column(
                 modifier = modifier
                     .clip(RoundedCornerShape(5.dp))
@@ -100,7 +100,7 @@ fun ExerciseInfoDialog(
                         elevation = 1.dp,
                         shape = RoundedCornerShape(5.dp)
                     )
-                    .background(MaterialTheme.colors.surface)
+                    .background(MaterialTheme.colorScheme.surface)
                     .verticalScroll(enabled = true, state = rememberScrollState())
             ) {
                 Row(
@@ -127,7 +127,7 @@ fun ExerciseInfoDialog(
                     Spacer(modifier = Modifier.width(spacing.spaceSmall))
                     Text(
                         text = exercise.name!!,
-                        style = MaterialTheme.typography.body1,
+                        style = MaterialTheme.typography.bodyLarge,
                         maxLines = 2,
                         overflow = TextOverflow.Visible,
                         modifier = Modifier
@@ -144,14 +144,14 @@ fun ExerciseInfoDialog(
                     Column {
                         Text(
                             text = stringResource(id = R.string.descr),
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
                                 .height(IntrinsicSize.Max)
                         )
                         Text(
                             text = exercise.description ?: "N/A",
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.bodyMedium,
                             maxLines = if(trackableExerciseState.isDescrExpanded) 100 else 2,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier
@@ -164,7 +164,7 @@ fun ExerciseInfoDialog(
                             Spacer(modifier = Modifier.height(spacing.spaceMedium))
                             Text(
                                 text = stringResource(id = R.string.exercise_demonstration),
-                                style = MaterialTheme.typography.body2,
+                                style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier
                                     .height(IntrinsicSize.Max)
@@ -196,28 +196,28 @@ fun ExerciseInfoDialog(
                         Spacer(modifier = Modifier.height(spacing.spaceMedium))
                         Text(
                             text = stringResource(id = R.string.exercise_muscle),
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
                                 .height(IntrinsicSize.Max)
                         )
                         Text(
                             text = exercise.muscle_name_main ?: "N/A",
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier
                                 .height(IntrinsicSize.Max)
                         )
                         Spacer(modifier = Modifier.height(spacing.spaceExtraSmall))
                         Text(
                             text = stringResource(id = R.string.exercise_muscle_secondary),
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
                                 .height(IntrinsicSize.Max)
                         )
                         Text(
                             text = exercise.muscle_name_secondary ?: "N/A",
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier
                                 .height(IntrinsicSize.Max)
                         )

@@ -5,8 +5,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -65,13 +65,13 @@ fun GenderScreen(
         ) {
             Text(
                 text = stringResource(id = R.string.whats_your_gender),
-                style = MaterialTheme.typography.h1
+                style = MaterialTheme.typography.displayLarge
             )
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
             Text(
                 text = viewModel.selectedGender.name.capitalize(),
-                style = MaterialTheme.typography.h2,
-                color = MaterialTheme.colors.primaryVariant
+                style = MaterialTheme.typography.displayMedium,
+                color = MaterialTheme.colorScheme.secondary
             )
             GenderPicker(
                 modifier = Modifier

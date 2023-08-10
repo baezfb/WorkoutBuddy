@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -36,7 +36,7 @@ import com.hbaez.user_auth_presentation.components.PasswordField
 @ExperimentalCoilApi
 @Composable
 fun UserAuthSignupScreen(
-    scaffoldState: ScaffoldState,
+    snackBarHost: SnackbarHostState,
     openAndPopUp: (String, String) -> Unit,
     viewModel: UserAuthViewModel = hiltViewModel()
 ) {
@@ -47,7 +47,7 @@ fun UserAuthSignupScreen(
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is UiEvent.ShowSnackbar -> {
-                    scaffoldState.snackbarHostState.showSnackbar(
+                    snackBarHost.showSnackbar(
                         message = event.message.asString(context)
                     )
                 }
@@ -60,13 +60,13 @@ fun UserAuthSignupScreen(
     Column(
         Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.primary)
+            .background(MaterialTheme.colorScheme.primary)
     ) {
         Spacer(modifier = Modifier.height(spacing.spaceSmall))
         //TODO: add back button
         Text(
             stringResource(id = R.string.sign_up),
-            style = MaterialTheme.typography.h2,
+            style = MaterialTheme.typography.displayMedium,
             modifier = Modifier
                 .padding(16.dp, 4.dp)
         )
@@ -83,7 +83,7 @@ fun UserAuthSignupScreen(
                         topEnd = 15.dp
                     )
                 )
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(
                     horizontal = spacing.spaceSmall
                 )
@@ -96,13 +96,13 @@ fun UserAuthSignupScreen(
             ) {
                 Text(
                     stringResource(id = R.string.sign_up_header),
-                    color = MaterialTheme.colors.primary,
-                    style = MaterialTheme.typography.h2,
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.displayMedium,
                 )
                 Text(
                     stringResource(id = R.string.sign_up_subheader),
                     color = Color.Gray,
-                    style = MaterialTheme.typography.h4,
+                    style = MaterialTheme.typography.headlineMedium
                 )
 
                 Spacer(modifier = Modifier.height(spacing.spaceLarge))
@@ -114,7 +114,6 @@ fun UserAuthSignupScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp, 4.dp)
                 )
                 PasswordField(
                     value = state.password,
@@ -122,8 +121,7 @@ fun UserAuthSignupScreen(
                         viewModel.onEvent(UserAuthEvent.OnPasswordFieldChange(it))
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp, 4.dp),
+                        .fillMaxWidth(),
                     placeholder = R.string.password
                 )
                 PasswordField(
@@ -132,8 +130,7 @@ fun UserAuthSignupScreen(
                         viewModel.onEvent(UserAuthEvent.OnPasswordRetypeFieldChange(it))
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp, 4.dp),
+                        .fillMaxWidth(),
                     placeholder = R.string.retype_password
                 )
 

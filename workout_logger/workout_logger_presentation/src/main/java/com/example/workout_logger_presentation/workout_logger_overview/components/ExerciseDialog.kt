@@ -1,5 +1,6 @@
 package com.example.workout_logger_presentation.workout_logger_overview.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,10 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -34,7 +36,8 @@ import com.example.workout_logger_presentation.search_exercise.components.Tracka
 import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
 
-@OptIn(ExperimentalComposeUiApi::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @ExperimentalCoilApi
 @Composable
 fun ExerciseDialog(
@@ -57,63 +60,55 @@ fun ExerciseDialog(
             .wrapContentHeight(align = Alignment.CenterVertically)
             .clip(RoundedCornerShape(50.dp)),
         onDismissRequest = { onDismiss() },
-        title = null,
-        text = null,
-        buttons = {
+        content = {
             Scaffold(
-                backgroundColor = MaterialTheme.colors.surface,
+                containerColor = MaterialTheme.colorScheme.surface,
                 modifier = Modifier.fillMaxHeight(),
-                topBar = {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column() {
-                            Text(
-                                stringResource(id = R.string.choose_exercise),
-                                textAlign = TextAlign.Center,
-                                fontSize = 32.sp,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                            )
-                            Spacer(modifier = Modifier.height(spacing.spaceLarge))
-                            SearchTextField(
-                                modifier = Modifier.padding(spacing.spaceMedium),
-                                text = filterText,
-                                onValueChange = {
-                                    onFilterTextChange(it)
-                                },
-                                onClear = {
-                                    onFilterTextChange("")
-                                    keyboardController?.hide()
-                                },
-                                onFocusChanged = {
-//                                    viewModel.onEvent(SearchExerciseEvent.OnExerciseNameFocusChange(it.isFocused))
-                                }
-                            )
-                        }
-                    }
-                },
                 content = {
-                    LazyColumn(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        contentPadding = PaddingValues(vertical = spacing.spaceMedium),
-                        modifier = Modifier.heightIn(250.dp)
-                    ){
-                        items(trackableExercises.size) {
-                            TrackableExerciseItem(
-                                trackableExerciseState = trackableExercises[it],
-                                onClick = {
-                                    onItemClick(trackableExercises[it])
-                                          },
-                                onDescrClick = {
-                                    onDescrClick(trackableExercises[it])
-                                               },
-                                onTrack = {
-                                    onChooseExercise(trackableExercises[it])
-                                })
+                    Column {
+                        Spacer(modifier = Modifier.height(spacing.spaceMedium))
+                        Text(
+                            stringResource(id = R.string.choose_exercise),
+                            textAlign = TextAlign.Center,
+                            fontSize = 32.sp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                        )
+                        Spacer(modifier = Modifier.height(spacing.spaceMedium))
+                        SearchTextField(
+                            modifier = Modifier.padding(spacing.spaceMedium),
+                            text = filterText,
+                            onValueChange = {
+                                onFilterTextChange(it)
+                            },
+                            onClear = {
+                                onFilterTextChange("")
+                                keyboardController?.hide()
+                            },
+                            onFocusChanged = {
+//                                    viewModel.onEvent(SearchExerciseEvent.OnExerciseNameFocusChange(it.isFocused))
+                            }
+                        )
+                        LazyColumn(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            contentPadding = PaddingValues(vertical = spacing.spaceMedium),
+                            modifier = Modifier.heightIn(250.dp)
+                        ){
+                            items(trackableExercises.size) {
+                                TrackableExerciseItem(
+                                    trackableExerciseState = trackableExercises[it],
+                                    onClick = {
+                                        onItemClick(trackableExercises[it])
+                                    },
+                                    onDescrClick = {
+                                        onDescrClick(trackableExercises[it])
+                                    },
+                                    onTrack = {
+                                        onChooseExercise(trackableExercises[it])
+                                    })
+                            }
                         }
                     }
                 }

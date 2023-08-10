@@ -1,5 +1,6 @@
 package com.hbaez.workoutbuddy
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -12,17 +13,17 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.rememberScaffoldState
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -83,7 +84,6 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import com.hbaez.core.R
 
-@ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @ExperimentalCoilApi
 @AndroidEntryPoint
@@ -100,6 +100,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
     private var wearNodesWithApp: Set<Node>? = null
     private var allConnectedNodes: List<Node>? = null
 
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,14 +124,15 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
         setContent {
             WorkoutBuddyTheme {
                 navController = rememberNavController()
-                val scaffoldState = rememberScaffoldState()
+                val snackbarHostState = remember { SnackbarHostState() }
+                val scope = rememberCoroutineScope()
 
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    scaffoldState = scaffoldState,
+                    snackbarHost = { SnackbarHost(snackbarHostState) },
                     bottomBar = {
                         if( currentRoute == Route.WORKOUT_OVERVIEW || currentRoute == Route.TRACKER_OVERVIEW
                             || currentRoute == Route.APP_SETTINGS || currentRoute == Route.ANALYZER_OVERVIEW || currentRoute == Route.CHAT_BOT){
@@ -152,11 +154,11 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                         route = Route.ANALYZER_OVERVIEW,
                                         icon = Icons.Default.Person
                                     ),
-                                    BottomNavItem(
-                                        name = "Chat",
-                                        route = Route.CHAT_BOT,
-                                        icon = Icons.Default.Face
-                                    ),
+//                                    BottomNavItem(
+//                                        name = "Chat",
+//                                        route = Route.CHAT_BOT,
+//                                        icon = Icons.Default.Face
+//                                    ),
                                     BottomNavItem(
                                         name = "Settings",
                                         route = Route.APP_SETTINGS,
@@ -174,7 +176,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                 ){
                     NavHost(
                         navController = navController,
-                        startDestination = Route.USER_AUTH_WELCOME
+                        startDestination = Route.SPLASH
                     ){
                         composable(Route.SPLASH){
                             SplashScreen(
@@ -198,7 +200,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                         }
                         composable(Route.AGE) {
                             AgeScreen(
-                                scaffoldState = scaffoldState,
+                                snackBarHost = snackbarHostState,
                                 onNextClick = {
                                     navController.navigate(Route.HEIGHT)
                                 }
@@ -206,7 +208,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                         }
                         composable(Route.HEIGHT) {
                             HeightScreen(
-                                scaffoldState = scaffoldState,
+                                snackBarHost = snackbarHostState,
                                 onNextClick = {
                                     navController.navigate(Route.WEIGHT)
                                 }
@@ -214,7 +216,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                         }
                         composable(Route.WEIGHT) {
                             WeightScreen(
-                                scaffoldState = scaffoldState,
+                                snackBarHost = snackbarHostState,
                                 onNextClick = {
                                     navController.navigate(Route.ACTIVITY)
                                 }
@@ -230,7 +232,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                         }
                         composable(Route.NUTRIENT_GOAL) {
                             NutrientGoalScreen(
-                                scaffoldState = scaffoldState,
+                                snackBarHost = snackbarHostState,
                                 onNextClick = {
                                     navController.navigate(Route.TRACKER_OVERVIEW)
                                 }
@@ -271,7 +273,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                             val month = it.arguments?.getInt("month")!!
                             val year = it.arguments?.getInt("year")!!
                             SearchScreen(
-                                scaffoldState = scaffoldState,
+                                snackBarHost = snackbarHostState,
                                 mealName = mealName,
                                 dayOfMonth = dayOfMonth,
                                 month = month,
@@ -416,7 +418,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                         ) {
                             val createWorkout = it.arguments?.getBoolean("createWorkout")!!
                             CreateWorkoutScreen(
-                                scaffoldState = scaffoldState,
+                                snackBarHost = snackbarHostState,
                                 createWorkout = createWorkout,
                                 onNavigateToSearchExercise = { page ->
                                     navController.navigate(Route.WORKOUT_SEARCH + "/$page")
@@ -437,7 +439,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                         ) {
                             val rowId = it.arguments?.getInt("rowId") ?: 0
                             SearchExerciseScreen(
-                                scaffoldState = scaffoldState,
+                                snackBarHost = snackbarHostState,
                                 rowId = rowId,
                                 onNavigateUp = {
                                     navController.navigateUp()
@@ -476,7 +478,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                         ) {
                             val createExercise = it.arguments?.getBoolean("createExercise")!!
                             CreateExerciseScreen(
-                                scaffoldState = scaffoldState,
+                                snackBarHost = snackbarHostState,
                                 createExercise = createExercise,
                                 onNavigateUp = {
                                     navController.navigateUp()
@@ -561,7 +563,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                         }
                         composable(Route.USER_AUTH_LOGIN) {
                             UserAuthLoginScreen(
-                                scaffoldState = scaffoldState,
+                                snackBarHost = snackbarHostState,
                                 onNavigateToSignUp = {
                                     navController.navigate(Route.USER_AUTH_SIGNUP)
                                 },
@@ -578,7 +580,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                         }
                         composable(Route.USER_AUTH_SIGNUP) {
                             UserAuthSignupScreen(
-                                scaffoldState = scaffoldState,
+                                snackBarHost = snackbarHostState,
                                 openAndPopUp = { route, popup ->
                                     navController.navigate(route) {
                                         launchSingleTop = true

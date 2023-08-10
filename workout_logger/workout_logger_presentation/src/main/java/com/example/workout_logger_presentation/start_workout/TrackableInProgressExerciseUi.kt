@@ -1,6 +1,6 @@
 package com.example.workout_logger_presentation.start_workout
 
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
 import com.example.workout_logger_domain.model.TrackedExercise
 

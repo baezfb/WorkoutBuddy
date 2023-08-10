@@ -11,13 +11,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -80,6 +79,7 @@ fun StartExerciseScreen(
                 horizontalArrangement = Arrangement.End
             ) {
                 IconButton(
+                    borderColor = MaterialTheme.colorScheme.outline,
                     modifier = Modifier
                         .padding(top = spacing.spaceMedium, end = spacing.spaceMedium, bottom = spacing.spaceLarge),
                     onClick = {
@@ -101,7 +101,7 @@ fun StartExerciseScreen(
                         text = state.exerciseName,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
-                        style = MaterialTheme.typography.h3,
+                        style = MaterialTheme.typography.displaySmall,
                         modifier = Modifier.fillMaxWidth(.75f)
                     )
                     Spacer(modifier = Modifier.width(spacing.spaceSmall))
@@ -165,9 +165,9 @@ fun StartExerciseScreen(
                     modifier = Modifier
                         .size(200.dp),
                     timerJump = state.timerJump,
-                    handleColor = MaterialTheme.colors.secondary,
-                    inactiveBarColor = MaterialTheme.colors.primaryVariant,
-                    activeBarColor = MaterialTheme.colors.primary
+                    handleColor = MaterialTheme.colorScheme.primary,
+                    inactiveBarColor = MaterialTheme.colorScheme.secondary,
+                    activeBarColor = MaterialTheme.colorScheme.inversePrimary
                 )
             }
         }
