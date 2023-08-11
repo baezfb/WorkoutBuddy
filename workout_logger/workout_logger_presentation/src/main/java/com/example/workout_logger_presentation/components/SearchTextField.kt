@@ -39,7 +39,7 @@ fun SearchTextField(
     onValueChange: (String) -> Unit,
     onClear: () -> Unit,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colorScheme.surface,
+    backgroundColor: Color = MaterialTheme.colorScheme.primaryContainer,
     hint: String = stringResource(id = R.string.search),
     shouldShowHint: Boolean = false,
     onFocusChanged: (FocusState) -> Unit
@@ -70,7 +70,7 @@ fun SearchTextField(
                     shape = RoundedCornerShape(5.dp)
                 )
                 .background(backgroundColor)
-                .border(border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface), shape = RectangleShape)
+//                .border(border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface), shape = RectangleShape)
                 .fillMaxWidth()
                 .padding(spacing.spaceMedium)
                 .padding(end = spacing.spaceMedium)

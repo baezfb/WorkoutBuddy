@@ -252,8 +252,8 @@ fun CreateExerciseScreen(
                                             fallback(R.drawable.ic_exercise)
                                         }
                                     ),
-                                    contentDescription = "main exercise image",
-                                    colorFilter = ColorFilter.colorMatrix(ColorMatrix(colorMatrix))
+                                    contentDescription = "supplemental exercise image",
+                                    colorFilter = if(MaterialTheme.colorScheme.onBackground.red * 255 > 150 && MaterialTheme.colorScheme.onBackground.blue * 255 > 150 && MaterialTheme.colorScheme.onBackground.green * 255 > 150) ColorFilter.colorMatrix(ColorMatrix(colorMatrix)) else null
                                 )
                             }
                         }

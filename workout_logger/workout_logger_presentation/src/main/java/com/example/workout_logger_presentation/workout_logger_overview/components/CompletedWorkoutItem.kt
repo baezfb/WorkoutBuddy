@@ -147,7 +147,7 @@ fun CompletedWorkoutItem(
                 var counter = 0
                 workout.weight.forEach{
                     if(workout.isCompleted[counter] == "true"){
-                        totalVolume += it.trim().toInt()
+                        totalVolume += it.trim().toInt() * workout.reps[counter].trim().toInt()
                     }
                     counter++
                 }
