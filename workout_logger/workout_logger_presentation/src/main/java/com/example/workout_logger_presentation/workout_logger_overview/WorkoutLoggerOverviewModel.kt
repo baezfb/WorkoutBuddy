@@ -14,6 +14,8 @@ import com.hbaez.core.util.UiEvent
 import com.hbaez.core.util.UiText
 import com.hbaez.user_auth_presentation.model.CompletedWorkout
 import com.hbaez.user_auth_presentation.model.service.StorageService
+import com.himanshoe.kalendar.KalendarEvent
+import com.himanshoe.kalendar.KalendarEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import java.time.LocalDate
 
 @HiltViewModel
 class WorkoutLoggerOverviewModel @Inject constructor(
@@ -54,6 +57,11 @@ class WorkoutLoggerOverviewModel @Inject constructor(
         refreshWorkouts()
         refreshExercises()
         executeSearch()
+        refreshKalendarEvents(
+            beginning = LocalDate.of(state.date.year, state.date.month, state.date.dayOfMonth)
+                .minusDays(if(state.date.dayOfMonth > 7) state.date.dayOfMonth.toLong() else 7),
+            end = LocalDate.of(state.date.year, state.date.month, state.date.dayOfMonth).plusDays(31)
+        )
     }
     fun onEvent(event: WorkoutLoggerOverviewEvent) {
         when(event) {
@@ -119,6 +127,38 @@ class WorkoutLoggerOverviewModel @Inject constructor(
             }
             is WorkoutLoggerOverviewEvent.OnChooseExercise -> {
                 /*TODO*/
+            }
+            is WorkoutLoggerOverviewEvent.OnDateClick -> {
+                state = state.copy(
+                    date = LocalDate.of(event.year, event.month, event.dayOfMonth)
+                )
+                imageUrls.clear()
+                refreshWorkouts()
+                refreshKalendarEvents(
+                    beginning = state.date
+                        .minusDays(if(event.dayOfMonth > 7) event.dayOfMonth.toLong() else 7),
+                    end = LocalDate.of(event.year, event.month, event.dayOfMonth).plusDays((31 - event.dayOfMonth).toLong())
+                )
+            }
+        }
+    }
+
+    private fun refreshKalendarEvents(beginning: LocalDate, end: LocalDate){
+        viewModelScope.launch {
+            val dateList = storageService.getCalendarEvents(begDate = beginning, endDate = end)
+            dateList.forEach { date ->
+                if(!state.kalendarEvents.events.any { event ->
+                        event.date.toString() == date.toString()
+                    }){
+                    state = state.copy(
+                        kalendarEvents = state.kalendarEvents.copy(
+                            events = (state.kalendarEvents.events.toMutableList() + KalendarEvent(
+                                date = kotlinx.datetime.LocalDate(date.year, date.monthValue, date.dayOfMonth),
+                                eventName = date.toString()
+                            )).toList()
+                        )
+                    )
+                }
             }
         }
     }

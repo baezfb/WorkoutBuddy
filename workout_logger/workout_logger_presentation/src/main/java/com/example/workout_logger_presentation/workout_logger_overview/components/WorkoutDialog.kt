@@ -3,7 +3,6 @@ package com.example.workout_logger_presentation.workout_logger_overview.componen
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -64,7 +63,7 @@ fun WorkoutDialog(
                     Column {
                         Spacer(modifier = Modifier.height(spacing.spaceLarge))
                         Text(
-                            stringResource(id = R.string.choose_workout),
+                            stringResource(id = R.string.choose_routine),
                             textAlign = TextAlign.Center,
                             fontSize = 32.sp,
                             modifier = Modifier

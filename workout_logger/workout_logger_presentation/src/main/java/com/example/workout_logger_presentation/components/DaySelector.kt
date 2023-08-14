@@ -29,13 +29,16 @@ fun DaySelector(
     ) {
         IconButton(
             icon = Icons.Default.ArrowBack,
+            color = MaterialTheme.colorScheme.onPrimary,
             onClick = onPreviousDayClick)
         Text(
             text = parseDateText(date = date),
-            style = MaterialTheme.typography.displayMedium
+            style = MaterialTheme.typography.displayMedium,
+            color = MaterialTheme.colorScheme.onPrimary
         )
         IconButton(
             icon = Icons.Default.ArrowForward,
+            color = MaterialTheme.colorScheme.onPrimary,
             onClick = onNextDayClick)
     }
 }

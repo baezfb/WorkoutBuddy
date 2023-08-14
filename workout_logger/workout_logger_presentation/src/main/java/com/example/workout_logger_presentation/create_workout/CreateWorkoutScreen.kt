@@ -45,7 +45,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import com.example.workout_logger_presentation.components.ExerciseInfoDialog
-import com.example.workout_logger_presentation.create_exercise.CreateExerciseEvent
 import com.example.workout_logger_presentation.create_workout.components.ExerciseCard
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -162,7 +161,7 @@ fun CreateWorkoutScreen(
                             .padding(spacing.spaceMedium),
 //                            .padding(end = spacing.spaceExtraLarge)
                         text = state.workoutName,
-                        hint = stringResource(id = R.string.workout_name),
+                        hint = stringResource(id = R.string.routine_name),
                         onValueChange = {
                             viewModel.onEvent(CreateWorkoutEvent.OnWorkoutNameChange(it))
                         },

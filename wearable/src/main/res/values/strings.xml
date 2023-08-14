@@ -14,5 +14,5 @@
     <string name="login">Login</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
-    <string name="choose_workout">Choose Workout</string>
+    <string name="choose_routine">Choose Workout</string>
 </resources>

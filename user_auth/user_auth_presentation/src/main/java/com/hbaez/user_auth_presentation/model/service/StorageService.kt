@@ -6,6 +6,7 @@ import com.hbaez.user_auth_presentation.model.ExerciseTemplate
 import com.hbaez.user_auth_presentation.model.Task
 import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 interface StorageService {
     val userPrefs: Flow<UserInfo>
@@ -15,6 +16,7 @@ interface StorageService {
 
     suspend fun getTask(taskId: String): Task?
     suspend fun getCompletedWorkoutByDate(date: String): List<CompletedWorkout>
+    suspend fun getCalendarEvents(begDate: LocalDate, endDate: LocalDate): List<LocalDate>
     suspend fun saveUserInfo(userInfo: UserInfo): String
     suspend fun getUserInfo(): UserInfo?
     suspend fun saveWorkoutTemplate(workoutTemplate: WorkoutTemplate): String

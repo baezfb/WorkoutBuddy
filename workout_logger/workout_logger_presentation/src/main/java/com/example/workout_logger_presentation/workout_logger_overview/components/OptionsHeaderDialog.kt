@@ -20,6 +20,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -77,7 +79,7 @@ fun OptionsHeaderDialog(
                         AddButton(
                             text = text1,
                             onClick = { onClickCreate() },
-                            icon = Icons.Default.List,
+                            icon = Icons.Default.Build,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(spacing.spaceSmall)
@@ -85,7 +87,7 @@ fun OptionsHeaderDialog(
                         AddButton(
                             text = text2,
                             onClick = { onClickEdit() },
-                            icon = Icons.Default.List,
+                            icon = Icons.Default.Edit,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(spacing.spaceSmall)

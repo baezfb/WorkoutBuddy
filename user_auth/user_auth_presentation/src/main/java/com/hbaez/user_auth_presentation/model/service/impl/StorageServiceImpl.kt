@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.asDeferred
 import kotlinx.coroutines.tasks.await
+import java.time.LocalDate
 
 class StorageServiceImpl @Inject
 constructor(private val firestore: FirebaseFirestore, private val auth: AccountService):
@@ -113,9 +114,23 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             .await()
         return completedWorkouts
     }
+
+    override suspend fun getCalendarEvents(
+        begDate: LocalDate,
+        endDate: LocalDate
+    ): List<LocalDate> {
+        val dateList = mutableListOf<LocalDate>()
+        var currentDate = begDate
+        while(currentDate <= endDate) {
+            currentDate = currentDate.plusDays(1)
+            if(completedWorkoutCollection(auth.currentUserId, currentDate.toString()).get().await().documents.size > 0){
+                dateList.add(currentDate)
+            }
+        }
+        return dateList
+    }
     override suspend fun saveUserInfo(userInfo: UserInfo): String =
         trace(SAVE_USER_INFO_TRACE) {
-            Log.println(Log.DEBUG, "auth.currentUserId", auth.currentUserId)
             if(userInfo.id == ""){
                 userInfoCollection(auth.currentUserId).document(auth.currentUserId).set(userInfo).await()
                 return auth.currentUserId
