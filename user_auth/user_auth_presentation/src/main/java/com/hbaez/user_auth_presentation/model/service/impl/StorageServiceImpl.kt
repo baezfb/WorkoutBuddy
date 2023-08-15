@@ -58,6 +58,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                                 rowId = it.get("rowId").toString().toInt(),
                                 position = it.get("position").toString().toInt(),
                                 lastUsedId = it.get("lastUsedId").toString().toInt(),
+                                lastUsedDate = it.get("lastUsedDate").toString()
                             )
                         }
                     }
@@ -171,13 +172,20 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             if (workoutTemplate.exerciseId != null) {
                 updateData["exerciseId"] = workoutTemplate.exerciseId
             }
+            if (workoutTemplate.rowId != -1) {
+                updateData["rowId"] = workoutTemplate.rowId
+            }
+            if (workoutTemplate.position != -1) {
+                updateData["position"] = workoutTemplate.position
+            }
+            if (workoutTemplate.lastUsedDate != null && workoutTemplate.lastUsedDate != "null") {
+                updateData["lastUsedDate"] = workoutTemplate.lastUsedDate
+            }
             updateData["exerciseName"] = workoutTemplate.exerciseName
             updateData["lastUsedId"] = workoutTemplate.lastUsedId
             updateData["name"] = workoutTemplate.name
             updateData["reps"] = workoutTemplate.reps
             updateData["rest"] = workoutTemplate.rest
-            updateData["rowId"] = workoutTemplate.rowId
-            updateData["position"] = workoutTemplate.position
             updateData["sets"] = workoutTemplate.sets
             updateData["weight"] = workoutTemplate.weight
             workoutTemplateCollection(auth.currentUserId).document(workoutTemplate.id).update(updateData).await()

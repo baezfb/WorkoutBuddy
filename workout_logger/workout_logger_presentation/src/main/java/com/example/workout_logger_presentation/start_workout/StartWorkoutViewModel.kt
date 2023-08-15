@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import java.time.Duration
+import java.time.LocalDate
 import java.util.Date
 
 @HiltViewModel
@@ -70,20 +71,42 @@ class StartWorkoutViewModel @Inject constructor(
         val initRoutine: MutableList<WorkoutTemplate?> = (List(workoutIds.size) { null }).toMutableList()
         viewModelScope.launch {
             workoutTemplates.first().forEach {
+                //TODO: get completedWorkout by date it.lastUsedDate
+                val currExercise: LoggerListState
                 if(it.name == workoutName){
-                    val currExercise = LoggerListState(
-                        id = it.rowId,
-                        position = it.position,
-                        exerciseName = it.exerciseName,
-                        exerciseId = it.exerciseId,
-                        timerStatus = TimerStatus.START,
-                        sets = it.sets.toString(),
-                        rest = it.rest,
-                        reps = it.reps,
-                        weight = it.weight,
-                        isCompleted = List(it.sets) { false },
-                        checkedColor = List(it.sets) { Color.DarkGray },
-                    )
+                    if(it.lastUsedDate != null && !it.lastUsedDate.equals("null")){
+                        val completedWorkouts = storageService.getCompletedWorkoutByDate(it.lastUsedDate!!).toMutableList()
+                        val completedWorkout = completedWorkouts.find { completed ->
+                            it.exerciseName == completed.exerciseName
+                        }
+                        currExercise = LoggerListState(
+                            id = it.rowId,
+                            position = it.position,
+                            exerciseName = it.exerciseName,
+                            exerciseId = it.exerciseId,
+                            timerStatus = TimerStatus.START,
+                            sets = completedWorkout!!.sets.toString(),
+                            rest = completedWorkout.rest,
+                            reps = completedWorkout.reps,
+                            weight = completedWorkout.weight,
+                            isCompleted = List(completedWorkout.sets) { false },
+                            checkedColor = List(completedWorkout.sets) { Color.DarkGray },
+                        )
+                    } else {
+                        currExercise = LoggerListState(
+                            id = it.rowId,
+                            position = it.position,
+                            exerciseName = it.exerciseName,
+                            exerciseId = it.exerciseId,
+                            timerStatus = TimerStatus.START,
+                            sets = it.sets.toString(),
+                            rest = it.rest,
+                            reps = it.reps,
+                            weight = it.weight,
+                            isCompleted = List(it.sets) { false },
+                            checkedColor = List(it.sets) { Color.DarkGray },
+                        )
+                    }
                     initExercises[it.position] = currExercise
                     initRoutine[it.position] = it
                 }
@@ -381,6 +404,29 @@ class StartWorkoutViewModel @Inject constructor(
                 ),
                 date = date
             )
+            workoutTemplates.first().onEach {
+                Log.println(Log.DEBUG, "StartWorkoutViewModel workoutTemplates", it.name)
+                if(it.name == state.workoutName){
+                    Log.println(Log.DEBUG, "inside if StartWorkoutViewModel", it.name)
+                    Log.println(Log.DEBUG, "inside if StartWorkoutViewModel", LocalDate.of(year, month, dayOfMonth).toString())
+                    storageService.updateWorkoutTemplate(
+                        WorkoutTemplate(
+                            id = it.id,
+                            name = it.name,
+                            exerciseName = it.exerciseName,
+                            exerciseId = null,
+                            sets = it.sets,
+                            rest = it.rest,
+                            reps = it.reps,
+                            weight = it.weight,
+                            rowId = -1,
+                            position = -1,
+                            lastUsedId = it.lastUsedId,
+                            lastUsedDate = LocalDate.of(year, month, dayOfMonth).toString()
+                        )
+                    )
+                }
+            }
         }
     }
 

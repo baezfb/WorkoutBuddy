@@ -199,7 +199,7 @@ fun WorkoutLoggerOverviewScreen(
             }
         }
     }
-    
+
     SwipeRefresh(
         state = swipeRefreshState,
         onRefresh = viewModel::swipeRefreshWorkouts

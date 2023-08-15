@@ -65,17 +65,40 @@ class CreateWorkoutViewModel @Inject constructor(
                 val initTrackableExercises: MutableList<TrackableExerciseUiState?> = (List(pageCount) { null }).toMutableList()
                 workoutTemplates.first().onEach{
                     if(it.name == initWorkoutName){
-                        val currTrackableExercise = TrackableExerciseUiState(
-                            docId = it.id,
-                            name = it.exerciseName,
-                            sets = it.sets,
-                            reps = it.reps,
-                            rest = it.rest,
-                            weight = it.weight,
-                            id = it.rowId,
-                            exercise = null,
-                            position = it.position
-                        )
+                        //TODO: get completedWorkout by date it.lastUsedDate
+                        val currTrackableExercise: TrackableExerciseUiState
+                        if(it.lastUsedDate != null && !it.lastUsedDate.equals("null")){
+                            Log.println(Log.DEBUG, "CreateWorkoutViewModel lastUsedDate", it.lastUsedDate.toString())
+                            val completedWorkouts = storageService.getCompletedWorkoutByDate(it.lastUsedDate!!).toMutableList()
+                            val completedWorkout = completedWorkouts.find { completed ->
+                                it.exerciseName == completed.exerciseName
+                            }
+                            currTrackableExercise = TrackableExerciseUiState(
+                                docId = it.id,
+                                name = it.exerciseName,
+                                sets = completedWorkout!!.sets,
+                                reps = completedWorkout.reps,
+                                rest = completedWorkout.rest,
+                                weight = completedWorkout.weight,
+                                id = it.rowId,
+                                exercise = null,
+                                position = it.position,
+                                lastUsedDate = it.lastUsedDate
+                            )
+                        } else{
+                            currTrackableExercise = TrackableExerciseUiState(
+                                docId = it.id,
+                                name = it.exerciseName,
+                                sets = it.sets,
+                                reps = it.reps,
+                                rest = it.rest,
+                                weight = it.weight,
+                                id = it.rowId,
+                                exercise = null,
+                                position = it.position,
+                                lastUsedDate = it.lastUsedDate
+                            )
+                        }
                         lastusedid = it.lastUsedId
                         initTrackableExercises[it.position] = currTrackableExercise
                     }
@@ -166,8 +189,6 @@ class CreateWorkoutViewModel @Inject constructor(
             }
 
             is CreateWorkoutEvent.OnRemovePage -> {
-                //TODO: set exercise's isDeleted at event.page to true
-                //TODO: subtract 1 from position for all exercises after deleted exercise
                 val tmpExercises = state.trackableExercises.toMutableList()
                 tmpExercises.forEachIndexed { index, it ->
                     if(it.position == event.page) {
@@ -419,6 +440,7 @@ class CreateWorkoutViewModel @Inject constructor(
                             rowId = it.id,
                             position = it.id,
                             lastUsedId = state.lastUsedId,
+                            lastUsedDate = it.lastUsedDate
                         )
                     )
                 }
@@ -444,6 +466,7 @@ class CreateWorkoutViewModel @Inject constructor(
                                 rowId = it.id,
                                 position = it.position,
                                 lastUsedId = state.lastUsedId,
+                                lastUsedDate = it.lastUsedDate
                             )
                         )
                     } else {
@@ -460,6 +483,7 @@ class CreateWorkoutViewModel @Inject constructor(
                                 rowId = it.id,
                                 position = it.id,
                                 lastUsedId = state.lastUsedId,
+                                lastUsedDate = it.lastUsedDate
                             )
                         )
                     }
@@ -477,6 +501,7 @@ class CreateWorkoutViewModel @Inject constructor(
                             rowId = it.id,
                             position = it.id,
                             lastUsedId = state.lastUsedId,
+                            lastUsedDate = it.lastUsedDate
                         )
                     )
                 }
@@ -502,6 +527,7 @@ class CreateWorkoutViewModel @Inject constructor(
                             rowId = it.id,
                             position = it.id,
                             lastUsedId = state.lastUsedId,
+                            lastUsedDate = null
                         )
                     )
                 }
