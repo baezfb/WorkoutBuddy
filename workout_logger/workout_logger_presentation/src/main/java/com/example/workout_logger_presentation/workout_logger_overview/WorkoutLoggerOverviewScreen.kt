@@ -101,6 +101,105 @@ fun WorkoutLoggerOverviewScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
 
+    if(showDialog.value){
+        WorkoutDialog(
+            onDismiss = {
+                showDialog.value = false
+                showDialogEdit.value = false
+            },
+            onChooseWorkout = { workoutName, workoutIds ->
+                if(showDialogEdit.value){
+                    onNavigateToEditWorkout(
+                        workoutName,
+                        workoutIds
+                    )
+                } else {
+                    onNavigateToStartWorkout(
+                        workoutName,
+                        state.date.dayOfMonth,
+                        state.date.monthValue,
+                        state.date.year,
+                        workoutIds
+                    )
+                }
+            },
+            workoutNames = state.workoutNames,
+            workoutTemplates = workoutTemplates
+        )
+    }
+    if(showExercise.value){
+        ExerciseDialog(
+            filterText = state.exerciseFilterText,
+            trackableExercises = state.trackableExercise,
+            onDismiss = {
+                showExercise.value = false
+                showExerciseEdit.value = false
+            },
+            onChooseExercise = {
+                if(showExerciseEdit.value){
+                    onNavigateToEditExercise(
+                        it.exercise.name!!,
+                        it.exercise.description ?: "",
+                        it.exercise.muscle_name_main,
+                        it.exercise.muscle_name_secondary,
+                        it.exercise.image_url.filterNotNull(),
+
+                        )
+                } else {
+                    onNavigateToStartExercise(
+                        it.exercise.name!!,
+                        state.date.dayOfMonth,
+                        state.date.monthValue,
+                        state.date.year,
+                    )
+                }
+            },
+            onFilterTextChange = {
+                viewModel.onEvent(WorkoutLoggerOverviewEvent.OnExerciseSearch(it))
+            },
+            onItemClick = {
+                viewModel.onEvent(WorkoutLoggerOverviewEvent.OnExerciseItemClick(it))
+            },
+            onDescrClick = {
+                viewModel.onEvent(WorkoutLoggerOverviewEvent.OnExerciseDescrClick(it))
+            }
+        )
+    }
+    if(showOptionsHeaderDialog.value){
+        when(optionsHeaderType.value) {
+            "workout" -> {
+                OptionsHeaderDialog(
+                    onDismiss = { showOptionsHeaderDialog.value = false },
+                    onClickCreate = {
+                        onNavigateToCreateWorkout()
+                    },
+                    onClickEdit = {
+                        showDialog.value = true
+                        showDialogEdit.value = true
+                    },
+                    title = R.string.workout_routine,
+                    text1 = stringResource(id = R.string.create_routine),
+                    text2 = stringResource(id = R.string.edit_routine)
+                )
+            }
+            "exercise" -> {
+                OptionsHeaderDialog(
+                    onDismiss = { showOptionsHeaderDialog.value = false },
+                    onClickCreate = {
+                        onNavigateToCreateExercise()
+                    },
+                    onClickEdit = {
+                        showExercise.value = true
+                        showExerciseEdit.value = true
+                    },
+                    title = R.string.exercise,
+                    text1 = stringResource(id = R.string.create_exercise),
+                    text2 = stringResource(id = R.string.edit_exercise)
+                )
+            }
+        }
+    }
+    
     SwipeRefresh(
         state = swipeRefreshState,
         onRefresh = viewModel::swipeRefreshWorkouts
@@ -297,104 +396,6 @@ fun WorkoutLoggerOverviewScreen(
                                 )
                             }
                             Spacer(modifier = Modifier.height(spacing.spaceMedium))
-                        }
-                        if(showDialog.value){
-                            WorkoutDialog(
-                                onDismiss = {
-                                    showDialog.value = false
-                                    showDialogEdit.value = false
-                                },
-                                onChooseWorkout = { workoutName, workoutIds ->
-                                    if(showDialogEdit.value){
-                                        onNavigateToEditWorkout(
-                                            workoutName,
-                                            workoutIds
-                                        )
-                                    } else {
-                                        onNavigateToStartWorkout(
-                                            workoutName,
-                                            state.date.dayOfMonth,
-                                            state.date.monthValue,
-                                            state.date.year,
-                                            workoutIds
-                                        )
-                                    }
-                                },
-                                workoutNames = state.workoutNames,
-                                workoutTemplates = workoutTemplates
-                            )
-                        }
-                        if(showExercise.value){
-                            ExerciseDialog(
-                                filterText = state.exerciseFilterText,
-                                trackableExercises = state.trackableExercise,
-                                onDismiss = {
-                                    showExercise.value = false
-                                    showExerciseEdit.value = false
-                                },
-                                onChooseExercise = {
-                                    if(showExerciseEdit.value){
-                                        onNavigateToEditExercise(
-                                            it.exercise.name!!,
-                                            it.exercise.description ?: "",
-                                            it.exercise.muscle_name_main,
-                                            it.exercise.muscle_name_secondary,
-                                            it.exercise.image_url.filterNotNull(),
-
-                                            )
-                                    } else {
-                                        onNavigateToStartExercise(
-                                            it.exercise.name!!,
-                                            state.date.dayOfMonth,
-                                            state.date.monthValue,
-                                            state.date.year,
-                                        )
-                                    }
-                                },
-                                onFilterTextChange = {
-                                    viewModel.onEvent(WorkoutLoggerOverviewEvent.OnExerciseSearch(it))
-                                },
-                                onItemClick = {
-                                    viewModel.onEvent(WorkoutLoggerOverviewEvent.OnExerciseItemClick(it))
-                                },
-                                onDescrClick = {
-                                    viewModel.onEvent(WorkoutLoggerOverviewEvent.OnExerciseDescrClick(it))
-                                }
-                            )
-                        }
-                        if(showOptionsHeaderDialog.value){
-                            when(optionsHeaderType.value) {
-                                "workout" -> {
-                                    OptionsHeaderDialog(
-                                        onDismiss = { showOptionsHeaderDialog.value = false },
-                                        onClickCreate = {
-                                            onNavigateToCreateWorkout()
-                                        },
-                                        onClickEdit = {
-                                            showDialog.value = true
-                                            showDialogEdit.value = true
-                                        },
-                                        title = R.string.workout_routine,
-                                        text1 = stringResource(id = R.string.create_routine),
-                                        text2 = stringResource(id = R.string.edit_routine)
-                                    )
-                                }
-                                "exercise" -> {
-                                    OptionsHeaderDialog(
-                                        onDismiss = { showOptionsHeaderDialog.value = false },
-                                        onClickCreate = {
-                                            onNavigateToCreateExercise()
-                                        },
-                                        onClickEdit = {
-                                            showExercise.value = true
-                                            showExerciseEdit.value = true
-                                        },
-                                        title = R.string.exercise,
-                                        text1 = stringResource(id = R.string.create_exercise),
-                                        text2 = stringResource(id = R.string.edit_exercise)
-                                    )
-                                }
-                            }
                         }
                     }
                     item{
