@@ -14,4 +14,6 @@ dependencies {
     "implementation"("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha03")
     "implementation"("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
     "implementation"("com.himanshoe:kalendar:1.3.2")
+    "implementation"("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    "implementation"("com.google.accompanist:accompanist-swiperefresh:0.27.0")
 }

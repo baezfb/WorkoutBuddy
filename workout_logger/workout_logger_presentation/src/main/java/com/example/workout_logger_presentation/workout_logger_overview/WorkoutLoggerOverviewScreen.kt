@@ -34,6 +34,8 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -57,6 +59,8 @@ import com.example.workout_logger_presentation.workout_logger_overview.component
 import com.example.workout_logger_presentation.workout_logger_overview.components.ExerciseRow
 import com.example.workout_logger_presentation.workout_logger_overview.components.OptionsHeaderDialog
 import com.example.workout_logger_presentation.workout_logger_overview.components.WorkoutDialog
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
 import com.hbaez.user_auth_presentation.components.FlatButton
@@ -94,385 +98,395 @@ fun WorkoutLoggerOverviewScreen(
     val optionsHeaderType = remember { mutableStateOf("") }
     val isFloatingButtonExpanded = remember { mutableStateOf(false) }
     val isCalendarExpanded = remember { mutableStateOf(false) }
+    val isLoading by viewModel.isLoading.collectAsState()
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
 
-    Scaffold(
-        floatingActionButton = {
-            if (isFloatingButtonExpanded.value) {
-                Dialog(
-                    onDismissRequest = {
-                        isFloatingButtonExpanded.value = false
-                    }
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(bottom = spacing.spaceExtraLarge + spacing.spaceMedium),
-                        horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.Bottom
+    SwipeRefresh(
+        state = swipeRefreshState,
+        onRefresh = viewModel::swipeRefreshWorkouts
+    ) {
+        Scaffold(
+            floatingActionButton = {
+                if (isFloatingButtonExpanded.value) {
+                    Dialog(
+                        onDismissRequest = {
+                            isFloatingButtonExpanded.value = false
+                        }
                     ) {
-                        FloatingActionButton(
-                            modifier = Modifier.padding(bottom = spacing.spaceLarge, end = spacing.spaceSmall),
-                            onClick = {
-                                showOptionsHeaderDialog.value = true
-                                optionsHeaderType.value = "exercise"
-                                isFloatingButtonExpanded.value = !isFloatingButtonExpanded.value
-                            },
-                            shape = CircleShape,
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(bottom = spacing.spaceExtraLarge + spacing.spaceMedium),
+                            horizontalAlignment = Alignment.End,
+                            verticalArrangement = Arrangement.Bottom
                         ) {
-                            Row(Modifier.padding(spacing.spaceMedium)) {
-                                Icon(imageVector = Icons.Filled.Edit, contentDescription = "floatingActionButton Icon")
-                                Spacer(modifier = Modifier.width(spacing.spaceMedium))
-                                Text(text = stringResource(id = R.string.exercise_template))
+                            FloatingActionButton(
+                                modifier = Modifier.padding(bottom = spacing.spaceLarge, end = spacing.spaceSmall),
+                                onClick = {
+                                    showOptionsHeaderDialog.value = true
+                                    optionsHeaderType.value = "exercise"
+                                    isFloatingButtonExpanded.value = !isFloatingButtonExpanded.value
+                                },
+                                shape = CircleShape,
+                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                            ) {
+                                Row(Modifier.padding(spacing.spaceMedium)) {
+                                    Icon(imageVector = Icons.Filled.Edit, contentDescription = "floatingActionButton Icon")
+                                    Spacer(modifier = Modifier.width(spacing.spaceMedium))
+                                    Text(text = stringResource(id = R.string.exercise_template))
+                                }
+                            }
+                            FloatingActionButton(
+                                modifier = Modifier.padding(bottom = spacing.spaceLarge, end = spacing.spaceSmall),
+                                onClick = {
+                                    showOptionsHeaderDialog.value = true
+                                    optionsHeaderType.value = "workout"
+                                    isFloatingButtonExpanded.value = !isFloatingButtonExpanded.value
+                                },
+                                shape = CircleShape,
+                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                            ) {
+                                Row(Modifier.padding(spacing.spaceMedium)) {
+                                    Icon(imageVector = Icons.Filled.Edit, contentDescription = "floatingActionButton Icon")
+                                    Spacer(modifier = Modifier.width(spacing.spaceMedium))
+                                    Text(text = stringResource(id = R.string.routine_template))
+                                }
+                            }
+                            FloatingActionButton(
+                                modifier = Modifier.padding(bottom = spacing.spaceLarge, end = spacing.spaceSmall),
+                                onClick = { isFloatingButtonExpanded.value = !isFloatingButtonExpanded.value },
+                                shape = CircleShape,
+                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                            ) {
+                                Icon(imageVector = Icons.Filled.Close, contentDescription = "floatingActionButton Icon")
                             }
                         }
-                        FloatingActionButton(
-                            modifier = Modifier.padding(bottom = spacing.spaceLarge, end = spacing.spaceSmall),
-                            onClick = {
-                                showOptionsHeaderDialog.value = true
-                                optionsHeaderType.value = "workout"
-                                isFloatingButtonExpanded.value = !isFloatingButtonExpanded.value
-                            },
-                            shape = CircleShape,
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-                        ) {
-                            Row(Modifier.padding(spacing.spaceMedium)) {
-                                Icon(imageVector = Icons.Filled.Edit, contentDescription = "floatingActionButton Icon")
-                                Spacer(modifier = Modifier.width(spacing.spaceMedium))
-                                Text(text = stringResource(id = R.string.routine_template))
-                            }
-                        }
-                        FloatingActionButton(
-                            modifier = Modifier.padding(bottom = spacing.spaceLarge, end = spacing.spaceSmall),
-                            onClick = { isFloatingButtonExpanded.value = !isFloatingButtonExpanded.value },
-                            shape = CircleShape,
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-                        ) {
-                            Icon(imageVector = Icons.Filled.Close, contentDescription = "floatingActionButton Icon")
-                        }
+
                     }
-
+                } else {
+                    FloatingActionButton(
+                        modifier = Modifier.padding(bottom = spacing.spaceLarge, end = spacing.spaceSmall),
+                        onClick = { isFloatingButtonExpanded.value = !isFloatingButtonExpanded.value },
+                        shape = CircleShape,
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                    ) {
+                        Icon(imageVector = Icons.Filled.Add, contentDescription = "floatingActionButton Icon")
+                    }
                 }
-            } else {
-                FloatingActionButton(
-                    modifier = Modifier.padding(bottom = spacing.spaceLarge, end = spacing.spaceSmall),
-                    onClick = { isFloatingButtonExpanded.value = !isFloatingButtonExpanded.value },
-                    shape = CircleShape,
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+
+            },
+            content = {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = spacing.spaceLarge)
                 ) {
-                    Icon(imageVector = Icons.Filled.Add, contentDescription = "floatingActionButton Icon")
-                }
-            }
-
-        },
-        content = {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = spacing.spaceLarge)
-            ) {
-                item {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(
-                                RoundedCornerShape(
-                                    bottomStart = 50.dp,
-                                    bottomEnd = 50.dp
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(
+                                    RoundedCornerShape(
+                                        bottomStart = 50.dp,
+                                        bottomEnd = 50.dp
+                                    )
                                 )
-                            )
-                            .background(MaterialTheme.colorScheme.primary)
-                            .padding(spacing.spaceSmall)
-                    ) {
-                        Kalendar(
-                            modifier = if(isCalendarExpanded.value) Modifier.height(360.dp) else Modifier,
-                            showLabel = isCalendarExpanded.value,
-                            currentDay = if(isCalendarExpanded.value) {
-                                LocalDate(state.date.year, state.date.monthValue, state.date.dayOfMonth)
-                            } else {
-                                LocalDate(state.date.minusDays(6).year, state.date.minusDays(6).monthValue, state.date.minusDays(6).dayOfMonth)
-                            },
-                            events = state.kalendarEvents,
-                            kalendarColors = KalendarColors(List(12) {KalendarColor(
-                                backgroundColor = MaterialTheme.colorScheme.primary,
-                                dayBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
-                                headerTextColor = MaterialTheme.colorScheme.onPrimary
-                            )}),
-                            dayContent = {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(end = 4.dp, bottom = 4.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    var isDateSelected = state.date.year == it.year && state.date.dayOfMonth == it.dayOfMonth && state.date.monthValue == it.monthNumber
-                                    Column(
+                                .background(MaterialTheme.colorScheme.primary)
+                                .padding(spacing.spaceSmall)
+                        ) {
+                            Kalendar(
+                                modifier = if(isCalendarExpanded.value) Modifier.height(360.dp) else Modifier,
+                                showLabel = isCalendarExpanded.value,
+                                currentDay = if(isCalendarExpanded.value) {
+                                    LocalDate(state.date.year, state.date.monthValue, state.date.dayOfMonth)
+                                } else {
+                                    LocalDate(state.date.minusDays(6).year, state.date.minusDays(6).monthValue, state.date.minusDays(6).dayOfMonth)
+                                },
+                                events = state.kalendarEvents,
+                                kalendarColors = KalendarColors(List(12) {KalendarColor(
+                                    backgroundColor = MaterialTheme.colorScheme.primary,
+                                    dayBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                                    headerTextColor = MaterialTheme.colorScheme.onPrimary
+                                )}),
+                                dayContent = {
+                                    Box(
                                         modifier = Modifier
                                             .fillMaxSize()
-                                            .clip(RoundedCornerShape(4.dp))
-                                            .background(
-                                                if (isDateSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.tertiaryContainer,
-                                                RoundedCornerShape(4.dp)
-                                            )
-                                            .padding(spacing.spaceSmall)
-                                            .clickable {
-                                                viewModel.onEvent(
-                                                    WorkoutLoggerOverviewEvent.OnDateClick(
-                                                        it.year,
-                                                        it.dayOfMonth,
-                                                        it.monthNumber
-                                                    )
-                                                )
-                                            },
-                                        horizontalAlignment = Alignment.CenterHorizontally
+                                            .padding(end = 4.dp, bottom = 4.dp),
+                                        contentAlignment = Alignment.Center
                                     ) {
-                                        if(!isCalendarExpanded.value){
+                                        var isDateSelected = state.date.year == it.year && state.date.dayOfMonth == it.dayOfMonth && state.date.monthValue == it.monthNumber
+                                        Column(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .clip(RoundedCornerShape(4.dp))
+                                                .background(
+                                                    if (isDateSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.tertiaryContainer,
+                                                    RoundedCornerShape(4.dp)
+                                                )
+                                                .padding(spacing.spaceSmall)
+                                                .clickable {
+                                                    viewModel.onEvent(
+                                                        WorkoutLoggerOverviewEvent.OnDateClick(
+                                                            it.year,
+                                                            it.dayOfMonth,
+                                                            it.monthNumber
+                                                        )
+                                                    )
+                                                },
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            if(!isCalendarExpanded.value){
+                                                Text(
+                                                    text = it.dayOfWeek.name.take(3), // First 3 characters of the day name
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                                                )
+                                                Spacer(modifier = Modifier.height(4.dp))
+                                            }
                                             Text(
-                                                text = it.dayOfWeek.name.take(3), // First 3 characters of the day name
-                                                style = MaterialTheme.typography.labelMedium,
+                                                text = String.format("%02d", it.dayOfMonth),
+                                                style = if(isCalendarExpanded.value) MaterialTheme.typography.displaySmall else MaterialTheme.typography.displayLarge,
                                                 color = MaterialTheme.colorScheme.onSecondaryContainer
                                             )
-                                            Spacer(modifier = Modifier.height(4.dp))
+                                            val isDateInEvents = state.kalendarEvents.events.any { event ->
+                                                event.date == it
+                                            }
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(spacing.spaceSmall)
+                                                    .background(
+                                                        if (isDateInEvents) MaterialTheme.colorScheme.primary else if (isDateSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.primaryContainer,
+                                                        CircleShape
+                                                    )
+                                            )
                                         }
-                                        Text(
-                                            text = String.format("%02d", it.dayOfMonth),
-                                            style = if(isCalendarExpanded.value) MaterialTheme.typography.displaySmall else MaterialTheme.typography.displayLarge,
-                                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                                    }
+                                },
+                                kalendarType = if(isCalendarExpanded.value) KalendarType.Firey else KalendarType.Oceanic
+                            )
+                            Spacer(modifier = Modifier.height(spacing.spaceLarge))
+                            Row(
+                                modifier = Modifier
+                                    .background(Color.Transparent)
+                                    .clickable { isCalendarExpanded.value = !isCalendarExpanded.value }
+                                    .padding(spacing.spaceSmall)
+                                    .fillMaxWidth(1f),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = if(isCalendarExpanded.value) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
+                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                    contentDescription = "Calendar Expand Button"
+                                )
+                            }
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = parseDateText(date = state.date),
+                                    style = MaterialTheme.typography.displayMedium,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(spacing.spaceMedium))
+                        }
+                        if(showDialog.value){
+                            WorkoutDialog(
+                                onDismiss = {
+                                    showDialog.value = false
+                                    showDialogEdit.value = false
+                                },
+                                onChooseWorkout = { workoutName, workoutIds ->
+                                    if(showDialogEdit.value){
+                                        onNavigateToEditWorkout(
+                                            workoutName,
+                                            workoutIds
                                         )
-                                        val isDateInEvents = state.kalendarEvents.events.any { event ->
-                                            event.date == it
-                                        }
-                                        Box(
-                                            modifier = Modifier
-                                                .size(spacing.spaceSmall)
-                                                .background(if(isDateInEvents) MaterialTheme.colorScheme.primary else if (isDateSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.primaryContainer, CircleShape)
+                                    } else {
+                                        onNavigateToStartWorkout(
+                                            workoutName,
+                                            state.date.dayOfMonth,
+                                            state.date.monthValue,
+                                            state.date.year,
+                                            workoutIds
                                         )
                                     }
-                                }
-                            },
-                            kalendarType = if(isCalendarExpanded.value) KalendarType.Firey else KalendarType.Oceanic
-                        )
-                        Spacer(modifier = Modifier.height(spacing.spaceLarge))
-                        Row(
-                            modifier = Modifier
-                                .background(Color.Transparent)
-                                .clickable { isCalendarExpanded.value = !isCalendarExpanded.value }
-                                .padding(spacing.spaceSmall)
-                                .fillMaxWidth(1f),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = if(isCalendarExpanded.value) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
-                                tint = MaterialTheme.colorScheme.onPrimary,
-                                contentDescription = "Calendar Expand Button"
+                                },
+                                workoutNames = state.workoutNames,
+                                workoutTemplates = workoutTemplates
                             )
                         }
+                        if(showExercise.value){
+                            ExerciseDialog(
+                                filterText = state.exerciseFilterText,
+                                trackableExercises = state.trackableExercise,
+                                onDismiss = {
+                                    showExercise.value = false
+                                    showExerciseEdit.value = false
+                                },
+                                onChooseExercise = {
+                                    if(showExerciseEdit.value){
+                                        onNavigateToEditExercise(
+                                            it.exercise.name!!,
+                                            it.exercise.description ?: "",
+                                            it.exercise.muscle_name_main,
+                                            it.exercise.muscle_name_secondary,
+                                            it.exercise.image_url.filterNotNull(),
+
+                                            )
+                                    } else {
+                                        onNavigateToStartExercise(
+                                            it.exercise.name!!,
+                                            state.date.dayOfMonth,
+                                            state.date.monthValue,
+                                            state.date.year,
+                                        )
+                                    }
+                                },
+                                onFilterTextChange = {
+                                    viewModel.onEvent(WorkoutLoggerOverviewEvent.OnExerciseSearch(it))
+                                },
+                                onItemClick = {
+                                    viewModel.onEvent(WorkoutLoggerOverviewEvent.OnExerciseItemClick(it))
+                                },
+                                onDescrClick = {
+                                    viewModel.onEvent(WorkoutLoggerOverviewEvent.OnExerciseDescrClick(it))
+                                }
+                            )
+                        }
+                        if(showOptionsHeaderDialog.value){
+                            when(optionsHeaderType.value) {
+                                "workout" -> {
+                                    OptionsHeaderDialog(
+                                        onDismiss = { showOptionsHeaderDialog.value = false },
+                                        onClickCreate = {
+                                            onNavigateToCreateWorkout()
+                                        },
+                                        onClickEdit = {
+                                            showDialog.value = true
+                                            showDialogEdit.value = true
+                                        },
+                                        title = R.string.workout_routine,
+                                        text1 = stringResource(id = R.string.create_routine),
+                                        text2 = stringResource(id = R.string.edit_routine)
+                                    )
+                                }
+                                "exercise" -> {
+                                    OptionsHeaderDialog(
+                                        onDismiss = { showOptionsHeaderDialog.value = false },
+                                        onClickCreate = {
+                                            onNavigateToCreateExercise()
+                                        },
+                                        onClickEdit = {
+                                            showExercise.value = true
+                                            showExerciseEdit.value = true
+                                        },
+                                        title = R.string.exercise,
+                                        text1 = stringResource(id = R.string.create_exercise),
+                                        text2 = stringResource(id = R.string.edit_exercise)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    item{
+                        Spacer(modifier = Modifier.height(spacing.spaceMedium))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(
-                                text = parseDateText(date = state.date),
-                                style = MaterialTheme.typography.displayMedium,
-                                color = MaterialTheme.colorScheme.onPrimary
+                            AddButton(
+                                text = stringResource(id = R.string.start_routine),
+                                onClick = {
+                                    viewModel.onEvent(WorkoutLoggerOverviewEvent.OnStartWorkoutClick)
+                                    showDialog.value = true
+                                },
+                                modifier = Modifier.weight(1f),
+                                color = MaterialTheme.colorScheme.primary,
+                                icon = Icons.Default.AddCircle
+                            )
+                            Spacer(modifier = Modifier.width(spacing.spaceExtraSmall))
+                            AddButton(
+                                text = stringResource(id = R.string.start_exercise),
+                                onClick = {
+                                    showExercise.value = true
+                                    showExerciseEdit.value = false
+                                },
+                                modifier = Modifier.weight(1f),
+                                color = MaterialTheme.colorScheme.primary,
+                                icon = Icons.Default.AddCircle
                             )
                         }
                         Spacer(modifier = Modifier.height(spacing.spaceMedium))
                     }
-                    if(showDialog.value){
-                        WorkoutDialog(
-                            onDismiss = {
-                                showDialog.value = false
-                                showDialogEdit.value = false
-                            },
-                            onChooseWorkout = { workoutName, workoutIds ->
-                                if(showDialogEdit.value){
-                                    onNavigateToEditWorkout(
-                                        workoutName,
-                                        workoutIds
-                                    )
-                                } else {
-                                    onNavigateToStartWorkout(
-                                        workoutName,
-                                        state.date.dayOfMonth,
-                                        state.date.monthValue,
-                                        state.date.year,
-                                        workoutIds
-                                    )
-                                }
-                            },
-                            workoutNames = state.workoutNames,
-                            workoutTemplates = workoutTemplates
-                        )
-                    }
-                    if(showExercise.value){
-                        ExerciseDialog(
-                            filterText = state.exerciseFilterText,
-                            trackableExercises = state.trackableExercise,
-                            onDismiss = {
-                                showExercise.value = false
-                                showExerciseEdit.value = false
-                            },
-                            onChooseExercise = {
-                                if(showExerciseEdit.value){
-                                    onNavigateToEditExercise(
-                                        it.exercise.name!!,
-                                        it.exercise.description ?: "",
-                                        it.exercise.muscle_name_main,
-                                        it.exercise.muscle_name_secondary,
-                                        it.exercise.image_url.filterNotNull(),
-
-                                        )
-                                } else {
-                                    onNavigateToStartExercise(
-                                        it.exercise.name!!,
-                                        state.date.dayOfMonth,
-                                        state.date.monthValue,
-                                        state.date.year,
-                                    )
-                                }
-                            },
-                            onFilterTextChange = {
-                                viewModel.onEvent(WorkoutLoggerOverviewEvent.OnExerciseSearch(it))
-                            },
-                            onItemClick = {
-                                viewModel.onEvent(WorkoutLoggerOverviewEvent.OnExerciseItemClick(it))
-                            },
-                            onDescrClick = {
-                                viewModel.onEvent(WorkoutLoggerOverviewEvent.OnExerciseDescrClick(it))
-                            }
-                        )
-                    }
-                    if(showOptionsHeaderDialog.value){
-                        when(optionsHeaderType.value) {
-                            "workout" -> {
-                                OptionsHeaderDialog(
-                                    onDismiss = { showOptionsHeaderDialog.value = false },
-                                    onClickCreate = {
-                                        onNavigateToCreateWorkout()
-                                    },
-                                    onClickEdit = {
-                                        showDialog.value = true
-                                        showDialogEdit.value = true
-                                    },
-                                    title = R.string.workout_routine,
-                                    text1 = stringResource(id = R.string.create_routine),
-                                    text2 = stringResource(id = R.string.edit_routine)
-                                )
-                            }
-                            "exercise" -> {
-                                OptionsHeaderDialog(
-                                    onDismiss = { showOptionsHeaderDialog.value = false },
-                                    onClickCreate = {
-                                        onNavigateToCreateExercise()
-                                    },
-                                    onClickEdit = {
-                                        showExercise.value = true
-                                        showExerciseEdit.value = true
-                                    },
-                                    title = R.string.exercise,
-                                    text1 = stringResource(id = R.string.create_exercise),
-                                    text2 = stringResource(id = R.string.edit_exercise)
-                                )
-                            }
-                        }
-                    }
-                }
-                item{
-                    Spacer(modifier = Modifier.height(spacing.spaceMedium))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        AddButton(
-                            text = stringResource(id = R.string.start_routine),
+                    items(viewModel.imageUrls.keys.size){// index, completedWorkout -> //items(state.completedWorkouts){ completedWorkout ->
+                        CompletedWorkoutItem(
+                            workout = viewModel.completedWorkouts[it],
+                            imageUrl = viewModel.imageUrls[viewModel.completedWorkouts[it].exerciseName],
+                            isExpanded = state.completedWorkoutIsExpanded.getOrNull(it) ?: false,
+                            modifier = Modifier,
                             onClick = {
-                                viewModel.onEvent(WorkoutLoggerOverviewEvent.OnStartWorkoutClick)
-                                showDialog.value = true
+                                viewModel.onEvent(WorkoutLoggerOverviewEvent.OnCompletedWorkoutClick(it))
                             },
-                            modifier = Modifier.weight(1f),
-                            color = MaterialTheme.colorScheme.primary,
-                            icon = Icons.Default.AddCircle
-                        )
-                        Spacer(modifier = Modifier.width(spacing.spaceExtraSmall))
-                        AddButton(
-                            text = stringResource(id = R.string.start_exercise),
-                            onClick = {
-                                showExercise.value = true
-                                showExerciseEdit.value = false
-                            },
-                            modifier = Modifier.weight(1f),
-                            color = MaterialTheme.colorScheme.primary,
-                            icon = Icons.Default.AddCircle
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(spacing.spaceMedium))
-                }
-                items(viewModel.imageUrls.keys.size){// index, completedWorkout -> //items(state.completedWorkouts){ completedWorkout ->
-                    CompletedWorkoutItem(
-                        workout = viewModel.completedWorkouts[it],
-                        imageUrl = viewModel.imageUrls[viewModel.completedWorkouts[it].exerciseName],
-                        isExpanded = state.completedWorkoutIsExpanded.getOrNull(it) ?: false,
-                        modifier = Modifier,
-                        onClick = {
-                            viewModel.onEvent(WorkoutLoggerOverviewEvent.OnCompletedWorkoutClick(it))
-                        },
-                        content = {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = spacing.spaceSmall)
-                            ) {
-                                Row(
+                            content = {
+                                Column(
                                     modifier = Modifier
-                                        .fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                                        .fillMaxWidth()
+                                        .padding(horizontal = spacing.spaceSmall)
                                 ) {
-                                    Text(
-                                        text= stringResource(id = R.string.sets),
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                    Text(
-                                        text= stringResource(id = R.string.weight),
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                    Text(
-                                        text= stringResource(id = R.string.reps),
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                    Text(
-                                        text= stringResource(id = R.string.completed_question),
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text= stringResource(id = R.string.sets),
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                        Text(
+                                            text= stringResource(id = R.string.weight),
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                        Text(
+                                            text= stringResource(id = R.string.reps),
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                        Text(
+                                            text= stringResource(id = R.string.completed_question),
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                    }
+                                    val weight = viewModel.completedWorkouts[it].weight
+                                    val reps = viewModel.completedWorkouts[it].reps
+                                    val isCompleted = viewModel.completedWorkouts[it].isCompleted
+                                    for(i in 1..viewModel.completedWorkouts[it].sets){
+                                        ExerciseRow(
+                                            set = i,
+                                            reps = reps[i-1].toInt(),
+                                            weight = weight[i-1].toInt(),
+                                            completed = isCompleted[i-1].toBoolean()
+                                        )
+                                        if(i != viewModel.completedWorkouts[it].sets) Divider(color = MaterialTheme.colorScheme.secondary, thickness = 1.dp)
+                                    }
+                                    Spacer(modifier = Modifier.height(spacing.spaceExtraSmall))
                                 }
-                                val weight = viewModel.completedWorkouts[it].weight
-                                val reps = viewModel.completedWorkouts[it].reps
-                                val isCompleted = viewModel.completedWorkouts[it].isCompleted
-                                for(i in 1..viewModel.completedWorkouts[it].sets){
-                                    ExerciseRow(
-                                        set = i,
-                                        reps = reps[i-1].toInt(),
-                                        weight = weight[i-1].toInt(),
-                                        completed = isCompleted[i-1].toBoolean()
-                                    )
-                                    if(i != viewModel.completedWorkouts[it].sets) Divider(color = MaterialTheme.colorScheme.secondary, thickness = 1.dp)
-                                }
-                                Spacer(modifier = Modifier.height(spacing.spaceExtraSmall))
-                            }
-                        },
+                            },
 //                color = MaterialTheme.colors.primaryVariant
-                    )
-                    Spacer(modifier = Modifier.height(spacing.spaceMedium))
+                        )
+                        Spacer(modifier = Modifier.height(spacing.spaceMedium))
+                    }
                 }
             }
-        }
-    )
+        )
+    }
 
 }

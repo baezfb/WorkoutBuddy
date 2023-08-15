@@ -21,6 +21,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -53,6 +55,18 @@ class WorkoutLoggerOverviewModel @Inject constructor(
     val workoutTemplates = storageService.workouts
     val trackedExercises = storageService.exercises
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
+
+    fun swipeRefreshWorkouts() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            imageUrls.clear()
+            refreshWorkouts()
+            delay(2000L)
+            _isLoading.value = false
+        }
+    }
     init {
         refreshWorkouts()
         refreshExercises()
