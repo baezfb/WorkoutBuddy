@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
@@ -46,6 +47,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.annotation.ExperimentalCoilApi
+import com.example.workout_logger_presentation.components.AddButton
 import com.example.workout_logger_presentation.components.DaySelector
 import com.example.workout_logger_presentation.components.IconButton
 import com.example.workout_logger_presentation.components.OptionsHeader
@@ -112,23 +114,6 @@ fun WorkoutLoggerOverviewScreen(
                             modifier = Modifier.padding(bottom = spacing.spaceLarge, end = spacing.spaceSmall),
                             onClick = {
                                 showOptionsHeaderDialog.value = true
-                                optionsHeaderType.value = "workout"
-                                isFloatingButtonExpanded.value = !isFloatingButtonExpanded.value
-                            },
-                            shape = CircleShape,
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-                        ) {
-                            Row(Modifier.padding(spacing.spaceMedium)) {
-                                Icon(imageVector = Icons.Filled.Edit, contentDescription = "floatingActionButton Icon")
-                                Spacer(modifier = Modifier.width(spacing.spaceMedium))
-                                Text(text = stringResource(id = R.string.workout_routine))
-                            }
-                        }
-                        FloatingActionButton(
-                            modifier = Modifier.padding(bottom = spacing.spaceLarge, end = spacing.spaceSmall),
-                            onClick = {
-                                showOptionsHeaderDialog.value = true
                                 optionsHeaderType.value = "exercise"
                                 isFloatingButtonExpanded.value = !isFloatingButtonExpanded.value
                             },
@@ -139,41 +124,24 @@ fun WorkoutLoggerOverviewScreen(
                             Row(Modifier.padding(spacing.spaceMedium)) {
                                 Icon(imageVector = Icons.Filled.Edit, contentDescription = "floatingActionButton Icon")
                                 Spacer(modifier = Modifier.width(spacing.spaceMedium))
-                                Text(text = stringResource(id = R.string.exercise))
+                                Text(text = stringResource(id = R.string.exercise_template))
                             }
                         }
                         FloatingActionButton(
                             modifier = Modifier.padding(bottom = spacing.spaceLarge, end = spacing.spaceSmall),
                             onClick = {
-                                viewModel.onEvent(WorkoutLoggerOverviewEvent.OnStartWorkoutClick)
-                                showDialog.value = true
+                                showOptionsHeaderDialog.value = true
+                                optionsHeaderType.value = "workout"
                                 isFloatingButtonExpanded.value = !isFloatingButtonExpanded.value
-                                      },
+                            },
                             shape = CircleShape,
                             containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                             contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                         ) {
                             Row(Modifier.padding(spacing.spaceMedium)) {
-                                Icon(imageVector = Icons.Filled.Add, contentDescription = "floatingActionButton Icon")
+                                Icon(imageVector = Icons.Filled.Edit, contentDescription = "floatingActionButton Icon")
                                 Spacer(modifier = Modifier.width(spacing.spaceMedium))
-                                Text(text = stringResource(id = R.string.start_routine))
-                            }
-                        }
-                        FloatingActionButton(
-                            modifier = Modifier.padding(bottom = spacing.spaceLarge, end = spacing.spaceSmall),
-                            onClick = {
-                                showExercise.value = true
-                                showExerciseEdit.value = false
-                                isFloatingButtonExpanded.value = !isFloatingButtonExpanded.value
-                                      },
-                            shape = CircleShape,
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-                        ) {
-                            Row(Modifier.padding(spacing.spaceMedium)) {
-                                Icon(imageVector = Icons.Filled.Add, contentDescription = "floatingActionButton Icon")
-                                Spacer(modifier = Modifier.width(spacing.spaceMedium))
-                                Text(text = stringResource(id = R.string.start_exercise))
+                                Text(text = stringResource(id = R.string.routine_template))
                             }
                         }
                         FloatingActionButton(
@@ -416,14 +384,41 @@ fun WorkoutLoggerOverviewScreen(
                         }
                     }
                 }
-                item {
+                item{
+                    Spacer(modifier = Modifier.height(spacing.spaceMedium))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        AddButton(
+                            text = stringResource(id = R.string.start_routine),
+                            onClick = {
+                                viewModel.onEvent(WorkoutLoggerOverviewEvent.OnStartWorkoutClick)
+                                showDialog.value = true
+                            },
+                            modifier = Modifier.weight(1f),
+                            color = MaterialTheme.colorScheme.primary,
+                            icon = Icons.Default.AddCircle
+                        )
+                        Spacer(modifier = Modifier.width(spacing.spaceExtraSmall))
+                        AddButton(
+                            text = stringResource(id = R.string.start_exercise),
+                            onClick = {
+                                showExercise.value = true
+                                showExerciseEdit.value = false
+                            },
+                            modifier = Modifier.weight(1f),
+                            color = MaterialTheme.colorScheme.primary,
+                            icon = Icons.Default.AddCircle
+                        )
+                    }
                     Spacer(modifier = Modifier.height(spacing.spaceMedium))
                 }
                 items(viewModel.imageUrls.keys.size){// index, completedWorkout -> //items(state.completedWorkouts){ completedWorkout ->
                     CompletedWorkoutItem(
                         workout = viewModel.completedWorkouts[it],
                         imageUrl = viewModel.imageUrls[viewModel.completedWorkouts[it].exerciseName],
-                        isExpanded = state.completedWorkoutIsExpanded[it],
+                        isExpanded = state.completedWorkoutIsExpanded.getOrNull(it) ?: false,
                         modifier = Modifier,
                         onClick = {
                             viewModel.onEvent(WorkoutLoggerOverviewEvent.OnCompletedWorkoutClick(it))
