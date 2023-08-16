@@ -450,6 +450,7 @@ class CreateWorkoutViewModel @Inject constructor(
     }
     private fun updateWorkout(event: CreateWorkoutEvent.OnUpdateWorkout){
         viewModelScope.launch {
+            var position = 0
             event.trackableExercise.forEach {
                 if(!it.isDeleted){
                     if(it.docId.isEmpty()){
@@ -464,7 +465,7 @@ class CreateWorkoutViewModel @Inject constructor(
                                 reps = it.reps,
                                 weight = it.weight,
                                 rowId = it.id,
-                                position = it.position,
+                                position = position,
                                 lastUsedId = state.lastUsedId,
                                 lastUsedDate = it.lastUsedDate
                             )
@@ -481,12 +482,13 @@ class CreateWorkoutViewModel @Inject constructor(
                                 reps = it.reps,
                                 weight = it.weight,
                                 rowId = it.id,
-                                position = it.id,
+                                position = position,
                                 lastUsedId = state.lastUsedId,
                                 lastUsedDate = it.lastUsedDate
                             )
                         )
                     }
+                    position+=1
                 } else if (it.docId.isNotEmpty()) {
                     storageService.deleteWorkoutTemplate(
                         WorkoutTemplate(
@@ -499,7 +501,7 @@ class CreateWorkoutViewModel @Inject constructor(
                             reps = it.reps,
                             weight = it.weight,
                             rowId = it.id,
-                            position = it.id,
+                            position = it.position,
                             lastUsedId = state.lastUsedId,
                             lastUsedDate = it.lastUsedDate
                         )
