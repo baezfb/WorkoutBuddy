@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -273,7 +274,7 @@ fun WorkoutLoggerOverviewScreen(
                         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                         contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                     ) {
-                        Icon(imageVector = Icons.Filled.Add, contentDescription = "floatingActionButton Icon")
+                        Icon(imageVector = Icons.Filled.Build, contentDescription = "floatingActionButton Icon")
                     }
                 }
 

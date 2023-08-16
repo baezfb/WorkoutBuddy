@@ -101,7 +101,7 @@ fun ExerciseCard(
             Card(
                 shape = RoundedCornerShape(8.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = if(isLongPressed && trackableExercises != null) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.background
+                    containerColor = if(isLongPressed && trackableExercises != null) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.background
                 ),
                 modifier = Modifier
                     .clip(
@@ -197,12 +197,12 @@ fun ExerciseCard(
                             Text(
                                 text = stringResource(id = R.string.delete).uppercase(),
                                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                                color = MaterialTheme.colorScheme.onSecondary
+                                color = MaterialTheme.colorScheme.onErrorContainer
                             )
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Delete",
-                                tint = MaterialTheme.colorScheme.onSecondary
+                                tint = MaterialTheme.colorScheme.onErrorContainer
                             )
                         }
                     }
