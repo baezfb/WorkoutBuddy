@@ -3,6 +3,7 @@ package com.example.workout_logger_presentation.workout_logger_overview
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -43,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -73,6 +77,8 @@ import com.himanshoe.kalendar.KalendarType
 import com.himanshoe.kalendar.color.KalendarColor
 import com.himanshoe.kalendar.color.KalendarColors
 import com.himanshoe.kalendar.ui.component.day.KalendarDayKonfig
+import com.himanshoe.kalendar.ui.component.header.KalendarTextKonfig
+import com.himanshoe.kalendar.ui.firey.DaySelectionMode
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 
@@ -301,7 +307,7 @@ fun WorkoutLoggerOverviewScreen(
                                 .padding(spacing.spaceSmall)
                         ) {
                             Kalendar(
-                                modifier = if(isCalendarExpanded.value) Modifier.height(360.dp) else Modifier,
+                                modifier = if(isCalendarExpanded.value) Modifier.height(450.dp) else Modifier,
                                 showLabel = isCalendarExpanded.value,
                                 currentDay = if(isCalendarExpanded.value) {
                                     LocalDate(state.date.year, state.date.monthValue, state.date.dayOfMonth)
@@ -315,7 +321,7 @@ fun WorkoutLoggerOverviewScreen(
                                 ),
                                 kalendarColors = KalendarColors(List(12) {KalendarColor(
                                     backgroundColor = MaterialTheme.colorScheme.primary,
-                                    dayBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                                    dayBackgroundColor = MaterialTheme.colorScheme.primary,
                                     headerTextColor = MaterialTheme.colorScheme.onPrimary
                                 )}),
                                 dayContent = {
@@ -331,7 +337,7 @@ fun WorkoutLoggerOverviewScreen(
                                                 .fillMaxSize()
                                                 .clip(RoundedCornerShape(4.dp))
                                                 .background(
-                                                    if (isDateSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.tertiaryContainer,
+                                                    if (isDateSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primary,
                                                     RoundedCornerShape(4.dp)
                                                 )
                                                 .padding(spacing.spaceSmall)
@@ -350,20 +356,20 @@ fun WorkoutLoggerOverviewScreen(
                                                 Text(
                                                     text = it.dayOfWeek.name.take(3), // First 3 characters of the day name
                                                     style = MaterialTheme.typography.labelMedium,
-                                                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                                                    color = if(isDateSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onPrimary
                                                 )
                                                 Spacer(modifier = Modifier.height(4.dp))
                                             }
                                             Text(
                                                 text = String.format("%02d", it.dayOfMonth),
                                                 style = if(isCalendarExpanded.value) MaterialTheme.typography.displaySmall else MaterialTheme.typography.displayLarge,
-                                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                                                color = if(isDateSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onPrimary
                                             )
                                             Box(
                                                 modifier = Modifier
                                                     .size(spacing.spaceSmall)
                                                     .background(
-                                                        if (it.toString() in calendarEvents.value.calendarDates) MaterialTheme.colorScheme.primary else if (isDateSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.primaryContainer,
+                                                        if (it.toString() in calendarEvents.value.calendarDates) MaterialTheme.colorScheme.inversePrimary else if (isDateSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primary,
                                                         CircleShape
                                                     )
                                             )
