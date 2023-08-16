@@ -19,6 +19,7 @@ import com.hbaez.core.domain.preferences.Preferences
 import com.hbaez.core.util.UiEvent
 import com.hbaez.core.util.UiText
 import com.hbaez.user_auth_presentation.AuthViewModel
+import com.hbaez.user_auth_presentation.model.CalendarDates
 import com.hbaez.user_auth_presentation.model.CompletedWorkout
 import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 import com.hbaez.user_auth_presentation.model.service.LogService
@@ -293,6 +294,7 @@ class StartWorkoutViewModel @Inject constructor(
                         }
                         if(repsList.isNotEmpty() && weightList.isNotEmpty()){
                             trackCompletedWorkout(it, repsList, weightList, isCompletedList.toList(), event.dayOfMonth, event.month, event.year)
+                            trackCalendarDate(event.year, event.month, event.dayOfMonth)
                         }
                         counter++
                     }
@@ -427,6 +429,14 @@ class StartWorkoutViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
+
+    private fun trackCalendarDate(year: Int, month: Int, dayOfMonth: Int){
+        viewModelScope.launch {
+            storageService.saveCalendarDate(
+                CalendarDates(storageService.calendarDates.first().calendarDates + LocalDate.of(year, month, dayOfMonth).toString())
+            )
         }
     }
 

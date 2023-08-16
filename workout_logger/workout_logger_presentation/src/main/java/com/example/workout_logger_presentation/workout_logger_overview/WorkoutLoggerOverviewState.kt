@@ -13,6 +13,5 @@ data class WorkoutLoggerOverviewState(
     val completedWorkouts: List<CompletedWorkout> = listOf(),
     val completedWorkoutIsExpanded: List<Boolean> = mutableListOf(),
     val exerciseFilterText: String = "",
-    val trackableExercise: List<TrackableExerciseState> = emptyList(),
-    val kalendarEvents: KalendarEvents = KalendarEvents()
+    val trackableExercise: List<TrackableExerciseState> = emptyList()
 )

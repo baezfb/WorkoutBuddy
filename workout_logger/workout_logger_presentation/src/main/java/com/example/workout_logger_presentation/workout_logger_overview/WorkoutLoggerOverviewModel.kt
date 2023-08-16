@@ -54,6 +54,7 @@ class WorkoutLoggerOverviewModel @Inject constructor(
 
     val workoutTemplates = storageService.workouts
     val trackedExercises = storageService.exercises
+    val calendarEvents = storageService.calendarDates
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
@@ -71,11 +72,6 @@ class WorkoutLoggerOverviewModel @Inject constructor(
         refreshWorkouts()
         refreshExercises()
         executeSearch()
-        refreshKalendarEvents(
-            beginning = LocalDate.of(state.date.year, state.date.month, state.date.dayOfMonth)
-                .minusDays(if(state.date.dayOfMonth > 7) state.date.dayOfMonth.toLong() else 7),
-            end = LocalDate.of(state.date.year, state.date.month, state.date.dayOfMonth).plusDays(31)
-        )
     }
     fun onEvent(event: WorkoutLoggerOverviewEvent) {
         when(event) {
@@ -148,31 +144,6 @@ class WorkoutLoggerOverviewModel @Inject constructor(
                 )
                 imageUrls.clear()
                 refreshWorkouts()
-                refreshKalendarEvents(
-                    beginning = state.date
-                        .minusDays(if(event.dayOfMonth > 7) event.dayOfMonth.toLong() else 7),
-                    end = LocalDate.of(event.year, event.month, event.dayOfMonth).plusDays((31 - event.dayOfMonth).toLong())
-                )
-            }
-        }
-    }
-
-    private fun refreshKalendarEvents(beginning: LocalDate, end: LocalDate){
-        viewModelScope.launch {
-            val dateList = storageService.getCalendarEvents(begDate = beginning, endDate = end)
-            dateList.forEach { date ->
-                if(!state.kalendarEvents.events.any { event ->
-                        event.date.toString() == date.toString()
-                    }){
-                    state = state.copy(
-                        kalendarEvents = state.kalendarEvents.copy(
-                            events = (state.kalendarEvents.events.toMutableList() + KalendarEvent(
-                                date = kotlinx.datetime.LocalDate(date.year, date.monthValue, date.dayOfMonth),
-                                eventName = date.toString()
-                            )).toList()
-                        )
-                    )
-                }
             }
         }
     }

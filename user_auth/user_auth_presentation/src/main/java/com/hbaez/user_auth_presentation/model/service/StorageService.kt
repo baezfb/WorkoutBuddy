@@ -1,6 +1,7 @@
 package com.hbaez.user_auth_presentation.model.service
 
 import com.hbaez.core.domain.model.UserInfo
+import com.hbaez.user_auth_presentation.model.CalendarDates
 import com.hbaez.user_auth_presentation.model.CompletedWorkout
 import com.hbaez.user_auth_presentation.model.ExerciseTemplate
 import com.hbaez.user_auth_presentation.model.Task
@@ -13,10 +14,10 @@ interface StorageService {
     val tasks: Flow<List<Task>>
     val workouts: Flow<List<WorkoutTemplate>>
     val exercises: Flow<List<ExerciseTemplate>>
+    val calendarDates: Flow<CalendarDates>
 
     suspend fun getTask(taskId: String): Task?
     suspend fun getCompletedWorkoutByDate(date: String): List<CompletedWorkout>
-    suspend fun getCalendarEvents(begDate: LocalDate, endDate: LocalDate): List<LocalDate>
     suspend fun saveUserInfo(userInfo: UserInfo): String
     suspend fun getUserInfo(): UserInfo?
     suspend fun saveWorkoutTemplate(workoutTemplate: WorkoutTemplate): String
@@ -25,6 +26,7 @@ interface StorageService {
     suspend fun saveCompletedWorkout(completedWorkout: CompletedWorkout, date: String): String
     suspend fun saveExerciseTemplate(exerciseTemplate: ExerciseTemplate): String
     suspend fun updateExerciseTemplate(exerciseTemplate: ExerciseTemplate): String
+    suspend fun saveCalendarDate(calendarDates: CalendarDates)
     suspend fun save(task: Task): String
     suspend fun update(task: Task)
     suspend fun delete(taskId: String)

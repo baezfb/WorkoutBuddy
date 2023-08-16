@@ -65,6 +65,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
 import com.hbaez.user_auth_presentation.components.FlatButton
+import com.hbaez.user_auth_presentation.model.CalendarDates
 import com.himanshoe.kalendar.Kalendar
 import com.himanshoe.kalendar.KalendarEvent
 import com.himanshoe.kalendar.KalendarEvents
@@ -90,6 +91,7 @@ fun WorkoutLoggerOverviewScreen(
     val spacing = LocalSpacing.current
     val state = viewModel.state
     val workoutTemplates = viewModel.workoutTemplates.collectAsStateWithLifecycle(emptyList())
+    val calendarEvents = viewModel.calendarEvents.collectAsStateWithLifecycle(initialValue = CalendarDates(emptyList()))
     val context = LocalContext.current
     val showDialog = remember { mutableStateOf(false) }
     val showDialogEdit = remember { mutableStateOf(false) }
@@ -306,7 +308,11 @@ fun WorkoutLoggerOverviewScreen(
                                 } else {
                                     LocalDate(state.date.minusDays(6).year, state.date.minusDays(6).monthValue, state.date.minusDays(6).dayOfMonth)
                                 },
-                                events = state.kalendarEvents,
+                                events = KalendarEvents(
+                                    calendarEvents.value.calendarDates.map { date ->
+                                        KalendarEvent(date = LocalDate.parse(date), eventName = date)
+                                    }
+                                ),
                                 kalendarColors = KalendarColors(List(12) {KalendarColor(
                                     backgroundColor = MaterialTheme.colorScheme.primary,
                                     dayBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
@@ -353,14 +359,11 @@ fun WorkoutLoggerOverviewScreen(
                                                 style = if(isCalendarExpanded.value) MaterialTheme.typography.displaySmall else MaterialTheme.typography.displayLarge,
                                                 color = MaterialTheme.colorScheme.onSecondaryContainer
                                             )
-                                            val isDateInEvents = state.kalendarEvents.events.any { event ->
-                                                event.date == it
-                                            }
                                             Box(
                                                 modifier = Modifier
                                                     .size(spacing.spaceSmall)
                                                     .background(
-                                                        if (isDateInEvents) MaterialTheme.colorScheme.primary else if (isDateSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.primaryContainer,
+                                                        if (it.toString() in calendarEvents.value.calendarDates) MaterialTheme.colorScheme.primary else if (isDateSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.primaryContainer,
                                                         CircleShape
                                                     )
                                             )
@@ -373,7 +376,9 @@ fun WorkoutLoggerOverviewScreen(
                             Row(
                                 modifier = Modifier
                                     .background(Color.Transparent)
-                                    .clickable { isCalendarExpanded.value = !isCalendarExpanded.value }
+                                    .clickable {
+                                        isCalendarExpanded.value = !isCalendarExpanded.value
+                                    }
                                     .padding(spacing.spaceSmall)
                                     .fillMaxWidth(1f),
                                 horizontalArrangement = Arrangement.Center,

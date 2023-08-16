@@ -14,6 +14,7 @@ import com.hbaez.core.domain.model.ActivityLevel
 import com.hbaez.core.domain.model.Gender
 import com.hbaez.core.domain.model.GoalType
 import com.hbaez.core.domain.model.UserInfo
+import com.hbaez.user_auth_presentation.model.CalendarDates
 import com.hbaez.user_auth_presentation.model.CompletedWorkout
 import com.hbaez.user_auth_presentation.model.ExerciseTemplate
 import com.hbaez.user_auth_presentation.model.WorkoutTemplate
@@ -22,6 +23,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.asDeferred
@@ -64,6 +66,22 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                     }
             }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override val calendarDates: Flow<CalendarDates>
+        get() =
+            auth.currentUser.flatMapLatest { user ->
+                calendarDateCollection(user.id).document(auth.currentUserId).snapshots().map { snapshot ->
+                    if(snapshot.exists()){
+                        CalendarDates(
+                            calendarDates = (snapshot.get("calendarDates") as List<*>).filterIsInstance<String>()
+                        )
+                    } else {
+                        CalendarDates(calendarDates = emptyList())
+                    }
+                }
+            }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     override val exercises: Flow<List<ExerciseTemplate>>
         get() = auth.currentUser.flatMapLatest { user ->
             exerciseTemplateCollection(user.id)
@@ -116,20 +134,6 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         return completedWorkouts
     }
 
-    override suspend fun getCalendarEvents(
-        begDate: LocalDate,
-        endDate: LocalDate
-    ): List<LocalDate> {
-        val dateList = mutableListOf<LocalDate>()
-        var currentDate = begDate
-        while(currentDate <= endDate) {
-            currentDate = currentDate.plusDays(1)
-            if(completedWorkoutCollection(auth.currentUserId, currentDate.toString()).get().await().documents.size > 0){
-                dateList.add(currentDate)
-            }
-        }
-        return dateList
-    }
     override suspend fun saveUserInfo(userInfo: UserInfo): String =
         trace(SAVE_USER_INFO_TRACE) {
             if(userInfo.id == ""){
@@ -241,6 +245,13 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             return exerciseTemplate.id
         }
 
+    override suspend fun saveCalendarDate(calendarDates: CalendarDates) {
+        trace(SAVE_CALENDAR_DATE) {
+            val documentRef = calendarDateCollection(auth.currentUserId).document(auth.currentUserId)
+            documentRef.set(calendarDates, SetOptions.merge())
+        }
+    }
+
     override suspend fun save(task: Task): String =
         trace(SAVE_TASK_TRACE) { userInfoCollection(auth.currentUserId).add(task).await().id }
 
@@ -272,6 +283,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     private fun exerciseTemplateCollection(uid: String): CollectionReference =
         firestore.collection(USER_COLLECTION).document(uid).collection(EXERCISE_TEMPLATE)
 
+    private fun calendarDateCollection(uid: String): CollectionReference =
+        firestore.collection(USER_COLLECTION).document(uid).collection(CALENDAR_DATES)
+
     companion object {
         private const val USER_COLLECTION = "users"
         private const val TASK_COLLECTION = "tasks"
@@ -282,9 +296,11 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         private const val SAVE_COMPLETED_WORKOUT = "saveCompletedWorkout"
         private const val SAVE_EXERCISE_TEMPLATE = "saveExerciseTemplate"
         private const val DELETE_WORKOUT_TEMPLATE = "deleteWorkoutTemplate"
+        private const val SAVE_CALENDAR_DATE = "saveCalendarDate"
         private const val UPDATE_TASK_TRACE = "updateTask"
         private const val WORKOUT_TEMPLATE = "workouts"
         private const val COMPLETED_WORKOUT = "completed_workouts"
         private const val EXERCISE_TEMPLATE = "exercises"
+        private const val CALENDAR_DATES = "calendarDates"
     }
 }
