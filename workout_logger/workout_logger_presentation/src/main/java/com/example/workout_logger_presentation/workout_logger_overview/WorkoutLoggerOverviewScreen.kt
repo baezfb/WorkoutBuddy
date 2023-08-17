@@ -335,7 +335,7 @@ fun WorkoutLoggerOverviewScreen(
                                         Column(
                                             modifier = Modifier
                                                 .fillMaxSize()
-                                                .clip(RoundedCornerShape(4.dp))
+                                                .clip(RoundedCornerShape(16.dp))
                                                 .background(
                                                     if (isDateSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primary,
                                                     RoundedCornerShape(4.dp)
@@ -396,16 +396,42 @@ fun WorkoutLoggerOverviewScreen(
                                     contentDescription = "Calendar Expand Button"
                                 )
                             }
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = parseDateText(date = state.date),
-                                    style = MaterialTheme.typography.displayMedium,
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                )
+                            Box(modifier = Modifier.fillMaxWidth()){
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = parseDateText(date = state.date),
+                                        style = MaterialTheme.typography.displayMedium,
+                                        color = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                }
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(end=spacing.spaceMedium),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.End
+                                ) {
+                                    Text(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(25f))
+                                            .border(
+                                                width = 2.dp,
+                                                color = MaterialTheme.colorScheme.onPrimary,
+                                                shape = RoundedCornerShape(25f)
+                                            )
+                                            .padding(spacing.spaceSmall)
+                                            .clickable {
+                                                viewModel.onEvent(WorkoutLoggerOverviewEvent.OnDateClick(java.time.LocalDate.now().year, java.time.LocalDate.now().dayOfMonth, java.time.LocalDate.now().monthValue))
+                                            },
+                                        text = String.format("%02d", java.time.LocalDate.now().dayOfMonth),
+                                        style = MaterialTheme.typography.displaySmall,
+                                        color = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                    }
                             }
                             Spacer(modifier = Modifier.height(spacing.spaceMedium))
                         }
