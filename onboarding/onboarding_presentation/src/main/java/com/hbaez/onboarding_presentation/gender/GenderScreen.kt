@@ -37,6 +37,7 @@ import com.hbaez.core.domain.model.Gender
 import com.hbaez.onboarding_presentation.components.ActionButton
 import com.hbaez.onboarding_presentation.components.SelectableButton
 import kotlinx.coroutines.flow.collect
+import java.util.Locale
 
 @Composable
 fun GenderScreen(
@@ -69,7 +70,11 @@ fun GenderScreen(
             )
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
             Text(
-                text = viewModel.selectedGender.name.capitalize(),
+                text = viewModel.selectedGender.name.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.getDefault()
+                    ) else it.toString()
+                },
                 style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.secondary
             )
