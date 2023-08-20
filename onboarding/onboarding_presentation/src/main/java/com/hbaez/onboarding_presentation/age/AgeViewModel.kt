@@ -14,6 +14,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.ZoneId
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,28 +24,33 @@ class AgeViewModel @Inject constructor(
     private val filterOutDigits: FilterOutDigits
 ): ViewModel() {
 
-    var age by mutableStateOf("20")
+    var age by mutableStateOf(LocalDate.parse(LocalDate.now().toString()).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli())
         private set
 
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    fun onAgeEnter(age: String) {
-        if(age.length <= 3) {
-            this.age = filterOutDigits(age)
+    init {
+        if(preferences.loadUserInfo().age != -1L){
+            age = preferences.loadUserInfo().age
         }
+    }
+
+    fun onAgeEnter(age: Long) {
+        this.age = age + 86400000 // add 1 day. Not sure why
     }
 
     fun onNextClick() {
         viewModelScope.launch {
-            val ageNumber = age.toIntOrNull() ?: kotlin.run {
-                _uiEvent.send(
-                    UiEvent.ShowSnackbar(
-                        UiText.StringResource(R.string.error_age_cant_be_empty)
-                    )
-                )
-                return@launch
-            }
+            val ageNumber = age
+//                ?: kotlin.run {
+//                _uiEvent.send(
+//                    UiEvent.ShowSnackbar(
+//                        UiText.StringResource(R.string.error_age_cant_be_empty)
+//                    )
+//                )
+//                return@launch
+//            }
             preferences.saveAge(ageNumber)
             _uiEvent.send(UiEvent.Success)
         }

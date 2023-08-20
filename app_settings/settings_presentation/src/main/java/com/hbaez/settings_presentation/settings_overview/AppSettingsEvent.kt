@@ -6,4 +6,6 @@ sealed class AppSettingsEvent{
     object OnSignOut: AppSettingsEvent()
     object OnDeleteButtonClick: AppSettingsEvent()
     object OnDeleteAccount: AppSettingsEvent()
+    object RefreshPreferences: AppSettingsEvent()
+    data class UpdateTimer(val time: Int, val isJump: Boolean): AppSettingsEvent()
 }

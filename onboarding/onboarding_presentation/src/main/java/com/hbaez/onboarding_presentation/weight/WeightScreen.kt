@@ -6,6 +6,11 @@ import android.graphics.Paint
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.SnackbarHostState
@@ -20,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.platform.LocalContext
@@ -98,11 +104,14 @@ fun WeightScreen(
             Scale(
                 style = ScaleStyle(
                     scaleWidth = 150.dp,
-                    scaleColor = ColorG.BLACK,
-                    fiveStepLineColor = Color.White,
-                    tenStepLineColor = MaterialTheme.colorScheme.primary,
-                    textColor = ColorG.WHITE,
-                    scaleIndicatorColor = MaterialTheme.colorScheme.secondary
+                    initialWeight = viewModel.initWeight.toInt(),
+                    scaleColor = MaterialTheme.colorScheme.primaryContainer.toArgb(),
+                    normalLineColor = MaterialTheme.colorScheme.secondary,
+                    fiveStepLineColor = MaterialTheme.colorScheme.secondary,
+                    tenStepLineColor = MaterialTheme.colorScheme.tertiary,
+                    shadowColor = MaterialTheme.colorScheme.inversePrimary.toArgb(),
+                    textColor = MaterialTheme.colorScheme.onPrimaryContainer.toArgb(),
+                    scaleIndicatorColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -111,11 +120,16 @@ fun WeightScreen(
                 viewModel.onWeightChange(it.toString())
             }
         }
-        ActionButton(
-            text = stringResource(id = R.string.next),
+        Button(
             onClick = viewModel::onNextClick,
-            modifier = Modifier.align(Alignment.BottomEnd)
-        )
+            modifier = Modifier.align(Alignment.BottomEnd),
+            shape = RoundedCornerShape(100.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                contentDescription = "Next"
+            )
+        }
     }
 }
 
@@ -184,10 +198,10 @@ fun Scale(
                     color = style.scaleColor
                     setStyle(Paint.Style.STROKE)
                     setShadowLayer(
-                        60f,
+                        15f,
                         0f,
                         0f,
-                        ColorG.argb(50,250,0,0)
+                        style.shadowColor
                     )
                 }
             )

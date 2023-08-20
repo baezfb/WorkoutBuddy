@@ -524,6 +524,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
 
                         composable(Route.APP_SETTINGS) {
                             AppSettingsOverviewScreen(
+                                snackBarHost = snackbarHostState,
                                 onNavigateToSignUp = {
                                     navController.navigate(Route.USER_AUTH_SIGNUP)
                                 },

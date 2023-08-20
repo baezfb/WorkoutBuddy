@@ -151,14 +151,16 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         return UserInfo(
             id = doc.get("id").toString(),
             gender = Gender.fromString(doc.get("gender").toString()),
-            age = doc.get("age").toString().toInt(),
+            age = doc.get("age").toString().toLong(),
             weight = doc.get("weight").toString().toFloat(),
             height = doc.get("height").toString().toInt(),
             activityLevel = ActivityLevel.fromString(doc.get("activityLevel").toString()),
             goalType = GoalType.fromString(doc.get("goalType").toString()),
             carbRatio = doc.get("carbRatio").toString().toFloat(),
             proteinRatio = doc.get("proteinRatio").toString().toFloat(),
-            fatRatio = doc.get("fatRatio").toString().toFloat()
+            fatRatio = doc.get("fatRatio").toString().toFloat(),
+            timerJump = doc.get("timerJump").toString().toInt(),
+            timerSeconds = doc.get("timerSeconds").toString().toInt(),
         )
     }
 

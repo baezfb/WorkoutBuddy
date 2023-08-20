@@ -22,8 +22,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,22 +36,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.annotation.ExperimentalCoilApi
 import com.hbaez.core.R
+import com.hbaez.core.util.UiEvent
 import com.hbaez.core_ui.LocalSpacing
+import com.hbaez.onboarding_presentation.activity.ActivityScreen
+import com.hbaez.onboarding_presentation.age.AgeScreen
 import com.hbaez.onboarding_presentation.gender.GenderScreen
+import com.hbaez.onboarding_presentation.goal.GoalScreen
+import com.hbaez.onboarding_presentation.height.HeightScreen
+import com.hbaez.onboarding_presentation.nutrient_goal.NutrientGoalScreen
+import com.hbaez.onboarding_presentation.weight.WeightScreen
+import com.hbaez.settings_presentation.settings_overview.components.TimerBottomSheet
 import com.hbaez.user_auth_presentation.common.composable.DialogCancelButton
 import com.hbaez.user_auth_presentation.common.composable.DialogConfirmButton
 import com.hbaez.user_auth_presentation.components.BasicButton
+import java.time.Instant
+import java.time.ZoneId
+import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalCoilApi
 @Composable
 fun AppSettingsOverviewScreen(
+    snackBarHost: SnackbarHostState,
     onNavigateToSignUp: () -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToWelcome: () -> Unit,
@@ -60,14 +74,30 @@ fun AppSettingsOverviewScreen(
 ){
     val spacing = LocalSpacing.current
     val context = LocalContext.current
+    LaunchedEffect(key1 = true) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is UiEvent.Success -> {
+                    /*DO NOTHING*/
+                }
+                is UiEvent.ShowSnackbar -> {
+                    snackBarHost.showSnackbar(
+                        message = event.message.asString(context)
+                    )
+                }
+                else -> Unit
+            }
+        }
+    }
     val uiState = viewModel.uiState
     val state by viewModel.state.collectAsState(
         initial = AppSettingsState(false, "test")
     )
     val showBottomSheet = remember { mutableStateOf(false) }
+    val bottomSheetType = remember { mutableStateOf(BottomSheetType.GENDER) }
 
     if(showBottomSheet.value){
-        BottomSheet(showBottomSheet)
+        BottomSheet(showBottomSheet, bottomSheetType.value, snackBarHost, viewModel)
     }
     if (state.isAnonymous){
         Column(
@@ -164,52 +194,68 @@ fun AppSettingsOverviewScreen(
 
             SettingsButton(
                 text = R.string.gender,
-                value = "Male" /*TODO*/,
+                value = uiState.preferences.gender.name.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.getDefault()
+                    ) else it.toString()
+                },
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 showBottomSheet.value = !showBottomSheet.value
+                bottomSheetType.value = BottomSheetType.GENDER
             }
             SettingsButton(
                 text = R.string.dob,
-                value = "03/24/2000" /*TODO*/,
+                value = Instant.ofEpochMilli(uiState.preferences.age).atZone(ZoneId.systemDefault()).toLocalDate().toString(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
+                showBottomSheet.value = !showBottomSheet.value
+                bottomSheetType.value = BottomSheetType.DOB
             }
             SettingsButton(
                 text = R.string.height,
-                value = "5 ft 9 in" /*TODO*/,
+                value = "${uiState.preferences.height / 12} ft ${uiState.preferences.height % 12} in",
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
+                showBottomSheet.value = !showBottomSheet.value
+                bottomSheetType.value = BottomSheetType.HEIGHT
             }
             SettingsButton(
                 text = R.string.weight,
-                value = "185 lbs" /*TODO*/,
+                value =  uiState.preferences.weight.toString() + " " + stringResource(id = R.string.lbs),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
+                showBottomSheet.value = !showBottomSheet.value
+                bottomSheetType.value = BottomSheetType.WEIGHT
             }
             SettingsButton(
                 text = R.string.activity_level,
-                value = "Low" /*TODO*/,
+                value = uiState.preferences.activityLevel.name.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.getDefault()
+                    ) else it.toString()
+                } /*TODO*/,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
+                showBottomSheet.value = !showBottomSheet.value
+                bottomSheetType.value = BottomSheetType.ACTIVITYLEVEL
             }
             SettingsButton(
                 text = R.string.body_goal,
-                value = "Lose" /*TODO*/,
+                value = uiState.preferences.goalType.name.replace("_", " ")
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } /*TODO*/,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
+                showBottomSheet.value = !showBottomSheet.value
+                bottomSheetType.value = BottomSheetType.BODYGOAL
             }
             SettingsButton(
                 text = R.string.nutrient_goal,
-                value = "40%, 30%, 30%" /*TODO*/,
+                value = "${(uiState.preferences.carbRatio*100).toInt()}%, ${(uiState.preferences.proteinRatio*100).toInt()}%, ${(uiState.preferences.fatRatio*100).toInt()}%" /*TODO*/,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
+                showBottomSheet.value = !showBottomSheet.value
+                bottomSheetType.value = BottomSheetType.NUTRIENTGOAL
             }
 
 
@@ -225,17 +271,19 @@ fun AppSettingsOverviewScreen(
             Divider(thickness = 2.dp, color = MaterialTheme.colorScheme.surfaceVariant)
             SettingsButton(
                 text = R.string.timer_jump,
-                value = "5 s" /*TODO*/,
+                value = "${uiState.preferences.timerJump} s",
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
+                showBottomSheet.value = !showBottomSheet.value
+                bottomSheetType.value = BottomSheetType.TIMERJUMP
             }
             SettingsButton(
                 text = R.string.default_timer_secs,
-                value = "60 s" /*TODO*/,
+                value = "${uiState.preferences.timerSeconds} s",
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
+                showBottomSheet.value = !showBottomSheet.value
+                bottomSheetType.value = BottomSheetType.TIMERSECONDS
             }
 
 
@@ -336,16 +384,88 @@ fun SettingsButton(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BottomSheet(showBottomSheet: MutableState<Boolean>){
+private fun BottomSheet(showBottomSheet: MutableState<Boolean>, bottomSheetType: BottomSheetType, snackBarHost: SnackbarHostState, viewModel: AppSettingsViewModel){
     ModalBottomSheet(
-        modifier = Modifier.fillMaxHeight(0.75f),
+        modifier = Modifier.fillMaxHeight(0.65f),
         onDismissRequest = {
             showBottomSheet.value = !showBottomSheet.value
         }) {
-        GenderScreen(onNextClick = {
-            /*TODO UPDATE USER PREFERENCES*/
-            showBottomSheet.value = !showBottomSheet.value
-        })
+        when(bottomSheetType){
+            BottomSheetType.GENDER -> {
+                GenderScreen(onNextClick = {
+                    showBottomSheet.value = !showBottomSheet.value
+                    viewModel.onEvent(AppSettingsEvent.RefreshPreferences)
+                })
+            }
+            BottomSheetType.DOB -> {
+                AgeScreen(
+                    snackBarHost = snackBarHost,
+                    onNextClick = {
+                        showBottomSheet.value = !showBottomSheet.value
+                        viewModel.onEvent(AppSettingsEvent.RefreshPreferences)
+                    }
+                )
+            }
+            BottomSheetType.HEIGHT -> {
+                HeightScreen(
+                    snackBarHost = snackBarHost,
+                    onNextClick = {
+                        showBottomSheet.value = !showBottomSheet.value
+                        viewModel.onEvent(AppSettingsEvent.RefreshPreferences)
+                    }
+                )
+            }
+            BottomSheetType.WEIGHT -> {
+                WeightScreen(
+                    snackBarHost = snackBarHost,
+                    onNextClick = {
+                        showBottomSheet.value = !showBottomSheet.value
+                        viewModel.onEvent(AppSettingsEvent.RefreshPreferences)
+                    }
+                )
+            }
+            BottomSheetType.ACTIVITYLEVEL -> {
+                ActivityScreen(onNextClick = {
+                    showBottomSheet.value = !showBottomSheet.value
+                    viewModel.onEvent(AppSettingsEvent.RefreshPreferences)
+                })
+            }
+            BottomSheetType.BODYGOAL -> {
+                GoalScreen(onNextClick = {
+                    showBottomSheet.value = !showBottomSheet.value
+                    viewModel.onEvent(AppSettingsEvent.RefreshPreferences)
+                })
+            }
+            BottomSheetType.NUTRIENTGOAL -> {
+                NutrientGoalScreen(
+                    snackBarHost = snackBarHost,
+                    onNextClick = {
+                        showBottomSheet.value = !showBottomSheet.value
+                        viewModel.onEvent(AppSettingsEvent.RefreshPreferences)
+                    }
+                )
+            }
+            BottomSheetType.TIMERJUMP -> {
+                TimerBottomSheet(
+                    onNextClick = { time ->
+                        showBottomSheet.value = !showBottomSheet.value
+                        viewModel.onEvent(AppSettingsEvent.UpdateTimer(time, true))
+                        viewModel.onEvent(AppSettingsEvent.RefreshPreferences)
+                    },
+                    isJump = true
+                )
+            }
+            BottomSheetType.TIMERSECONDS -> {
+                TimerBottomSheet(
+                    onNextClick = { time ->
+                        showBottomSheet.value = !showBottomSheet.value
+                        viewModel.onEvent(AppSettingsEvent.UpdateTimer(time, false))
+                        viewModel.onEvent(AppSettingsEvent.RefreshPreferences)
+                    },
+                    isJump = false
+                )
+            }
+        }
     }
 }
 

@@ -7,6 +7,10 @@ import com.hbaez.core.domain.model.UserInfo
 import com.hbaez.core.domain.preferences.Preferences
 import com.hbaez.tracker_domain.model.MealType
 import com.hbaez.tracker_domain.model.TrackedFood
+import java.time.Instant
+import java.time.LocalDate
+import java.time.Period
+import java.time.ZoneId
 import kotlin.math.roundToInt
 
 class CalculateMealNutrients(
@@ -53,14 +57,15 @@ class CalculateMealNutrients(
 
 
     private fun bmr(userInfo: UserInfo): Int {
+        val age = Period.between(Instant.ofEpochMilli(userInfo.age).atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now()).years
         return when(userInfo.gender) {
             is Gender.Male -> {
                 (66.47f + 13.75f * (userInfo.weight / 2.20462f) + // have to convert weight and height back to kg and cm
-                        5f * (userInfo.height / 0.393701f) - 6.75f * userInfo.age).roundToInt()
+                        5f * (userInfo.height / 0.393701f) - 6.75f * age).roundToInt()
             }
             is Gender.Female -> {
                 (665.09f + 9.56f * (userInfo.weight / 2.20462f) +
-                        1.84f * (userInfo.height / 0.393701f) - 4.67 * userInfo.age).roundToInt()
+                        1.84f * (userInfo.height / 0.393701f) - 4.67 * age).roundToInt()
             }
         }
     }

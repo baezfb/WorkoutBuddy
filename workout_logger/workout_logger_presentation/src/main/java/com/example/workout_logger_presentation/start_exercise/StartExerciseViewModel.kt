@@ -41,7 +41,9 @@ class StartExerciseViewModel @Inject constructor(
     logService: LogService
 ): AuthViewModel(logService) {
 
-    var state by mutableStateOf(StartExerciseState())
+    var state by mutableStateOf(StartExerciseState(
+        timerJump = preferences.loadUserInfo().timerJump.toLong(),
+        rest = listOf(preferences.loadUserInfo().timerSeconds.toString())))
         private set
 
     var currentTime by mutableStateOf(state.remainingTime)

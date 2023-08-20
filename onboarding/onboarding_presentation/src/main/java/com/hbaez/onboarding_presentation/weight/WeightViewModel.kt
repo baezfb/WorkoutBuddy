@@ -22,9 +22,19 @@ class WeightViewModel @Inject constructor(
 
     var weight by mutableStateOf("180")
         private set
+    var initWeight = -1F
 
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
+
+    init {
+        if (preferences.loadUserInfo().weight != -1F){
+            initWeight = preferences.loadUserInfo().weight
+            weight = preferences.loadUserInfo().weight.toString()
+        } else {
+            initWeight = weight.toFloat()
+        }
+    }
 
     fun onWeightChange(weight: String) {
         this.weight = weight
@@ -40,6 +50,8 @@ class WeightViewModel @Inject constructor(
                 return@launch
             }
             preferences.saveWeight(weightNumber)
+            initWeight = weightNumber
+            weight = weightNumber.toString()
             _uiEvent.send(UiEvent.Success)
         }
     }

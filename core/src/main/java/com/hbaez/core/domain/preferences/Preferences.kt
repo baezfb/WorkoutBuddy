@@ -10,7 +10,7 @@ import com.hbaez.core.domain.model.UserInfo
 
 interface Preferences {
     fun saveGender(gender: Gender)
-    fun saveAge(age: Int)
+    fun saveAge(age: Long)
     fun saveWeight(weight: Float)
     fun saveHeight(height: Int)
     fun saveActivityLevel(level: ActivityLevel)
@@ -19,6 +19,8 @@ interface Preferences {
     fun saveProteinRatio(ratio: Float)
     fun saveFatRatio(ratio: Float)
     fun saveFirebaseUserInfoId(id: String)
+    fun saveTimerJump(timerJump: Int)
+    fun saveTimerSeconds(timerSeconds: Int)
 
     fun saveLoginInfo(username: String, email: String)
     fun loadLoginInfo(): LoginInfo
@@ -56,6 +58,8 @@ interface Preferences {
         const val KEY_SHOULD_CREATE_AUTH_KEY = "should_create_auth_key"
         const val KEY_AUTH_KEY_EXP = "auth_key_exp"
         const val KEY_FIREBASE_USER_INFO_ID = "key_firebase_user_info_id"
+        const val KEY_TIMER_JUMP = "key_timer_jump"
+        const val KEY_TIMER_SECONDS = "key_timer_seconds"
 
         const val KEY_USERNAME="username"
         const val KEY_EMAIL="email"

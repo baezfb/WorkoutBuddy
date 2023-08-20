@@ -25,6 +25,10 @@ class GenderViewModel @Inject constructor(
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
+    init {
+        selectedGender = preferences.loadUserInfo().gender
+    }
+
     fun onGenderClick(gender: Gender) {
         selectedGender = gender
     }

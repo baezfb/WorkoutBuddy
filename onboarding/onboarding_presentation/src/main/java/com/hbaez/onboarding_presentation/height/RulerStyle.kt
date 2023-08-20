@@ -9,9 +9,9 @@ import androidx.compose.ui.unit.sp
 data class RulerStyle(
     val minHeight: Int = 12,
     val maxHeight: Int = 108,
-    val initialHeight: Int = 70,
+    val initialHeight: Int = 62,
     val rulerHeight: Dp = 300.dp,
-    val rulerColor: Int = android.graphics.Color.WHITE,
+    val rulerColor: Color = Color.White,
     val normalLineColor: Color = Color.LightGray,
     val fiveStepLineColor: Color = Color.Green,
     val tenStepLineColor: Color = Color.Black,
@@ -20,6 +20,7 @@ data class RulerStyle(
     val tenStepLineLength: Dp = 35.dp,
     val heightIndicatorColor: Color = Color.Green,
     val heightIndicatorLength: Dp = 60.dp,
+    val shadowColor: Color = Color.Red,
     val textSize: TextUnit = 18.sp,
-    val textColor: Int = android.graphics.Color.BLACK
+    val textColor: Color = Color.Black
 )

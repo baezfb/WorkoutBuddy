@@ -5,6 +5,11 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,8 +30,6 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.capitalize
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,9 +37,6 @@ import com.hbaez.core.util.UiEvent
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
 import com.hbaez.core.domain.model.Gender
-import com.hbaez.onboarding_presentation.components.ActionButton
-import com.hbaez.onboarding_presentation.components.SelectableButton
-import kotlinx.coroutines.flow.collect
 import java.util.Locale
 
 @Composable
@@ -88,39 +88,17 @@ fun GenderScreen(
                 pathScaleFactor = 7f,
                 viewModel = viewModel
             )
-//            Row {
-//                SelectableButton(
-//                    text = stringResource(id = R.string.male),
-//                    isSelected = viewModel.selectedGender is Gender.Male,
-//                    color = MaterialTheme.colors.primaryVariant,
-//                    selectedTextColor = Color.White,
-//                    onClick = {
-//                        viewModel.onGenderClick(Gender.Male)
-//                    },
-//                    textStyle = MaterialTheme.typography.button.copy(
-//                        fontWeight = FontWeight.Normal
-//                    )
-//                )
-//                Spacer(modifier = Modifier.width(spacing.spaceMedium))
-//                SelectableButton(
-//                    text = stringResource(id = R.string.female),
-//                    isSelected = viewModel.selectedGender is Gender.Female,
-//                    color = MaterialTheme.colors.primaryVariant,
-//                    selectedTextColor = Color.White,
-//                    onClick = {
-//                        viewModel.onGenderClick(Gender.Female)
-//                    },
-//                    textStyle = MaterialTheme.typography.button.copy(
-//                        fontWeight = FontWeight.Normal
-//                    )
-//                )
-//            }
         }
-        ActionButton(
-            text = stringResource(id = R.string.next),
+        Button(
             onClick = viewModel::onNextClick,
-            modifier = Modifier.align(Alignment.BottomEnd)
-        )
+            modifier = Modifier.align(Alignment.BottomEnd),
+            shape = RoundedCornerShape(100.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                contentDescription = "Next"
+            )
+        }
     }
 }
 

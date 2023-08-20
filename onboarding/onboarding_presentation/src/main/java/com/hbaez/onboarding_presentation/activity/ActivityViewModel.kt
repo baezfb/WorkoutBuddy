@@ -25,6 +25,10 @@ class ActivityViewModel @Inject constructor(
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
+    init {
+        selectedActivityLevel = preferences.loadUserInfo().activityLevel
+    }
+
     fun onActivityLevelSelect(activityLevel: ActivityLevel) {
         selectedActivityLevel = activityLevel
     }

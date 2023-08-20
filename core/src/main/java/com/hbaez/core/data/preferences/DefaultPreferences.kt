@@ -19,9 +19,9 @@ class DefaultPreferences(
             .apply()
     }
 
-    override fun saveAge(age: Int) {
+    override fun saveAge(age: Long) {
         sharedPref.edit()
-            .putInt(Preferences.KEY_AGE, age)
+            .putLong(Preferences.KEY_AGE, age)
             .apply()
     }
 
@@ -73,6 +73,18 @@ class DefaultPreferences(
             .apply()
     }
 
+    override fun saveTimerJump(timerJump: Int) {
+        sharedPref.edit()
+            .putInt(Preferences.KEY_TIMER_JUMP, timerJump)
+            .apply()
+    }
+
+    override fun saveTimerSeconds(timerSeconds: Int) {
+        sharedPref.edit()
+            .putInt(Preferences.KEY_TIMER_SECONDS, timerSeconds)
+            .apply()
+    }
+
     override fun saveLoginInfo(username: String, email: String) {
         sharedPref.edit()
             .putString(Preferences.KEY_USERNAME, username)
@@ -91,7 +103,7 @@ class DefaultPreferences(
     }
 
     override fun loadUserInfo(): UserInfo {
-        val age = sharedPref.getInt(Preferences.KEY_AGE, -1)
+        val age = sharedPref.getLong(Preferences.KEY_AGE, -1L)
         val height = sharedPref.getInt(Preferences.KEY_HEIGHT, -1)
         val weight = sharedPref.getFloat(Preferences.KEY_WEIGHT, -1f)
         val genderString = sharedPref.getString(Preferences.KEY_GENDER, null)
@@ -102,6 +114,9 @@ class DefaultPreferences(
         val proteinRatio = sharedPref.getFloat(Preferences.KEY_PROTEIN_RATIO, -1f)
         val fatRatio = sharedPref.getFloat(Preferences.KEY_FAT_RATIO, -1f)
         val firebaseUserInfoID = sharedPref.getString(Preferences.KEY_FIREBASE_USER_INFO_ID, "")
+        val timerJump = sharedPref.getInt(Preferences.KEY_TIMER_JUMP, 5)
+        val timerSeconds = sharedPref.getInt(Preferences.KEY_TIMER_SECONDS, 60)
+
 
         return UserInfo(
             id = firebaseUserInfoID!!,
@@ -113,14 +128,16 @@ class DefaultPreferences(
             goalType = GoalType.fromString(goalType ?: "keep_weight"),
             carbRatio = carbRatio,
             proteinRatio = proteinRatio,
-            fatRatio = fatRatio
+            fatRatio = fatRatio,
+            timerJump = timerJump,
+            timerSeconds = timerSeconds
         )
     }
 
     override fun updateUserInfo(userInfo: UserInfo, userID: String) {
         sharedPref.edit()
             .putString(Preferences.KEY_GENDER, userInfo.gender.name)
-            .putInt(Preferences.KEY_AGE, userInfo.age)
+            .putLong(Preferences.KEY_AGE, userInfo.age)
             .putFloat(Preferences.KEY_WEIGHT, userInfo.weight)
             .putInt(Preferences.KEY_HEIGHT, userInfo.height)
             .putString(Preferences.KEY_ACTIVITY_LEVEL, userInfo.activityLevel.name)
@@ -129,6 +146,8 @@ class DefaultPreferences(
             .putFloat(Preferences.KEY_PROTEIN_RATIO, userInfo.proteinRatio)
             .putFloat(Preferences.KEY_FAT_RATIO, userInfo.fatRatio)
             .putString(Preferences.KEY_FIREBASE_USER_INFO_ID, userID)
+            .putInt(Preferences.KEY_TIMER_JUMP, userInfo.timerJump)
+            .putInt(Preferences.KEY_TIMER_SECONDS, userInfo.timerSeconds)
             .apply()
 
     }

@@ -22,14 +22,24 @@ class HeightViewModel @Inject constructor(
     private val filterOutDigits: FilterOutDigits
 ): ViewModel() {
 
-    var height by mutableStateOf("70")
+    var height by mutableStateOf("64")
         private set
+    var initHeight = -1
 
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
     fun onHeightChange(height: String) {
         this.height = filterOutDigits(height)
+    }
+
+    init {
+        if (preferences.loadUserInfo().height != -1){
+            initHeight = preferences.loadUserInfo().height
+            height = preferences.loadUserInfo().height.toString()
+        } else {
+            initHeight = height.toInt()
+        }
     }
 
     fun onNextClick() {
@@ -43,6 +53,8 @@ class HeightViewModel @Inject constructor(
                 return@launch
             }
             preferences.saveHeight(heightNumber)
+            initHeight = heightNumber
+            height = heightNumber.toString()
             _uiEvent.send(UiEvent.Success)
         }
     }

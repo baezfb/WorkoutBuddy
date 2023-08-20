@@ -22,6 +22,10 @@ class GoalViewModel @Inject constructor(
     var selectedGoal by mutableStateOf<GoalType>(GoalType.KeepWeight)
         private set
 
+    init {
+        selectedGoal = preferences.loadUserInfo().goalType
+    }
+
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 

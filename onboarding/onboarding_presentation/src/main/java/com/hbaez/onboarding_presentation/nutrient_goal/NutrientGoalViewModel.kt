@@ -38,6 +38,16 @@ class NutrientGoalViewModel @Inject constructor(
     private val _uiEvent = Channel<UiEvent> {  }
     val uiEvent = _uiEvent.receiveAsFlow()
 
+    init {
+        if(preferences.loadUserInfo().carbRatio != -1F){
+            state = state.copy(
+                carbsRatio = (preferences.loadUserInfo().carbRatio * 100).toInt().toString(),
+                proteinRatio = (preferences.loadUserInfo().proteinRatio * 100).toInt().toString(),
+                fatRatio = (preferences.loadUserInfo().fatRatio * 100).toInt().toString()
+            )
+        }
+    }
+
     fun onEvent(event: NutrientGoalEvent) {
         when(event) {
             is NutrientGoalEvent.OnCarbRatioEnter -> {

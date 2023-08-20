@@ -1,11 +1,20 @@
 package com.hbaez.onboarding_presentation.age
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -15,8 +24,11 @@ import com.hbaez.core.R
 import com.hbaez.core.util.UiEvent
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.onboarding_presentation.components.ActionButton
-import com.hbaez.onboarding_presentation.components.UnitTextField
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AgeScreen(
     snackBarHost: SnackbarHostState,
@@ -25,6 +37,7 @@ fun AgeScreen(
 ) {
     val spacing = LocalSpacing.current
     val context = LocalContext.current
+    val showDatePicker = remember { mutableStateOf(false) }
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
             when (event) {
@@ -38,6 +51,10 @@ fun AgeScreen(
             }
         }
     }
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = if(viewModel.age != -1L) viewModel.age else Instant.now().toEpochMilli(),
+        initialDisplayMode = DisplayMode.Input
+    )
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -49,14 +66,18 @@ fun AgeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = stringResource(id = R.string.whats_your_age),
+                text = stringResource(id = R.string.dob),
                 style = MaterialTheme.typography.displaySmall
             )
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
-            UnitTextField(
-                value = viewModel.age,
-                onValueChange = viewModel::onAgeEnter,
-                unit = stringResource(id = R.string.years)
+            Text(
+                text = Instant.ofEpochMilli(viewModel.age).atZone(ZoneId.systemDefault()).toLocalDate().toString(),
+                style = MaterialTheme.typography.displayMedium,
+                modifier = Modifier
+                    .padding(spacing.spaceMedium)
+                    .clickable {
+                        showDatePicker.value = !showDatePicker.value
+                    }
             )
         }
         ActionButton(
@@ -64,5 +85,33 @@ fun AgeScreen(
             onClick = viewModel::onNextClick,
             modifier = Modifier.align(Alignment.BottomEnd)
         )
+        if(showDatePicker.value){
+            DatePickerDialog(
+                shape = RoundedCornerShape(spacing.spaceSmall),
+                onDismissRequest = { showDatePicker.value = !showDatePicker.value },
+                confirmButton = {
+                    ActionButton(
+                        text = stringResource(id = R.string.next),
+                        onClick = {
+                            if(datePickerState.selectedDateMillis != null){
+                                viewModel.onAgeEnter(datePickerState.selectedDateMillis!! + ZoneId.systemDefault().rules.getOffset(Instant.now()).totalSeconds*1000)
+                            } else
+                                viewModel.onAgeEnter(LocalDate.parse(
+                                LocalDate.now().toString()).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                            )
+                            showDatePicker.value = !showDatePicker.value
+                        },
+                        modifier = Modifier.align(Alignment.BottomEnd)
+                    )
+                },
+            ) {
+                DatePicker(
+                    state = datePickerState,
+                    dateValidator = { timestamp ->
+                        timestamp <= Instant.now().toEpochMilli()
+                    }
+                )
+            }
+        }
     }
 }

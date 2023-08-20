@@ -5,6 +5,11 @@ import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.SnackbarHostState
@@ -20,6 +25,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.platform.LocalContext
@@ -32,9 +38,7 @@ import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.onboarding_presentation.components.ActionButton
 import com.hbaez.onboarding_presentation.weight.LineType
 import kotlin.math.abs
-import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
-import android.graphics.Color as ColorG
 
 @Composable
 fun HeightScreen(
@@ -44,6 +48,7 @@ fun HeightScreen(
 ) {
     val spacing = LocalSpacing.current
     val context = LocalContext.current
+    val initHeight = viewModel.initHeight
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
             when (event) {
@@ -85,12 +90,14 @@ fun HeightScreen(
             Spacer(modifier = Modifier.height(spacing.spaceExtraLarge))
             Ruler(
                 style = RulerStyle(
+                    initialHeight = initHeight,
                     rulerHeight = 125.dp,
-                    rulerColor = ColorG.BLACK,
-                    normalLineColor = Color.White,
-                    fiveStepLineColor = Color.White,
-                    tenStepLineColor = MaterialTheme.colorScheme.primary,
-                    textColor = ColorG.WHITE,
+                    rulerColor = MaterialTheme.colorScheme.primaryContainer,
+                    normalLineColor = MaterialTheme.colorScheme.secondary,
+                    fiveStepLineColor = MaterialTheme.colorScheme.secondary,
+                    tenStepLineColor = MaterialTheme.colorScheme.tertiary,
+                    shadowColor = MaterialTheme.colorScheme.inversePrimary,
+                    textColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     heightIndicatorColor = MaterialTheme.colorScheme.secondary
                 ),
                 modifier = Modifier
@@ -100,11 +107,16 @@ fun HeightScreen(
                 viewModel.onHeightChange(it.toString())
             }
         }
-        ActionButton(
-            text = stringResource(id = R.string.next),
+        Button(
             onClick = viewModel::onNextClick,
-            modifier = Modifier.align(Alignment.BottomEnd)
-        )
+            modifier = Modifier.align(Alignment.BottomEnd),
+            shape = RoundedCornerShape(100.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                contentDescription = "Next"
+            )
+        }
     }
 }
 
@@ -160,7 +172,7 @@ fun Ruler(
             rectTopLeft = Offset(center.x, rectTopLeft.y)
             oldPosition = center.x
         }
-        val rect = Offset(center.x - spaceBetween * style.initialHeight * 10, center.y)
+        val rect = Offset(center.x - spaceBetween * style.initialHeight * 10, style.initialHeight.toFloat() - style.fiveStepLineLength.toPx())
         drawContext.canvas.nativeCanvas.apply {
             drawRect(
                 rect.x,
@@ -168,13 +180,13 @@ fun Ruler(
                 width,
                 rulerHeight.toPx(),
                 Paint().apply {
-                    color = style.rulerColor
+                    color = style.rulerColor.toArgb()
                     setStyle(Paint.Style.FILL)
                     setShadowLayer(
-                        60f,
+                        15f,
                         0f,
                         0f,
-                        ColorG.argb(50,250,0,0)
+                        style.shadowColor.toArgb()
                     )
                 }
             )
@@ -222,34 +234,33 @@ fun Ruler(
                         Paint().apply {
                             textSize = style.textSize.toPx()
                             textAlign = Paint.Align.CENTER
-                            color = style.textColor
+                            color = style.textColor.toArgb()
                         }
                     )
                 }
             }
-
-            val middleTop = Offset(
-                x = center.x,
-                y = rectTopLeft.y + style.rulerHeight.toPx() - style.heightIndicatorLength.toPx()
-            )
-            val bottomLeft = Offset(
-                x = center.x - 4f,
-                y = rectTopLeft.y + style.rulerHeight.toPx()
-            )
-            val bottomRight = Offset(
-                x = center.x + 4f,
-                y = rectTopLeft.y + style.rulerHeight.toPx()
-            )
-            val indicator = Path().apply {
-                moveTo(middleTop.x, middleTop.y)
-                lineTo(bottomLeft.x, bottomLeft.y)
-                lineTo(bottomRight.x, bottomRight.y)
-                lineTo(middleTop.x, middleTop.y)
-            }
-            drawPath(
-                path = indicator,
-                color = style.heightIndicatorColor
-            )
         }
+        val middleTop = Offset(
+            x = center.x,
+            y = rectTopLeft.y + style.rulerHeight.toPx() - style.heightIndicatorLength.toPx()
+        )
+        val bottomLeft = Offset(
+            x = center.x - 4f,
+            y = rectTopLeft.y + style.rulerHeight.toPx()
+        )
+        val bottomRight = Offset(
+            x = center.x + 4f,
+            y = rectTopLeft.y + style.rulerHeight.toPx()
+        )
+        val indicator = Path().apply {
+            moveTo(middleTop.x, middleTop.y)
+            lineTo(bottomLeft.x, bottomLeft.y)
+            lineTo(bottomRight.x, bottomRight.y)
+            lineTo(middleTop.x, middleTop.y)
+        }
+        drawPath(
+            path = indicator,
+            color = style.heightIndicatorColor
+        )
     }
 }
