@@ -158,6 +158,13 @@ fun StartWorkoutScreen(
                 Column{
                     Row{
                         Text(
+                            text = "${page + 1}/${count}",
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                            style = MaterialTheme.typography.displaySmall
+                        )
+                        Spacer(modifier = Modifier.width(spacing.spaceSmall))
+                        Text(
                             text = currentExercise.exerciseName,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,

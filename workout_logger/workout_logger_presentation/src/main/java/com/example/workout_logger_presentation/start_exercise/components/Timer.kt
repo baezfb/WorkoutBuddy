@@ -171,7 +171,7 @@ fun Timer(
                     R.string.null_time) },
                 fontSize = 44.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (state.timerStatus == TimerStatus.RUNNING){ MaterialTheme.colorScheme.onBackground } else { MaterialTheme.colorScheme.inverseOnSurface }
+                color = if (state.timerStatus == TimerStatus.RUNNING){ MaterialTheme.colorScheme.onBackground } else { MaterialTheme.colorScheme.outline }
             )
             Spacer(modifier = Modifier.width(spacing.spaceMedium))
             Row {
@@ -179,7 +179,7 @@ fun Timer(
                     text = "- ${timerJump}s",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Black,
-                    color = if(state.timerStatus == TimerStatus.RUNNING && Duration.ofMillis(currentTime - 1000) > Duration.ofSeconds(timerJump)) MaterialTheme.colorScheme.secondary else Color.Gray,
+                    color = if(state.timerStatus == TimerStatus.RUNNING && Duration.ofMillis(currentTime - 1000) > Duration.ofSeconds(timerJump)) MaterialTheme.colorScheme.inverseSurface else MaterialTheme.colorScheme.outline,
                     modifier = Modifier
                         .clickable(
                             enabled = (state.timerStatus == TimerStatus.RUNNING && Duration.ofMillis(
@@ -206,7 +206,7 @@ fun Timer(
                     text = "+ ${timerJump}s",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Black,
-                    color = if(state.timerStatus == TimerStatus.RUNNING) MaterialTheme.colorScheme.inverseSurface else MaterialTheme.colorScheme.inverseOnSurface,
+                    color = if(state.timerStatus == TimerStatus.RUNNING) MaterialTheme.colorScheme.inverseSurface else MaterialTheme.colorScheme.outline,
                     modifier = Modifier
                         .clickable(enabled = state.timerStatus == TimerStatus.RUNNING) {
                             StartExerciseViewModel.removeAlarm(context)
