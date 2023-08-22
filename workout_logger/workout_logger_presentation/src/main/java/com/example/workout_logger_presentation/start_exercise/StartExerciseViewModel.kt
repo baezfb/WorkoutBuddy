@@ -215,6 +215,7 @@ class StartExerciseViewModel @Inject constructor(
             val date = "${event.year}-${event.month.toString().padStart(2,'0')}-${event.dayOfMonth.toString().padStart(2, '0')}"
             storageService.saveCompletedWorkout(
                 CompletedWorkout(
+                    docId = "",
                     workoutName = "",
                     workoutId = -1,
                     exerciseName = event.exerciseName,

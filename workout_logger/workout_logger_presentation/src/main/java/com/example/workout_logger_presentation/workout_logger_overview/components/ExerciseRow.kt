@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 fun ExerciseRow(
     set: Int,
     reps: Int,
-    weight: Int,
+    weight: Double,
     completed: Boolean
 ){
     Row(

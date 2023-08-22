@@ -143,11 +143,11 @@ fun CompletedWorkoutItem(
                 modifier = modifier,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                var totalVolume = 0
+                var totalVolume = 0.0
                 var counter = 0
                 workout.weight.forEach{
                     if(workout.isCompleted[counter] == "true"){
-                        totalVolume += it.trim().toInt() * workout.reps[counter].trim().toInt()
+                        totalVolume += it.trim().toDouble() * workout.reps[counter].trim().toDouble()
                     }
                     counter++
                 }

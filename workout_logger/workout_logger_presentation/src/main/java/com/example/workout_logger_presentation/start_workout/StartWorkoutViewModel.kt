@@ -86,12 +86,12 @@ class StartWorkoutViewModel @Inject constructor(
                             exerciseName = it.exerciseName,
                             exerciseId = it.exerciseId,
                             timerStatus = TimerStatus.START,
-                            sets = completedWorkout!!.sets.toString(),
-                            rest = completedWorkout.rest,
-                            reps = completedWorkout.reps,
-                            weight = completedWorkout.weight,
-                            isCompleted = List(completedWorkout.sets) { false },
-                            checkedColor = List(completedWorkout.sets) { Color.DarkGray },
+                            sets = (completedWorkout?.sets ?: it.sets).toString(),
+                            rest = completedWorkout?.rest ?: it.rest,
+                            reps = completedWorkout?.reps ?: it.reps,
+                            weight = completedWorkout?.weight ?: it.weight,
+                            isCompleted = List(completedWorkout?.sets ?: it.sets) { false },
+                            checkedColor = List(completedWorkout?.sets ?: it.sets) { Color.DarkGray },
                         )
                     } else {
                         currExercise = LoggerListState(
@@ -391,6 +391,7 @@ class StartWorkoutViewModel @Inject constructor(
             val date = "${year}-${month.toString().padStart(2,'0')}-${dayOfMonth.toString().padStart(2, '0')}"
             storageService.saveCompletedWorkout(
                 CompletedWorkout(
+                    docId = "",
                     workoutName = state.workoutName,
                     workoutId = workoutId,
                     exerciseName = loggerListState.exerciseName,
@@ -434,9 +435,11 @@ class StartWorkoutViewModel @Inject constructor(
 
     private fun trackCalendarDate(year: Int, month: Int, dayOfMonth: Int){
         viewModelScope.launch {
-            storageService.saveCalendarDate(
-                CalendarDates(storageService.calendarDates.first().calendarDates + LocalDate.of(year, month, dayOfMonth).toString())
-            )
+            if(LocalDate.of(year, month, dayOfMonth).toString() !in storageService.calendarDates.first().calendarDates){
+                storageService.saveCalendarDate(
+                    CalendarDates(storageService.calendarDates.first().calendarDates + LocalDate.of(year, month, dayOfMonth).toString())
+                )
+            }
         }
     }
 

@@ -114,6 +114,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         completedWorkoutCollection(auth.currentUserId, date).get().addOnSuccessListener { snapshot ->
             for (document in snapshot.documents) {
                 val completedWorkout = CompletedWorkout(
+                    docId = document.id,
                     workoutName = document.get("workoutName").toString(),
                     workoutId = document.get("workoutId").toString().toInt(),
                     exerciseName = document.get("exerciseName").toString(),
@@ -211,6 +212,22 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             documentRef.id
         }
 
+    override suspend fun updateCompletedWorkout(
+        completedWorkout: CompletedWorkout,
+        date: String
+    ): String {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteCompletedWorkout(
+        completedWorkout: CompletedWorkout,
+        date: String
+    ): Boolean = trace(DELETE_COMPLETED_WORKOUT) {
+            completedWorkoutCollection(auth.currentUserId, date).document(completedWorkout.docId).delete().await()
+            // check if collection is empty
+            completedWorkoutCollection(auth.currentUserId, date).get().await().documents.isEmpty()
+        }
+
     override suspend fun saveExerciseTemplate(exerciseTemplate: ExerciseTemplate): String =
         trace(SAVE_EXERCISE_TEMPLATE) {
             val documentRef = exerciseTemplateCollection(auth.currentUserId).document()
@@ -298,6 +315,8 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         private const val SAVE_COMPLETED_WORKOUT = "saveCompletedWorkout"
         private const val SAVE_EXERCISE_TEMPLATE = "saveExerciseTemplate"
         private const val DELETE_WORKOUT_TEMPLATE = "deleteWorkoutTemplate"
+        private const val DELETE_COMPLETED_WORKOUT = "deleteCompletedWorkout"
+        private const val UPDATE_COMPLETED_WORKOUT = "updateCompletedWorkout"
         private const val SAVE_CALENDAR_DATE = "saveCalendarDate"
         private const val UPDATE_TASK_TRACE = "updateTask"
         private const val WORKOUT_TEMPLATE = "workouts"

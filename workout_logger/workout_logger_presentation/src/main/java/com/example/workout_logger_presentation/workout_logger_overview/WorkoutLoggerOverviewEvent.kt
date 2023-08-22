@@ -14,4 +14,5 @@ sealed class WorkoutLoggerOverviewEvent {
     data class OnExerciseDescrClick(val trackableExerciseState: TrackableExerciseState): WorkoutLoggerOverviewEvent()
     data class OnChooseExercise(val trackableExerciseState: TrackableExerciseState): WorkoutLoggerOverviewEvent()
     data class OnDateClick(val year: Int, val dayOfMonth: Int, val month: Int): WorkoutLoggerOverviewEvent()
+    data class OnDeleteCompletedWorkout(val completedWorkout: CompletedWorkout): WorkoutLoggerOverviewEvent()
 }

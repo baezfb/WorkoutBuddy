@@ -1,6 +1,7 @@
 package com.hbaez.user_auth_presentation.model
 
 data class CompletedWorkout(
+    val docId: String,
     val workoutName: String,
     val workoutId: Int,
     val exerciseName: String,

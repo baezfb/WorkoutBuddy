@@ -12,6 +12,7 @@ import com.hbaez.core.R
 import com.hbaez.core.domain.preferences.Preferences
 import com.hbaez.core.util.UiEvent
 import com.hbaez.core.util.UiText
+import com.hbaez.user_auth_presentation.model.CalendarDates
 import com.hbaez.user_auth_presentation.model.CompletedWorkout
 import com.hbaez.user_auth_presentation.model.service.StorageService
 import com.himanshoe.kalendar.KalendarEvent
@@ -144,6 +145,25 @@ class WorkoutLoggerOverviewModel @Inject constructor(
                 )
                 imageUrls.clear()
                 refreshWorkouts()
+            }
+
+            is WorkoutLoggerOverviewEvent.OnDeleteCompletedWorkout -> {
+                viewModelScope.launch {
+                    val deleteDate = storageService.deleteCompletedWorkout(
+                        event.completedWorkout,
+                        state.date.toString()
+                    )
+                    Log.println(Log.DEBUG, "delete date value", deleteDate.toString())
+                    if(deleteDate){
+                        val calendarDates = storageService.calendarDates.first().calendarDates.toMutableList()
+                        Log.println(Log.DEBUG, "calendarDates today", state.date.toString())
+                        calendarDates.remove(state.date.toString())
+                        Log.println(Log.DEBUG, "calendarDates", calendarDates.toString())
+                        storageService.saveCalendarDate(CalendarDates(calendarDates.toList()))
+                    }
+                    imageUrls.clear()
+                    refreshWorkouts()
+                }
             }
         }
     }

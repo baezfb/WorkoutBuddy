@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -411,7 +412,7 @@ fun WorkoutLoggerOverviewScreen(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(end=spacing.spaceMedium),
+                                        .padding(end = spacing.spaceMedium),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.End
                                 ) {
@@ -425,7 +426,13 @@ fun WorkoutLoggerOverviewScreen(
                                             )
                                             .padding(spacing.spaceSmall)
                                             .clickable {
-                                                viewModel.onEvent(WorkoutLoggerOverviewEvent.OnDateClick(java.time.LocalDate.now().year, java.time.LocalDate.now().dayOfMonth, java.time.LocalDate.now().monthValue))
+                                                viewModel.onEvent(
+                                                    WorkoutLoggerOverviewEvent.OnDateClick(
+                                                        java.time.LocalDate.now().year,
+                                                        java.time.LocalDate.now().dayOfMonth,
+                                                        java.time.LocalDate.now().monthValue
+                                                    )
+                                                )
                                             },
                                         text = String.format("%02d", java.time.LocalDate.now().dayOfMonth),
                                         style = MaterialTheme.typography.displaySmall,
@@ -511,17 +518,44 @@ fun WorkoutLoggerOverviewScreen(
                                         ExerciseRow(
                                             set = i,
                                             reps = reps[i-1].toInt(),
-                                            weight = weight[i-1].toInt(),
+                                            weight = weight[i-1].toDouble(),
                                             completed = isCompleted[i-1].toBoolean()
                                         )
                                         if(i != viewModel.completedWorkouts[it].sets) Divider(color = MaterialTheme.colorScheme.secondary, thickness = 1.dp)
                                     }
                                     Spacer(modifier = Modifier.height(spacing.spaceExtraSmall))
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(spacing.spaceMedium),
+                                        horizontalArrangement = Arrangement.End
+                                    ) {
+                                        Icon(
+                                            modifier = Modifier
+                                                .clickable {
+                                                    viewModel.onEvent(WorkoutLoggerOverviewEvent.OnDeleteCompletedWorkout(viewModel.completedWorkouts[it]))
+                                                }
+                                                .padding(spacing.spaceSmall),
+                                            imageVector = Icons.Filled.Delete,
+                                            contentDescription = "CompletedWorkoutItem Delete"
+                                        )
+                                        Spacer(modifier = Modifier.width(spacing.spaceMedium))
+                                        Icon(
+                                            modifier = Modifier
+                                                .clickable {
+                                                /*TODO*/
+                                                }
+                                                .padding(spacing.spaceSmall),
+                                            imageVector = Icons.Filled.Edit,
+                                            contentDescription = "CompletedWorkoutItem Edit"
+                                        )
+                                    }
                                 }
                             },
 //                color = MaterialTheme.colors.primaryVariant
                         )
                         Spacer(modifier = Modifier.height(spacing.spaceMedium))
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(spacing.spaceExtraLarge))
                     }
                 }
             }
