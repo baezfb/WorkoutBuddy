@@ -194,7 +194,9 @@ fun ExerciseCardRow(
             value = loggerListState.weight[index],
             textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
             singleLine = true,
-            onValueChange = { onWeightChange(it, index, loggerListState.id) },
+            onValueChange = {
+                val filteredValue = it.filter { tmp -> tmp != '-' } // Filter out non-digit characters
+                onWeightChange(filteredValue, index, loggerListState.id) },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
                 onDone = {
@@ -214,7 +216,10 @@ fun ExerciseCardRow(
             value = loggerListState.reps[index],
             textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
             singleLine = true,
-            onValueChange = { onRepsChange(it, index, loggerListState.id) },
+            onValueChange = {
+                val filteredValue = it.filter { tmp -> !(tmp == '.' || tmp == '-') } // Filter out non-digit characters
+                onRepsChange(filteredValue, index, loggerListState.id)
+                            },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
                 onDone = {

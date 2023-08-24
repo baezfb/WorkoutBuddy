@@ -51,7 +51,8 @@ fun CreateWorkoutTableRow(
             weight = .20f,
             keyboardType = KeyboardType.Number,
             onValueChange = {
-                onRepsChange(it)
+                val filteredValue = it.filter { tmp -> !(tmp == '.' || tmp == '-') } // Filter out non-digit characters
+                onRepsChange(filteredValue)
             },
             borderColor = MaterialTheme.colorScheme.background,
             backgroundColor = MaterialTheme.colorScheme.background
@@ -62,7 +63,8 @@ fun CreateWorkoutTableRow(
             weight = .25f,
             keyboardType = KeyboardType.Number,
             onValueChange = {
-                onRestChange(it)
+                val filteredValue = it.filter { tmp -> !(tmp == '.' || tmp == '-') } // Filter out non-digit characters
+                onRestChange(filteredValue)
             },
             borderColor = MaterialTheme.colorScheme.background,
             backgroundColor = MaterialTheme.colorScheme.background
@@ -73,7 +75,8 @@ fun CreateWorkoutTableRow(
             weight = .25f,
             keyboardType = KeyboardType.Number,
             onValueChange = {
-                onWeightChange(it)
+                val filteredValue = it.filter { tmp -> tmp != '-' } // Filter out non-digit characters
+                onWeightChange(filteredValue)
             },
             borderColor = MaterialTheme.colorScheme.background,
             backgroundColor = MaterialTheme.colorScheme.background
