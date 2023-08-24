@@ -18,17 +18,20 @@ import com.hbaez.core.domain.preferences.Preferences
 import com.hbaez.core.util.UiEvent
 import com.hbaez.core.util.UiText
 import com.hbaez.user_auth_presentation.AuthViewModel
+import com.hbaez.user_auth_presentation.model.CalendarDates
 import com.hbaez.user_auth_presentation.model.CompletedWorkout
 import com.hbaez.user_auth_presentation.model.service.LogService
 import com.hbaez.user_auth_presentation.model.service.StorageService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.time.Duration
+import java.time.LocalDate
 import java.util.Date
 import javax.inject.Inject
 
@@ -198,9 +201,10 @@ class StartExerciseViewModel @Inject constructor(
                             } else weightList.add(state.weight[index])
                         }
                     }
-                    val restList = List(repsList.size) { "60" } /*TODO: replace with user preferences*/
+                    val restList = List(repsList.size) { preferences.loadUserInfo().timerSeconds.toString() } /*TODO: replace with user preferences*/
                     if(repsList.isNotEmpty() && weightList.isNotEmpty()){
                         trackCompletedExercise(event, restList, repsList, weightList, isCompletedList.toList())
+                        trackCalendarDate(event.year, event.month, event.dayOfMonth)
                     }
                     viewModelScope.launch {
                         _uiEvent.send(UiEvent.NavigateUp)
@@ -231,6 +235,16 @@ class StartExerciseViewModel @Inject constructor(
                 ),
                 date = date
             )
+        }
+    }
+
+    private fun trackCalendarDate(year: Int, month: Int, dayOfMonth: Int){
+        viewModelScope.launch {
+            if(LocalDate.of(year, month, dayOfMonth).toString() !in storageService.calendarDates.first().calendarDates){
+                storageService.saveCalendarDate(
+                    CalendarDates(storageService.calendarDates.first().calendarDates + LocalDate.of(year, month, dayOfMonth).toString())
+                )
+            }
         }
     }
 
