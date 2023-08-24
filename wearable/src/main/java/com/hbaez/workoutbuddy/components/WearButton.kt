@@ -7,13 +7,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Phone
-import androidx.compose.material.icons.rounded.SelfImprovement
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,12 +33,12 @@ fun WearButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colors.primary,
-    textColor: Color = MaterialTheme.colors.onPrimary,
-    borderColor: Color = MaterialTheme.colors.primary,
+    backgroundColor: Color = MaterialTheme.colorScheme.primaryContainer,
+    textColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+    borderColor: Color = MaterialTheme.colorScheme.outline,
     icon: ImageVector?,
     iconModifier: Modifier = Modifier,
-    iconColor: Color = MaterialTheme.colors.onPrimary,
+    iconColor: Color = MaterialTheme.colorScheme.onPrimary,
     padding: Dp = 16.dp
 ){
     val spacing = LocalSpacing.current
@@ -73,7 +69,7 @@ fun WearButton(
             Text(
                 text = text,
                 maxLines = 2,
-                style = MaterialTheme.typography.button,
+                style = MaterialTheme.typography.labelMedium,
                 color = textColor
             )
         }

@@ -8,12 +8,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hbaez.core.util.UiEvent
+import com.hbaez.user_auth_presentation.model.CalendarDates
 import com.hbaez.user_auth_presentation.model.CompletedWorkout
+import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 import com.hbaez.user_auth_presentation.model.service.StorageService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -179,6 +183,7 @@ class StartWorkoutViewModel @Inject constructor(
 
                         if(repsList.isNotEmpty() && weightList.isNotEmpty()){
                             trackCompletedWorkout(it, repsList, weightList, isCompletedList.toList(), event.dayOfMonth, event.month, event.year)
+                            trackCalendarDate(event.year, event.month, event.dayOfMonth)
                         }
                         counter++
                     }
@@ -195,6 +200,7 @@ class StartWorkoutViewModel @Inject constructor(
             val date = "${year}-${month.toString().padStart(2,'0')}-${dayOfMonth.toString().padStart(2, '0')}"
             storageService.saveCompletedWorkout(
                 CompletedWorkout(
+                    docId = "",
                     workoutName = state.workoutName,
                     workoutId = workoutId,
                     exerciseName = loggerListState.exerciseName,
@@ -210,6 +216,39 @@ class StartWorkoutViewModel @Inject constructor(
                 ),
                 date = date
             )
+            workoutTemplates.first().onEach {
+                Log.println(Log.DEBUG, "StartWorkoutViewModel workoutTemplates", it.name)
+                if(it.name == state.workoutName){
+                    Log.println(Log.DEBUG, "inside if StartWorkoutViewModel", it.name)
+                    Log.println(Log.DEBUG, "inside if StartWorkoutViewModel", LocalDate.of(year, month, dayOfMonth).toString())
+                    storageService.updateWorkoutTemplate(
+                        WorkoutTemplate(
+                            id = it.id,
+                            name = it.name,
+                            exerciseName = it.exerciseName,
+                            exerciseId = null,
+                            sets = it.sets,
+                            rest = it.rest,
+                            reps = it.reps,
+                            weight = it.weight,
+                            rowId = -1,
+                            position = -1,
+                            lastUsedId = it.lastUsedId,
+                            lastUsedDate = LocalDate.of(year, month, dayOfMonth).toString()
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    private fun trackCalendarDate(year: Int, month: Int, dayOfMonth: Int){
+        viewModelScope.launch {
+            if(LocalDate.of(year, month, dayOfMonth).toString() !in storageService.calendarDates.first().calendarDates){
+                storageService.saveCalendarDate(
+                    CalendarDates(storageService.calendarDates.first().calendarDates + LocalDate.of(year, month, dayOfMonth).toString())
+                )
+            }
         }
     }
 }

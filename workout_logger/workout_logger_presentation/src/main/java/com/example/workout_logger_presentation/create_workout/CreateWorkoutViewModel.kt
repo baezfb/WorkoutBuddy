@@ -65,7 +65,6 @@ class CreateWorkoutViewModel @Inject constructor(
                 val initTrackableExercises: MutableList<TrackableExerciseUiState?> = (List(pageCount) { null }).toMutableList()
                 workoutTemplates.first().onEach{
                     if(it.name == initWorkoutName){
-                        //TODO: get completedWorkout by date it.lastUsedDate
                         val currTrackableExercise: TrackableExerciseUiState
                         if(it.lastUsedDate != null && !it.lastUsedDate.equals("null")){
                             Log.println(Log.DEBUG, "CreateWorkoutViewModel lastUsedDate", it.lastUsedDate.toString())

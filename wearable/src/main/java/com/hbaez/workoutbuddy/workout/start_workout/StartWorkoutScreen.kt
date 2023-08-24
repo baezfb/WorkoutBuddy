@@ -18,9 +18,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -37,9 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.TimeText
@@ -58,9 +59,7 @@ import com.hbaez.workoutbuddy.components.WearButton
 import com.hbaez.workoutbuddy.components.WearText
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalLifecycleComposeApi::class,
-    ExperimentalPagerApi::class
-)
+@OptIn(ExperimentalPagerApi::class)
 @ExperimentalCoilApi
 @Composable
 fun StartWorkoutScreen(
@@ -114,7 +113,7 @@ fun StartWorkoutScreen(
             )
         },
         modifier = Modifier
-            .background(color = MaterialTheme.colors.background),
+            .background(color = MaterialTheme.colorScheme.background),
     ) {
 
         val contentModifier = Modifier
@@ -211,7 +210,7 @@ fun StartWorkoutScreen(
                                 viewModel.onEvent(StartWorkoutEvent.OnSubmitWorkout(workoutName, state.loggerListStates, workoutTemplates.value, dayOfMonth, month, year))
                                       },
                             icon = Icons.Rounded.Done,
-                            borderColor = androidx.compose.material.MaterialTheme.colors.primary,
+                            borderColor = MaterialTheme.colorScheme.outline,
                             modifier = Modifier
                                 .wrapContentHeight()
                                 .fillMaxWidth(.8f)
@@ -223,14 +222,19 @@ fun StartWorkoutScreen(
                     if (state.loggerListStates[page].currentSet >= state.loggerListStates[page].reps.size) {
                         Card(
                             shape = RoundedCornerShape(8.dp),
-                            backgroundColor = androidx.compose.material.MaterialTheme.colors.background,
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.background,
+                                contentColor = MaterialTheme.colorScheme.onBackground,
+                                disabledContainerColor = MaterialTheme.colorScheme.background,
+                                disabledContentColor = MaterialTheme.colorScheme.onBackground
+                            ),
                             modifier = Modifier
                                 .clip(
                                     RoundedCornerShape(50.dp)
                                 )
                                 .border(
                                     2.dp,
-                                    androidx.compose.material.MaterialTheme.colors.primary,
+                                    MaterialTheme.colorScheme.outline,
                                     RoundedCornerShape(50.dp)
                                 )
                                 .padding(spacing.spaceSmall)
@@ -244,18 +248,18 @@ fun StartWorkoutScreen(
                             ) {
                                 WearText(
                                     modifier = Modifier.padding(horizontal = spacing.spaceSmall),
-                                    color = androidx.compose.material.MaterialTheme.colors.onBackground,
+                                    color = MaterialTheme.colorScheme.onBackground,
                                     text = state.loggerListStates[page].exerciseName,
-                                    style = androidx.compose.material.MaterialTheme.typography.body2,
+                                    style = MaterialTheme.typography.labelMedium,
                                     maxLines = 3,
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 Spacer(modifier = Modifier.height(spacing.spaceSmall))
                                 WearText(
                                     modifier = Modifier.padding(horizontal = spacing.spaceSmall),
-                                    color = androidx.compose.material.MaterialTheme.colors.onBackground,
+                                    color = MaterialTheme.colorScheme.onBackground,
                                     text = stringResource(id = com.hbaez.core.R.string.redo),
-                                    style = androidx.compose.material.MaterialTheme.typography.body2
+                                    style = MaterialTheme.typography.labelMedium
                                 )
                             }
                         }

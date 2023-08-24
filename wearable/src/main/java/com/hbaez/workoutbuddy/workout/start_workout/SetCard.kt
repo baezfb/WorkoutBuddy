@@ -10,30 +10,21 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.CheckCircleOutline
-import androidx.compose.material.icons.rounded.Done
-import androidx.compose.material.icons.rounded.KeyboardArrowUp
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.material.Chip
-import androidx.wear.compose.material.Icon
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.core.R
 import com.hbaez.workoutbuddy.components.WearButton
@@ -55,12 +46,17 @@ fun SetCard(
     val spacing = LocalSpacing.current
     Card(
         shape = RoundedCornerShape(8.dp),
-        backgroundColor = MaterialTheme.colors.background,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.onBackground,
+            disabledContainerColor = MaterialTheme.colorScheme.background,
+            disabledContentColor = MaterialTheme.colorScheme.onBackground
+        ),
         modifier = Modifier
             .clip(
                 RoundedCornerShape(50.dp)
             )
-            .border(2.dp, MaterialTheme.colors.primary, RoundedCornerShape(50.dp))
+            .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(50.dp))
             .padding(spacing.spaceSmall)
             .fillMaxWidth(.9f)
             .height(155.dp)
@@ -73,9 +69,9 @@ fun SetCard(
                 modifier = Modifier
                     .padding(horizontal = spacing.spaceSmall)
                     .horizontalScroll(scroll),
-                color = MaterialTheme.colors.onBackground,
+                color = MaterialTheme.colorScheme.onBackground,
                 text = exerciseName,
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.labelMedium,
                 maxLines = 1,
 //                overflow = TextOverflow.Ellipsis
             )
@@ -91,7 +87,7 @@ fun SetCard(
                     text = "",
                     onClick = { onRepDecrease() },
                     icon = Icons.Rounded.ArrowDownward,
-                    borderColor = MaterialTheme.colors.background,
+                    borderColor = MaterialTheme.colorScheme.background,
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(1f)
@@ -107,13 +103,13 @@ fun SetCard(
                 ) {
                     WearText(
                         text = currReps,
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.onBackground
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                     WearText(
                         text = stringResource(id = R.string.reps),
-                        style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.onBackground
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
 
                 }
@@ -121,7 +117,7 @@ fun SetCard(
                     text = "",
                     onClick = { onRepIncrease() },
                     icon = Icons.Rounded.ArrowUpward,
-                    borderColor = MaterialTheme.colors.background,
+                    borderColor = MaterialTheme.colorScheme.background,
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(1f)
@@ -139,7 +135,7 @@ fun SetCard(
                     text = "",
                     onClick = { onWeightDecrease() },
                     icon = Icons.Rounded.ArrowDownward,
-                    borderColor = MaterialTheme.colors.background,
+                    borderColor = MaterialTheme.colorScheme.background,
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(1f)
@@ -155,13 +151,13 @@ fun SetCard(
                 ) {
                     WearText(
                         text = currWeight,
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.onBackground
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                     WearText(
                         text = stringResource(id = R.string.lbs),
-                        style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.onBackground
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
 
                 }
@@ -169,7 +165,7 @@ fun SetCard(
                     text = "",
                     onClick = { onWeightIncrease() },
                     icon = Icons.Rounded.ArrowUpward,
-                    borderColor = MaterialTheme.colors.background,
+                    borderColor = MaterialTheme.colorScheme.background,
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(1f)
@@ -186,14 +182,14 @@ fun SetCard(
             ){
                 WearText(
                     text = "${currSet+1}/${totalSets}",
-                    style = MaterialTheme.typography.body2,
-                    color = MaterialTheme.colors.onBackground
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 WearButton(
                     text = "",
                     onClick = { onRest() },
                     icon = Icons.Rounded.CheckCircleOutline,
-                    borderColor = MaterialTheme.colors.background,
+                    borderColor = MaterialTheme.colorScheme.background,
                     modifier = Modifier
                         .fillMaxHeight()
                 )

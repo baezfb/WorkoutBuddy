@@ -4,68 +4,35 @@ import android.app.RemoteInput
 import android.content.Intent
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
-import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.wear.compose.material.PositionIndicator
-import androidx.wear.compose.material.Scaffold
-import androidx.wear.compose.material.TimeText
-import androidx.wear.compose.material.Vignette
-import androidx.wear.compose.material.VignettePosition
-import androidx.wear.compose.material.rememberScalingLazyListState
-import androidx.wear.compose.material.scrollAway
 import androidx.wear.input.wearableExtender
 import com.hbaez.workoutbuddy.R
-import com.hbaez.workoutbuddy.navigation.Route
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Login
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.input.RemoteInputIntentHelper
-import androidx.wear.compose.material.CompactButton
 import androidx.wear.compose.material.Icon
 import com.hbaez.core_ui.LocalSpacing
 
 private const val SPLASH_TIMEOUT = 1000L
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
@@ -125,7 +92,7 @@ fun LoginScreen(
                     )
                 )
                       },
-            colors = ButtonDefaults.secondaryButtonColors(backgroundColor = MaterialTheme.colors.primary)
+            colors = ButtonDefaults.secondaryButtonColors(backgroundColor = MaterialTheme.colorScheme.primary)
         ) {
             Row(
                 horizontalArrangement = Arrangement.Center,
@@ -133,8 +100,8 @@ fun LoginScreen(
             ) {
                 Text(
                     text = stringResource(id = R.string.login),
-                    color = MaterialTheme.colors.onPrimary,
-                    style = MaterialTheme.typography.h4
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MaterialTheme.typography.displaySmall
                 )
                 Spacer(modifier = Modifier.width(spacing.spaceLarge))
                 Icon(

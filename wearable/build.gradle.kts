@@ -8,6 +8,10 @@ plugins {
     id("com.google.gms.google-services")
 }
 
+kapt {
+    correctErrorTypes = true
+}
+
 android {
     namespace = "com.hbaez.workoutbuddy"
     compileSdk = 33

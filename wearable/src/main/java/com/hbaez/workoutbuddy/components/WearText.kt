@@ -1,5 +1,7 @@
 package com.hbaez.workoutbuddy.components
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -7,15 +9,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.wear.compose.material.MaterialTheme
-import androidx.wear.compose.material.Text
 
 @Composable
 fun WearText(
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colors.onPrimary,
+    color: Color = MaterialTheme.colorScheme.onPrimary,
     text: String,
-    style: TextStyle = MaterialTheme.typography.title3,
+    style: TextStyle = MaterialTheme.typography.displaySmall,
     maxLines: Int = 1,
     overflow: TextOverflow = TextOverflow.Clip
 ) {

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -24,10 +25,8 @@ import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.wear.compose.material.AutoCenteringParams
-import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.ScalingLazyColumn
@@ -43,7 +42,6 @@ import com.hbaez.workoutbuddy.components.WearButton
 import com.hbaez.workoutbuddy.components.WearText
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalLifecycleComposeApi::class)
 @ExperimentalCoilApi
 @Composable
 fun WorkoutOverviewScreen(
@@ -72,7 +70,7 @@ fun WorkoutOverviewScreen(
             )
         },
         modifier = Modifier
-            .background(color = MaterialTheme.colors.background)
+            .background(color = MaterialTheme.colorScheme.background)
             .onRotaryScrollEvent {
                 coroutineScope.launch {
                     Log.println(
@@ -103,7 +101,7 @@ fun WorkoutOverviewScreen(
             state = listState
         ) {
 
-            item { WearText(color = MaterialTheme.colors.onBackground, text = stringResource(R.string.choose_routine)) }
+            item { WearText(color = MaterialTheme.colorScheme.onBackground, text = stringResource(R.string.choose_routine)) }
             item { Spacer(modifier = Modifier.height(spacing.spaceMedium)) }
             val uniqueNames = mutableListOf<String>()
             val workoutId = hashMapOf<String, List<Int>>()

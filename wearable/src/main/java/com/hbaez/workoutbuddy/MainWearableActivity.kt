@@ -2,7 +2,6 @@ package com.hbaez.workoutbuddy
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavType
@@ -27,7 +26,6 @@ import com.hbaez.workoutbuddy.workout.timer.TimerScreen
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-@ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @ExperimentalCoilApi
 @AndroidEntryPoint
