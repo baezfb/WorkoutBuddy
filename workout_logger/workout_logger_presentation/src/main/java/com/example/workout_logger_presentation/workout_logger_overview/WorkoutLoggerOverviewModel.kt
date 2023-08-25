@@ -8,12 +8,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.workout_logger_domain.use_case.ExerciseTrackerUseCases
 import com.example.workout_logger_presentation.search_exercise.TrackableExerciseState
+import com.example.workout_logger_presentation.workout_logger_overview.components.EditableWorkoutItemState
 import com.hbaez.core.R
 import com.hbaez.core.domain.preferences.Preferences
 import com.hbaez.core.util.UiEvent
 import com.hbaez.core.util.UiText
 import com.hbaez.user_auth_presentation.model.CalendarDates
 import com.hbaez.user_auth_presentation.model.CompletedWorkout
+import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 import com.hbaez.user_auth_presentation.model.service.StorageService
 import com.himanshoe.kalendar.KalendarEvent
 import com.himanshoe.kalendar.KalendarEvents
@@ -165,6 +167,83 @@ class WorkoutLoggerOverviewModel @Inject constructor(
                     refreshWorkouts()
                 }
             }
+
+            is WorkoutLoggerOverviewEvent.OnEditWorkoutItem -> {
+                state = state.copy(
+                    editableWorkoutItemState = EditableWorkoutItemState(
+                        origReps = completedWorkouts[event.index].reps,
+                        origWeights = completedWorkouts[event.index].weight,
+                        origIsCompleted = completedWorkouts[event.index].isCompleted,
+                        reps = completedWorkouts[event.index].reps,
+                        weight = completedWorkouts[event.index].weight,
+                        isCompleted = completedWorkouts[event.index].isCompleted
+                    )
+                )
+            }
+            is WorkoutLoggerOverviewEvent.OnEditWorkoutItemCompleted -> {
+                val tmpCompleted = state.editableWorkoutItemState.isCompleted.toMutableList()
+                tmpCompleted[event.row] = event.newValue.toString()
+                state = state.copy(
+                    editableWorkoutItemState = state.editableWorkoutItemState.copy(
+                        isCompleted = tmpCompleted
+                    )
+                )
+            }
+            is WorkoutLoggerOverviewEvent.OnEditWorkoutItemReps -> {
+                val tmpReps = state.editableWorkoutItemState.reps.toMutableList()
+                tmpReps[event.row] = event.newValue
+                state = state.copy(
+                    editableWorkoutItemState = state.editableWorkoutItemState.copy(
+                        reps = tmpReps
+                    )
+                )
+            }
+            is WorkoutLoggerOverviewEvent.OnEditWorkoutItemWeight -> {
+                val tmpWeight = state.editableWorkoutItemState.weight.toMutableList()
+                tmpWeight[event.row] = event.newValue
+                state = state.copy(
+                    editableWorkoutItemState = state.editableWorkoutItemState.copy(
+                        weight = tmpWeight
+                    )
+                )
+            }
+
+            is WorkoutLoggerOverviewEvent.OnEditWorkoutItemUpdate -> {
+                updateCompletedWorkoutItem(
+                    reps = state.editableWorkoutItemState.reps,
+                    weight = state.editableWorkoutItemState.weight,
+                    isCompleted = state.editableWorkoutItemState.isCompleted,
+                    index = event.index,
+                    dayOfMonth = state.date.dayOfMonth,
+                    month = state.date.monthValue,
+                    year = state.date.year
+                )
+            }
+        }
+    }
+
+    private fun updateCompletedWorkoutItem(reps: List<String>, weight: List<String>, isCompleted: List<String>, index: Int, dayOfMonth: Int, month: Int, year: Int){
+        val date = "${year}-${month.toString().padStart(2,'0')}-${dayOfMonth.toString().padStart(2, '0')}"
+        viewModelScope.launch {
+            storageService.updateCompletedWorkout(
+                CompletedWorkout(
+                    docId = completedWorkouts[index].docId,
+                    workoutName = completedWorkouts[index].workoutName,
+                    workoutId = completedWorkouts[index].workoutId,
+                    exerciseName = completedWorkouts[index].exerciseName,
+                    exerciseId = null,
+                    sets = completedWorkouts[index].sets,
+                    rest = completedWorkouts[index].rest,
+                    reps = reps,
+                    weight = weight,
+                    isCompleted = isCompleted,
+                    dayOfMonth = dayOfMonth,
+                    month = month,
+                    year = year
+                ),
+                date = date
+            )
+            refreshWorkouts()
         }
     }
 

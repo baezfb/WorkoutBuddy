@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -108,6 +109,7 @@ fun WorkoutLoggerOverviewScreen(
     val optionsHeaderType = remember { mutableStateOf("") }
     val isFloatingButtonExpanded = remember { mutableStateOf(false) }
     val isCalendarExpanded = remember { mutableStateOf(false) }
+    val editingWorkoutItem = remember { mutableStateOf(listOf(false, -1)) }
     val isLoading by viewModel.isLoading.collectAsState()
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
 
@@ -517,40 +519,103 @@ fun WorkoutLoggerOverviewScreen(
                                     for(i in 1..viewModel.completedWorkouts[it].sets){
                                         ExerciseRow(
                                             set = i,
-                                            reps = reps[i-1].toInt(),
-                                            weight = weight[i-1].toDouble(),
-                                            completed = isCompleted[i-1].toBoolean()
+                                            reps = if(editingWorkoutItem.value[0] as Boolean && editingWorkoutItem.value[1] == it) state.editableWorkoutItemState.reps[i-1].toIntOrNull() else reps[i-1].toInt(),
+                                            weight = if(editingWorkoutItem.value[0] as Boolean && editingWorkoutItem.value[1] == it) state.editableWorkoutItemState.weight[i-1].toDoubleOrNull() else weight[i-1].toDouble(),
+                                            completed = if(editingWorkoutItem.value[0] as Boolean && editingWorkoutItem.value[1] == it) state.editableWorkoutItemState.isCompleted[i-1].toBoolean() else isCompleted[i-1].toBoolean(),
+                                            enabled = editingWorkoutItem.value[0] as Boolean && editingWorkoutItem.value[1] == it,
+                                            onRepsChange = { newValue ->
+                                                viewModel.onEvent(WorkoutLoggerOverviewEvent.OnEditWorkoutItemReps(it, i - 1, newValue))
+                                            },
+                                            onWeightChange = { newValue ->
+                                                viewModel.onEvent(WorkoutLoggerOverviewEvent.OnEditWorkoutItemWeight(it, i - 1, newValue))
+                                            },
+                                            onCompletedChange = { newValue ->
+                                                viewModel.onEvent(WorkoutLoggerOverviewEvent.OnEditWorkoutItemCompleted(it, i - 1, newValue))
+                                            }
                                         )
                                         if(i != viewModel.completedWorkouts[it].sets) Divider(color = MaterialTheme.colorScheme.secondary, thickness = 1.dp)
                                     }
                                     Spacer(modifier = Modifier.height(spacing.spaceExtraSmall))
                                     Row(
-                                        modifier = Modifier.fillMaxWidth().padding(spacing.spaceMedium),
-                                        horizontalArrangement = Arrangement.End
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(spacing.spaceMedium),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Icon(
-                                            modifier = Modifier
-                                                .clickable {
-                                                    viewModel.onEvent(WorkoutLoggerOverviewEvent.OnDeleteCompletedWorkout(viewModel.completedWorkouts[it]))
-                                                }
-                                                .padding(spacing.spaceSmall),
-                                            imageVector = Icons.Filled.Delete,
-                                            contentDescription = "CompletedWorkoutItem Delete"
-                                        )
+                                        if(editingWorkoutItem.value[0] as Boolean && editingWorkoutItem.value[1] == it){
+                                            Icon(
+                                                modifier = Modifier
+                                                    .clickable {
+                                                        viewModel.onEvent(
+                                                            WorkoutLoggerOverviewEvent.OnDeleteCompletedWorkout(
+                                                                viewModel.completedWorkouts[it]
+                                                            )
+                                                        )
+                                                    }
+                                                    .padding(spacing.spaceSmall),
+                                                imageVector = Icons.Filled.Delete,
+                                                contentDescription = "CompletedWorkoutItem Delete"
+                                            )
+                                        }
                                         Spacer(modifier = Modifier.width(spacing.spaceMedium))
-                                        Icon(
-                                            modifier = Modifier
-                                                .clickable {
-                                                /*TODO*/
-                                                }
-                                                .padding(spacing.spaceSmall),
-                                            imageVector = Icons.Filled.Edit,
-                                            contentDescription = "CompletedWorkoutItem Edit"
-                                        )
+                                        Row(
+                                            horizontalArrangement = Arrangement.End
+                                        ) {
+                                            if(editingWorkoutItem.value[0] as Boolean && editingWorkoutItem.value[1] == it){
+                                                Icon(
+                                                    modifier = Modifier
+                                                        .clickable {
+                                                            editingWorkoutItem.value = listOf(
+                                                                !(editingWorkoutItem.value[0] as Boolean),
+                                                                -1
+                                                            )
+                                                        }
+                                                        .padding(spacing.spaceSmall),
+                                                    imageVector = Icons.Filled.Close,
+                                                    contentDescription = "CompletedWorkoutItem Edit"
+                                                )
+                                                Spacer(modifier = Modifier.width(spacing.spaceLarge))
+                                            }
+                                            Icon(
+                                                modifier = Modifier
+                                                    .clickable {
+                                                        // if check mark clicked
+                                                        if (editingWorkoutItem.value[0] as Boolean && editingWorkoutItem.value[1] == it) {
+                                                            editingWorkoutItem.value = listOf(
+                                                                !(editingWorkoutItem.value[0] as Boolean),
+                                                                -1
+                                                            )
+                                                            viewModel.onEvent(WorkoutLoggerOverviewEvent.OnEditWorkoutItemUpdate(it))
+                                                        }
+                                                        // if edit clicked while another was being edited
+                                                        else if (editingWorkoutItem.value[0] as Boolean && editingWorkoutItem.value[1] != it) {
+                                                            editingWorkoutItem.value = listOf(
+                                                                editingWorkoutItem.value[0] as Boolean,
+                                                                it
+                                                            )
+                                                        }
+                                                        // if edit clicked while nothing was being edited
+                                                        else {
+                                                            editingWorkoutItem.value = listOf(
+                                                                !(editingWorkoutItem.value[0] as Boolean),
+                                                                it
+                                                            )
+                                                            viewModel.onEvent(
+                                                                WorkoutLoggerOverviewEvent.OnEditWorkoutItem(
+                                                                    it
+                                                                )
+                                                            )
+                                                        }
+                                                    }
+                                                    .padding(spacing.spaceSmall),
+                                                imageVector = if(editingWorkoutItem.value[0] as Boolean && editingWorkoutItem.value[1] == it) Icons.Filled.Done else Icons.Filled.Edit,
+                                                contentDescription = "CompletedWorkoutItem Edit"
+                                            )
+                                        }
                                     }
                                 }
                             },
-//                color = MaterialTheme.colors.primaryVariant
                         )
                         Spacer(modifier = Modifier.height(spacing.spaceMedium))
                     }

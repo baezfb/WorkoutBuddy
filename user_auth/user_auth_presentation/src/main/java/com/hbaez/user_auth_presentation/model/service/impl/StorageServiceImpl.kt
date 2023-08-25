@@ -216,7 +216,25 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         completedWorkout: CompletedWorkout,
         date: String
     ): String {
-        TODO("Not yet implemented")
+        trace(UPDATE_COMPLETED_WORKOUT) {
+            val updateData = mutableMapOf<String, Any>()
+            if(completedWorkout.exerciseId != null){
+                updateData["exerciseId"] = completedWorkout.exerciseId
+            }
+            updateData["completed"] = completedWorkout.isCompleted
+            updateData["dayOfMonth"] = completedWorkout.dayOfMonth
+            updateData["exerciseName"] = completedWorkout.exerciseName
+            updateData["month"] = completedWorkout.month
+            updateData["reps"] = completedWorkout.reps
+            updateData["rest"] = completedWorkout.rest
+            updateData["sets"] = completedWorkout.sets
+            updateData["weight"] = completedWorkout.weight
+            updateData["workoutId"] = completedWorkout.workoutId
+            updateData["workoutName"] = completedWorkout.workoutName
+            updateData["year"] = completedWorkout.year
+            completedWorkoutCollection(auth.currentUserId, date).document(completedWorkout.docId).update(updateData).await()
+            return completedWorkout.docId
+        }
     }
 
     override suspend fun deleteCompletedWorkout(
