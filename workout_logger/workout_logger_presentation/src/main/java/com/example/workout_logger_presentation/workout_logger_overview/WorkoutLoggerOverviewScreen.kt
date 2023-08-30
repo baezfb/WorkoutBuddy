@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -227,7 +228,14 @@ fun WorkoutLoggerOverviewScreen(
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(bottom = spacing.spaceExtraLarge + spacing.spaceMedium),
+                                .padding(bottom = spacing.spaceExtraLarge + spacing.spaceMedium)
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    onClick = {
+                                        isFloatingButtonExpanded.value = false
+                                    }
+                                ),
                             horizontalAlignment = Alignment.End,
                             verticalArrangement = Arrangement.Bottom
                         ) {
