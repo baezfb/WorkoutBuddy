@@ -35,6 +35,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,7 +44,9 @@ import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import com.example.workout_logger_presentation.components.AddButton
 import com.example.workout_logger_presentation.components.IconButton
+import com.example.workout_logger_presentation.create_workout.CreateWorkoutTableRow
 import com.example.workout_logger_presentation.create_workout.TrackableExerciseUiState
+import com.example.workout_logger_presentation.start_workout.TimerStatus
 import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
 import kotlinx.coroutines.launch
@@ -191,7 +194,8 @@ fun ExerciseCard(
                                 Row(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(16.dp))
-                                        .background(MaterialTheme.colorScheme.primaryContainer),
+                                        .background(MaterialTheme.colorScheme.primaryContainer)
+                                        .padding(horizontal=spacing.spaceMedium),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
@@ -201,63 +205,121 @@ fun ExerciseCard(
                                     )
                                     Column {
                                         Spacer(modifier = Modifier.height(spacing.spaceMedium))
-                                        DraggableRow(
+                                        CreateWorkoutTableRow(
+                                            onRepsChange = { text -> onRepsChange(text, it, trackableExercises[0]!!.name) },
+                                            onRestChange = { text ->  onRestChange(text, it, trackableExercises[0]!!.name) },
+                                            onWeightChange = { text -> onWeightChange(text, it, trackableExercises[0]!!.name) },
                                             reps = trackableExercises[0]!!.reps[it],
                                             rest = trackableExercises[0]!!.rest[it],
                                             weight = trackableExercises[0]!!.weight[it],
-                                            hasExercise = true,
-                                            id = it,
-                                            cardOffset = 600f,
-                                            onRepsChange = { text ->
-                                                onRepsChange(text, it, trackableExercises[0]!!.name)
-                                            },
-                                            onRestChange = { text ->
-                                                onRestChange(text, it, trackableExercises[0]!!.name)
-                                            },
-                                            onWeightChange = { text ->
-                                                onWeightChange(text, it, trackableExercises[0]!!.name)
-                                            },
-                                            onDeleteRow = { id ->
-                                                onDeleteRow(id)
-                                            }
+                                            hasExercise = true
                                         )
+//                                        DraggableRow(
+//                                            reps = trackableExercises[0]!!.reps[it],
+//                                            rest = trackableExercises[0]!!.rest[it],
+//                                            weight = trackableExercises[0]!!.weight[it],
+//                                            hasExercise = true,
+//                                            id = it,
+//                                            cardOffset = 600f,
+//                                            onRepsChange = { text ->
+//                                                onRepsChange(text, it, trackableExercises[0]!!.name)
+//                                            },
+//                                            onRestChange = { text ->
+//                                                onRestChange(text, it, trackableExercises[0]!!.name)
+//                                            },
+//                                            onWeightChange = { text ->
+//                                                onWeightChange(text, it, trackableExercises[0]!!.name)
+//                                            },
+//                                            onDeleteRow = { id ->
+//                                                onDeleteRow(id)
+//                                            }
+//                                        )
                                         if(trackableExercises.size > 1){
                                             Spacer(modifier = Modifier.height(spacing.spaceSmall))
-                                            DraggableRow(
+                                            CreateWorkoutTableRow(
+                                                onRepsChange = { text -> onRepsChange(text, it, trackableExercises[1]!!.name) },
+                                                onRestChange = { text ->  onRestChange(text, it, trackableExercises[1]!!.name) },
+                                                onWeightChange = { text -> onWeightChange(text, it, trackableExercises[1]!!.name) },
                                                 reps = trackableExercises[1]!!.reps[it],
                                                 rest = trackableExercises[1]!!.rest[it],
                                                 weight = trackableExercises[1]!!.weight[it],
-                                                hasExercise = true,
-                                                id = it,
-                                                cardOffset = 600f,
-                                                onRepsChange = { text ->
-                                                    onRepsChange(text, it, trackableExercises[1]!!.name)
-                                                },
-                                                onRestChange = { text ->
-                                                    onRestChange(text, it, trackableExercises[1]!!.name)
-                                                },
-                                                onWeightChange = { text ->
-                                                    onWeightChange(text, it, trackableExercises[1]!!.name)
-                                                },
-                                                onDeleteRow = { id ->
-                                                    onDeleteRow(id)
-                                                }
+                                                hasExercise = true
                                             )
+//                                            DraggableRow(
+//                                                reps = trackableExercises[1]!!.reps[it],
+//                                                rest = trackableExercises[1]!!.rest[it],
+//                                                weight = trackableExercises[1]!!.weight[it],
+//                                                hasExercise = true,
+//                                                id = it,
+//                                                cardOffset = 600f,
+//                                                onRepsChange = { text ->
+//                                                    onRepsChange(text, it, trackableExercises[1]!!.name)
+//                                                },
+//                                                onRestChange = { text ->
+//                                                    onRestChange(text, it, trackableExercises[1]!!.name)
+//                                                },
+//                                                onWeightChange = { text ->
+//                                                    onWeightChange(text, it, trackableExercises[1]!!.name)
+//                                                },
+//                                                onDeleteRow = { id ->
+//                                                    onDeleteRow(id)
+//                                                }
+//                                            )
                                         }
                                         Spacer(modifier = Modifier.height(spacing.spaceMedium))
                                     }
                                 }
                                 Spacer(modifier = Modifier.height(spacing.spaceMedium))
                             }
-                            item{
-                                AddButton(
-                                    text = stringResource(id = R.string.add_set),
-                                    onClick = {
-                                        onAddSet()
-                                    },
-                                    color = MaterialTheme.colorScheme.primary,
-                                    borderColor = MaterialTheme.colorScheme.background
-                                )
+                            item {
+                                Spacer(modifier = Modifier.height(spacing.spaceMedium))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ){
+                                    Row(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(100f))
+                                            .clickable(enabled = trackableExercises[0]!!.sets > 0) {
+                                                onDeleteRow(trackableExercises[0]!!.sets - 1)
+                                            }
+                                            .border(
+                                                width = 1.dp,
+                                                color = MaterialTheme.colorScheme.background,
+                                                shape = RoundedCornerShape(100f)
+                                            )
+                                            .padding(spacing.spaceMedium),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "Del Set",
+                                            maxLines = 2,
+                                            style = MaterialTheme.typography.labelLarge,
+                                            color = if(trackableExercises[0]!!.sets > 0) MaterialTheme.colorScheme.primary else Color.DarkGray
+                                        )
+                                    }
+                                    Row(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(100f))
+                                            .clickable { onAddSet() }
+                                            .border(
+                                                width = 1.dp,
+                                                color = MaterialTheme.colorScheme.background,
+                                                shape = RoundedCornerShape(100f)
+                                            )
+                                            .padding(spacing.spaceMedium),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "Add Set",
+                                            maxLines = 2,
+                                            style = MaterialTheme.typography.labelLarge,
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
                             }
                             if(trackableExercises.size < 2){
                                 item {

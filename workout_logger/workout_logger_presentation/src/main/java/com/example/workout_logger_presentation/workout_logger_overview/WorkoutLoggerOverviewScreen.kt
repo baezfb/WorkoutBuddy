@@ -270,7 +270,7 @@ fun WorkoutLoggerOverviewScreen(
                                 Row(Modifier.padding(spacing.spaceMedium)) {
                                     Icon(imageVector = Icons.Filled.Edit, contentDescription = "floatingActionButton Icon")
                                     Spacer(modifier = Modifier.width(spacing.spaceMedium))
-                                    Text(text = stringResource(id = R.string.routine_template))
+                                    Text(text = stringResource(id = R.string.workout_routine))
                                 }
                             }
                             FloatingActionButton(
