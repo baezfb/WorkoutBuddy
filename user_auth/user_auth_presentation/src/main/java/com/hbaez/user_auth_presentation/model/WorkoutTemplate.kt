@@ -15,5 +15,6 @@ data class WorkoutTemplate(
     val rowId: Int,
     val position: Int,
     val lastUsedId: Int,
-    val lastUsedDate: String?
+    val lastUsedDate: String?,
+    val isSuperset: Boolean
 )

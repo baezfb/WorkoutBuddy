@@ -9,11 +9,11 @@ sealed class CreateWorkoutEvent {
 
     data class OnWorkoutNameFocusChange(val isFocused: Boolean): CreateWorkoutEvent()
 
-    data class OnTrackableExerciseUiRepsChange(val reps: String, val page: Int, val index: Int): CreateWorkoutEvent()
+    data class OnTrackableExerciseUiRepsChange(val reps: String, val page: Int, val index: Int, val exercise: String): CreateWorkoutEvent()
 
-    data class OnTrackableExerciseUiRestChange(val rest: String, val page: Int, val index: Int): CreateWorkoutEvent()
+    data class OnTrackableExerciseUiRestChange(val rest: String, val page: Int, val index: Int, val exercise: String): CreateWorkoutEvent()
 
-    data class OnTrackableExerciseUiWeightChange(val weight: String, val page: Int, val index: Int): CreateWorkoutEvent()
+    data class OnTrackableExerciseUiWeightChange(val weight: String, val page: Int, val index: Int, val exercise: String): CreateWorkoutEvent()
 
     data class OnRemoveSetRow(val id: Int, val page: Int): CreateWorkoutEvent()
 
@@ -31,11 +31,11 @@ sealed class CreateWorkoutEvent {
 
     data class OnRemovePage(val page: Int): CreateWorkoutEvent()
 
-    data class GetExerciseInfo(val exerciseName: String): CreateWorkoutEvent()
+    data class GetExerciseInfo(val position: Int, val isSuperset: Boolean): CreateWorkoutEvent()
 
     object GetAllExerciseInfo: CreateWorkoutEvent()
 
-    data class OnToggleExerciseDescription(val exercise: TrackableExerciseState): CreateWorkoutEvent()
+    data class OnToggleExerciseDescription(val exercise: TrackableExerciseState, val pos: Int = 0): CreateWorkoutEvent()
 
     object DeleteRoutine: CreateWorkoutEvent()
 

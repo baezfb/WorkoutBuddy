@@ -75,6 +75,7 @@ fun CreateWorkoutScreen(
     val pagerState = rememberPagerState()
     val pageCount = remember { mutableStateOf(state.pageCount) }
     val showExerciseInfoDialog = remember { mutableStateOf(false) }
+    val showExerciseInfoDialogSuperset = remember { mutableStateOf(false) }
     val showDeleteRoutineDialog = remember { mutableStateOf(false) }
 
     var menuExpanded = remember { mutableStateOf(false) }
@@ -107,7 +108,11 @@ fun CreateWorkoutScreen(
     }
     LaunchedEffect(key1 = pagerState.currentPage, key2 = state.trackableExercises.size){
         if(state.trackableExercises.getOrNull(pagerState.currentPage) != null){
-            viewModel.onEvent(CreateWorkoutEvent.GetExerciseInfo(state.trackableExercises[pagerState.currentPage].name))
+            if(state.trackableExercises[pagerState.currentPage].isSuperset){
+                viewModel.onEvent(CreateWorkoutEvent.GetExerciseInfo(pagerState.currentPage, true))
+            } else {
+                viewModel.onEvent(CreateWorkoutEvent.GetExerciseInfo(pagerState.currentPage, false))
+            }
         }
         if (!createWorkout){
             viewModel.onEvent(CreateWorkoutEvent.GetAllExerciseInfo)
@@ -116,11 +121,11 @@ fun CreateWorkoutScreen(
 
     if(showExerciseInfoDialog.value){
         ExerciseInfoDialog(
-            trackableExerciseState = state.exerciseInfo.first(),
+            trackableExerciseState = if(showExerciseInfoDialogSuperset.value) state.exerciseInfo[1] else state.exerciseInfo[0],
             onDescrClick = {
-                           viewModel.onEvent(CreateWorkoutEvent.OnToggleExerciseDescription(state.exerciseInfo.first()))
+                           viewModel.onEvent(CreateWorkoutEvent.OnToggleExerciseDescription(if(showExerciseInfoDialogSuperset.value) state.exerciseInfo[1] else state.exerciseInfo[0], if(showExerciseInfoDialogSuperset.value) 1 else 0))
                            },
-            onDismiss = { showExerciseInfoDialog.value = false }
+            onDismiss = { showExerciseInfoDialog.value = false; showExerciseInfoDialogSuperset.value = false }
         )
     }
 
@@ -206,7 +211,8 @@ fun CreateWorkoutScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 count = 15,
                 contentPadding = PaddingValues(spacing.spaceSmall)
-            ) {page ->
+            ) { page ->
+                val trackableExercises = state.trackableExercises.filter { !it.isDeleted && it.position == page }
                 ExerciseCard(
                     page = page,
                     onAddCard = {
@@ -215,9 +221,16 @@ fun CreateWorkoutScreen(
                     onAddSet = {
                         viewModel.onEvent(CreateWorkoutEvent.AddSet(page))
                     },
-                    trackableExercises = state.trackableExercises.firstOrNull { !it.isDeleted && it.position == page },
+                    onMakeSuperset = {
+                        onNavigateToSearchExercise(page)
+                    },
+                    trackableExercises = trackableExercises,
                     onShowInfo = {
                         showExerciseInfoDialog.value = true
+                    },
+                    onShowInfoSuperset = {
+                        showExerciseInfoDialog.value = true
+                        showExerciseInfoDialogSuperset.value = true
                     },
                     onDeleteRow = { id ->
                         viewModel.onEvent(CreateWorkoutEvent.OnRemoveSetRow(id, page))
@@ -225,14 +238,14 @@ fun CreateWorkoutScreen(
                     onDeletePage = {
                         viewModel.onEvent(CreateWorkoutEvent.OnRemovePage(page))
                     },
-                    onRepsChange = { text, index ->
-                        viewModel.onEvent(CreateWorkoutEvent.OnTrackableExerciseUiRepsChange(reps = text, page = page, index = index))
+                    onRepsChange = { text, index, exerciseName ->
+                        viewModel.onEvent(CreateWorkoutEvent.OnTrackableExerciseUiRepsChange(reps = text, page = page, index = index, exercise = exerciseName))
                     },
-                    onRestChange = { text, index ->
-                        viewModel.onEvent(CreateWorkoutEvent.OnTrackableExerciseUiRestChange(rest = text, page = page, index = index))
+                    onRestChange = { text, index, exerciseName->
+                        viewModel.onEvent(CreateWorkoutEvent.OnTrackableExerciseUiRestChange(rest = text, page = page, index = index, exercise = exerciseName))
                     },
-                    onWeightChange = { text, index ->
-                        viewModel.onEvent(CreateWorkoutEvent.OnTrackableExerciseUiWeightChange(weight = text, page = page, index = index))
+                    onWeightChange = { text, index, exerciseName ->
+                        viewModel.onEvent(CreateWorkoutEvent.OnTrackableExerciseUiWeightChange(weight = text, page = page, index = index, exercise = exerciseName))
                     }
                 )
             }

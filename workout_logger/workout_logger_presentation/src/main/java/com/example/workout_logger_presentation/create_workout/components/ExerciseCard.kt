@@ -53,14 +53,16 @@ import kotlinx.coroutines.launch
 fun ExerciseCard(
     onAddCard: () -> Unit,
     onAddSet: () -> Unit,
+    onMakeSuperset: () -> Unit,
     page: Int,
-    trackableExercises: TrackableExerciseUiState?,
+    trackableExercises: List<TrackableExerciseUiState?>,
     onShowInfo: () -> Unit,
+    onShowInfoSuperset: () -> Unit,
     onDeleteRow: (id: Int) -> Unit,
     onDeletePage: () -> Unit,
-    onRepsChange: (text: String, index: Int)  -> Unit,
-    onRestChange: (text: String, index: Int)  -> Unit,
-    onWeightChange: (text: String, index: Int)  -> Unit
+    onRepsChange: (text: String, index: Int, exerciseName: String)  -> Unit,
+    onRestChange: (text: String, index: Int, exerciseName: String)  -> Unit,
+    onWeightChange: (text: String, index: Int, exerciseName: String)  -> Unit
 ){
     val spacing = LocalSpacing.current
     var isLongPressed by remember { mutableStateOf(false) }
@@ -78,10 +80,10 @@ fun ExerciseCard(
         contentAlignment = Alignment.Center
     ) {
         Column {
-            if(trackableExercises != null){
+            if(trackableExercises.size == 1 && trackableExercises[0] != null){
                 Row {
                     Text(
-                        text = trackableExercises.name.uppercase(),
+                        text = trackableExercises[0]!!.name.uppercase(),
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
                         style = MaterialTheme.typography.displaySmall,
@@ -98,10 +100,46 @@ fun ExerciseCard(
                 }
                 Spacer(modifier = Modifier.height(spacing.spaceSmall))
             }
+            else if (trackableExercises.size > 1){
+                Row {
+                    Text(
+                        text = trackableExercises[0]!!.name.uppercase(),
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        style = MaterialTheme.typography.displaySmall,
+                        modifier = Modifier
+                            .padding(spacing.spaceExtraSmall)
+                            .weight(.8f)
+                    )
+                    Spacer(modifier = Modifier.width(spacing.spaceSmall))
+                    IconButton(
+                        onClick = { onShowInfo() },
+                        icon = Icons.Outlined.Info,
+                        padding = 0.dp
+                    )
+                    Spacer(modifier = Modifier.width(spacing.spaceMedium))
+                    Text(
+                        text = trackableExercises[1]!!.name.uppercase(),
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        style = MaterialTheme.typography.displaySmall,
+                        modifier = Modifier
+                            .padding(spacing.spaceExtraSmall)
+                            .weight(.8f)
+                    )
+                    Spacer(modifier = Modifier.width(spacing.spaceSmall))
+                    IconButton(
+                        onClick = { onShowInfoSuperset() },
+                        icon = Icons.Outlined.Info,
+                        padding = 0.dp
+                    )
+                }
+                Spacer(modifier = Modifier.height(spacing.spaceSmall))
+            }
             Card(
                 shape = RoundedCornerShape(8.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = if(isLongPressed && trackableExercises != null) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.background
+                    containerColor = if(isLongPressed && trackableExercises.isNotEmpty()) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.background
                 ),
                 modifier = Modifier
                     .clip(
@@ -122,7 +160,7 @@ fun ExerciseCard(
                     }
             ) {
 
-                if(trackableExercises == null){
+                if(trackableExercises.isEmpty()){
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -146,29 +184,70 @@ fun ExerciseCard(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Top
                         ) {
-                            items(count = trackableExercises.sets) {
+                            item {
                                 Spacer(modifier = Modifier.height(spacing.spaceMedium))
-                                DraggableRow(
-                                    sets = it.toString(),
-                                    reps = trackableExercises.reps[it],
-                                    rest = trackableExercises.rest[it],
-                                    weight = trackableExercises.weight[it],
-                                    hasExercise = true,
-                                    id = it,
-                                    cardOffset = 600f,
-                                    onRepsChange = { text ->
-                                        onRepsChange(text, it)
-                                    },
-                                    onRestChange = { text ->
-                                        onRestChange(text, it)
-                                    },
-                                    onWeightChange = { text ->
-                                        onWeightChange(text, it)
-                                    },
-                                    onDeleteRow = { id ->
-                                        onDeleteRow(id)
+                            }
+                            items(count = trackableExercises[0]!!.sets) {
+                                Row(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .background(MaterialTheme.colorScheme.primaryContainer),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = (it + 1).toString(),
+                                        style = MaterialTheme.typography.displaySmall,
+                                        modifier = Modifier.padding(spacing.spaceSmall)
+                                    )
+                                    Column {
+                                        Spacer(modifier = Modifier.height(spacing.spaceMedium))
+                                        DraggableRow(
+                                            reps = trackableExercises[0]!!.reps[it],
+                                            rest = trackableExercises[0]!!.rest[it],
+                                            weight = trackableExercises[0]!!.weight[it],
+                                            hasExercise = true,
+                                            id = it,
+                                            cardOffset = 600f,
+                                            onRepsChange = { text ->
+                                                onRepsChange(text, it, trackableExercises[0]!!.name)
+                                            },
+                                            onRestChange = { text ->
+                                                onRestChange(text, it, trackableExercises[0]!!.name)
+                                            },
+                                            onWeightChange = { text ->
+                                                onWeightChange(text, it, trackableExercises[0]!!.name)
+                                            },
+                                            onDeleteRow = { id ->
+                                                onDeleteRow(id)
+                                            }
+                                        )
+                                        if(trackableExercises.size > 1){
+                                            Spacer(modifier = Modifier.height(spacing.spaceSmall))
+                                            DraggableRow(
+                                                reps = trackableExercises[1]!!.reps[it],
+                                                rest = trackableExercises[1]!!.rest[it],
+                                                weight = trackableExercises[1]!!.weight[it],
+                                                hasExercise = true,
+                                                id = it,
+                                                cardOffset = 600f,
+                                                onRepsChange = { text ->
+                                                    onRepsChange(text, it, trackableExercises[1]!!.name)
+                                                },
+                                                onRestChange = { text ->
+                                                    onRestChange(text, it, trackableExercises[1]!!.name)
+                                                },
+                                                onWeightChange = { text ->
+                                                    onWeightChange(text, it, trackableExercises[1]!!.name)
+                                                },
+                                                onDeleteRow = { id ->
+                                                    onDeleteRow(id)
+                                                }
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(spacing.spaceMedium))
                                     }
-                                )
+                                }
+                                Spacer(modifier = Modifier.height(spacing.spaceMedium))
                             }
                             item{
                                 AddButton(
@@ -179,6 +258,19 @@ fun ExerciseCard(
                                     color = MaterialTheme.colorScheme.primary,
                                     borderColor = MaterialTheme.colorScheme.background
                                 )
+                            }
+                            if(trackableExercises.size < 2){
+                                item {
+                                    Spacer(modifier = Modifier.height(spacing.spaceLarge))
+                                    AddButton(
+                                        text = stringResource(id = R.string.make_superset),
+                                        onClick = {
+                                            onMakeSuperset()
+                                        },
+                                        color = MaterialTheme.colorScheme.tertiary,
+                                        borderColor = MaterialTheme.colorScheme.background
+                                    )
+                                }
                             }
                         }
                     }

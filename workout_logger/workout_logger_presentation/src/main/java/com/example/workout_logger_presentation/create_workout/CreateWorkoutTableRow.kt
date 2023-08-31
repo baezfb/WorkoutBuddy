@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -28,7 +29,6 @@ fun CreateWorkoutTableRow(
     onRepsChange: (String) -> Unit,
     onRestChange: (String) -> Unit,
     onWeightChange: (String) -> Unit,
-    sets: String,
     reps: String,
     rest: String,
     weight: String,
@@ -38,13 +38,8 @@ fun CreateWorkoutTableRow(
 
     Spacer(modifier = Modifier.height(spacing.spaceMedium))
     Row(
-        modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+//        modifier = Modifier.border(2.dp, MaterialTheme.colorScheme.onPrimaryContainer, RectangleShape)
     ){
-        Text(
-            text = (sets.toInt() + 1).toString(),
-            style = MaterialTheme.typography.displaySmall,
-            modifier = Modifier.padding(spacing.spaceSmall)
-        )
         EditTableCell(
             label = stringResource(id = R.string.reps),
             text = reps,
@@ -54,8 +49,8 @@ fun CreateWorkoutTableRow(
                 val filteredValue = it.filter { tmp -> !(tmp == '.' || tmp == '-') } // Filter out non-digit characters
                 onRepsChange(filteredValue)
             },
-            borderColor = MaterialTheme.colorScheme.background,
-            backgroundColor = MaterialTheme.colorScheme.background
+            borderColor = MaterialTheme.colorScheme.primaryContainer,
+            backgroundColor = Color.Transparent
         )
         EditTableCell(
             label = stringResource(id = R.string.rest),
@@ -66,8 +61,8 @@ fun CreateWorkoutTableRow(
                 val filteredValue = it.filter { tmp -> !(tmp == '.' || tmp == '-') } // Filter out non-digit characters
                 onRestChange(filteredValue)
             },
-            borderColor = MaterialTheme.colorScheme.background,
-            backgroundColor = MaterialTheme.colorScheme.background
+            borderColor = MaterialTheme.colorScheme.primaryContainer,
+            backgroundColor = Color.Transparent
         )
         EditTableCell(
             label = stringResource(id = R.string.weight),
@@ -78,8 +73,8 @@ fun CreateWorkoutTableRow(
                 val filteredValue = it.filter { tmp -> tmp != '-' } // Filter out non-digit characters
                 onWeightChange(filteredValue)
             },
-            borderColor = MaterialTheme.colorScheme.background,
-            backgroundColor = MaterialTheme.colorScheme.background
+            borderColor = MaterialTheme.colorScheme.primaryContainer,
+            backgroundColor = Color.Transparent
         )
 
     }

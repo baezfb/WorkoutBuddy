@@ -60,7 +60,8 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                                 rowId = it.get("rowId").toString().toInt(),
                                 position = it.get("position").toString().toInt(),
                                 lastUsedId = it.get("lastUsedId").toString().toInt(),
-                                lastUsedDate = it.get("lastUsedDate").toString()
+                                lastUsedDate = it.get("lastUsedDate").toString(),
+                                isSuperset = it.get("isSuperset").toString().toBoolean()
                             )
                         }
                     }

@@ -52,7 +52,6 @@ const val MIN_DRAG_AMOUNT = 6
 @SuppressLint("UnusedTransitionTargetStateParameter")
 @Composable
 fun DraggableRow(
-    sets: String,
     reps: String,
     rest: String,
     weight: String,
@@ -111,7 +110,7 @@ fun DraggableRow(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.background), RoundedCornerShape(4.dp))
+//            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.primaryContainer), RoundedCornerShape(4.dp))
             .padding(horizontal = 2.dp)
     ){
         Row(
@@ -124,7 +123,7 @@ fun DraggableRow(
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .clip(RectangleShape)
-                .background(MaterialTheme.colorScheme.secondary)
+//                .background(MaterialTheme.colorScheme.secondary)
             ){
                 Icon(
                     imageVector = Icons.Default.Delete,
@@ -185,7 +184,6 @@ fun DraggableRow(
                 onRepsChange = { onRepsChange(it) },
                 onRestChange = { onRestChange(it) },
                 onWeightChange = { onWeightChange(it) },
-                sets = sets,
                 reps = reps,
                 rest = rest,
                 weight = weight,

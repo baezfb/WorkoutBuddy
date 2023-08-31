@@ -425,7 +425,8 @@ class StartWorkoutViewModel @Inject constructor(
                             rowId = -1,
                             position = -1,
                             lastUsedId = it.lastUsedId,
-                            lastUsedDate = LocalDate.of(year, month, dayOfMonth).toString()
+                            lastUsedDate = LocalDate.of(year, month, dayOfMonth).toString(),
+                            isSuperset = it.isSuperset
                         )
                     )
                 }

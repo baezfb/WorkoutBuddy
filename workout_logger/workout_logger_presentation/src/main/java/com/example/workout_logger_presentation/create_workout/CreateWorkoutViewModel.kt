@@ -60,9 +60,8 @@ class CreateWorkoutViewModel @Inject constructor(
 
             workoutIds = (savedStateHandle["workoutIds"] ?: "").trim('[').trim(']').replace(" ","").split(',').toList()
             viewModelScope.launch {
-                val pageCount = workoutIds.size
                 var lastusedid = -1
-                val initTrackableExercises: MutableList<TrackableExerciseUiState?> = (List(pageCount) { null }).toMutableList()
+                val initTrackableExercises: MutableList<TrackableExerciseUiState> = emptyList<TrackableExerciseUiState>().toMutableList()
                 workoutTemplates.first().onEach{
                     if(it.name == initWorkoutName){
                         val currTrackableExercise: TrackableExerciseUiState
@@ -82,7 +81,8 @@ class CreateWorkoutViewModel @Inject constructor(
                                 id = it.rowId,
                                 exercise = null,
                                 position = it.position,
-                                lastUsedDate = it.lastUsedDate
+                                lastUsedDate = it.lastUsedDate,
+                                isSuperset = it.isSuperset
                             )
                         } else{
                             currTrackableExercise = TrackableExerciseUiState(
@@ -95,18 +95,22 @@ class CreateWorkoutViewModel @Inject constructor(
                                 id = it.rowId,
                                 exercise = null,
                                 position = it.position,
-                                lastUsedDate = it.lastUsedDate
+                                lastUsedDate = it.lastUsedDate,
+                                isSuperset = it.isSuperset
                             )
                         }
                         lastusedid = it.lastUsedId
-                        initTrackableExercises[it.position] = currTrackableExercise
+                        initTrackableExercises.add(currTrackableExercise)
                     }
                 }
+                initTrackableExercises.sortBy { it.position }
+                val initTrackableExerciseSize = initTrackableExercises.filter { !it.isSuperset }.size
+                + (initTrackableExercises.filter { it.isSuperset }.size) / 2
                 state = state.copy(
-                    trackableExercises = initTrackableExercises.filterNotNull(),
-                    trackableExercisesSize = initTrackableExercises.size,
+                    trackableExercises = initTrackableExercises,
+                    trackableExercisesSize = initTrackableExerciseSize,
                     lastUsedId = lastusedid,
-                    pageCount = initTrackableExercises.size
+                    pageCount = initTrackableExerciseSize
                 )
             }
         }
@@ -131,11 +135,12 @@ class CreateWorkoutViewModel @Inject constructor(
             is CreateWorkoutEvent.OnTrackableExerciseUiRepsChange -> {
                 state = state.copy(
                     trackableExercises = state.trackableExercises.toList().map {
-                        if (it.position == event.page) {
+                        if(it.position == event.page && it.name == event.exercise){
                             val tmp = it.reps.toMutableList()
                             tmp[event.index] = event.reps
                             it.copy(reps = tmp.toList())
-                        } else{
+                        }
+                        else{
                             it
                         }
                     }.toMutableList()
@@ -145,11 +150,12 @@ class CreateWorkoutViewModel @Inject constructor(
             is CreateWorkoutEvent.OnTrackableExerciseUiRestChange -> {
                 state = state.copy(
                     trackableExercises = state.trackableExercises.toList().map {
-                        if (it.position == event.page) {
+                        if(it.position == event.page && it.name == event.exercise){
                             val tmp = it.rest.toMutableList()
                             tmp[event.index] = event.rest
                             it.copy(rest = tmp.toList())
-                        } else {
+                        }
+                        else{
                             it
                         }
                     }.toMutableList()
@@ -159,11 +165,12 @@ class CreateWorkoutViewModel @Inject constructor(
             is CreateWorkoutEvent.OnTrackableExerciseUiWeightChange -> {
                 state = state.copy(
                     trackableExercises = state.trackableExercises.toList().map {
-                        if (it.position == event.page) {
+                        if(it.position == event.page && it.name == event.exercise){
                             val tmp = it.weight.toMutableList()
                             tmp[event.index] = event.weight
                             it.copy(weight = tmp.toList())
-                        } else {
+                        }
+                        else{
                             it
                         }
                     }.toMutableList()
@@ -210,11 +217,29 @@ class CreateWorkoutViewModel @Inject constructor(
             is CreateWorkoutEvent.CheckTrackedExercise -> {
                 val trackedExercise = preferences.loadTrackedExercise()
                 if (trackedExercise.rowId != -1){
-                    state = state.copy(
-                        trackableExercises = (state.trackableExercises.toList() + TrackableExerciseUiState(
+                    Log.println(Log.DEBUG, "trackedExercise row ID", trackedExercise.rowId.toString())
+                    if(trackedExercise.rowId < state.pageCount){
+                        var currentSets = 0
+                        // update original exercise to superset status
+                        state = state.copy(
+                            trackableExercises = state.trackableExercises.map {
+                                if(it.position == trackedExercise.rowId){
+                                    currentSets = it.sets
+                                    it.copy(isSuperset = true)
+                                } else it
+                            }
+                        )
+                        // add new exercise
+                        state = state.copy(
+                            trackableExercises = (state.trackableExercises.toList() + TrackableExerciseUiState(
                                 name = trackedExercise.name,
                                 id = state.lastUsedId,
-                                position = state.trackableExercisesSize,
+                                position = trackedExercise.rowId,
+                                isSuperset = true,
+                                sets = currentSets,
+                                reps = List(currentSets) { "" },
+                                rest = List(currentSets) { "" },
+                                weight = List(currentSets) { "" },
                                 exercise = TrackedExercise(
                                     id = trackedExercise.id,
                                     name = trackedExercise.name,
@@ -232,11 +257,39 @@ class CreateWorkoutViewModel @Inject constructor(
                                     muscle_name_secondary = trackedExercise.muscle_name_secondary
                                 )
                             )).toMutableList(),
-                        lastUsedId = state.lastUsedId + 1,
-                        trackableExercisesSize = state.trackableExercisesSize + 1
-                    )
+                            lastUsedId = state.lastUsedId + 1,
+                            trackableExercisesSize = state.trackableExercisesSize
+                        )
+                    } else {
+                        state = state.copy(
+                            trackableExercises = (state.trackableExercises.toList() + TrackableExerciseUiState(
+                                name = trackedExercise.name,
+                                id = state.lastUsedId,
+                                position = state.trackableExercisesSize,
+                                isSuperset = false,
+                                exercise = TrackedExercise(
+                                    id = trackedExercise.id,
+                                    name = trackedExercise.name,
+                                    exerciseBase = trackedExercise.exerciseBase,
+                                    description = trackedExercise.description,
+                                    muscles = trackedExercise.muscles,
+                                    muscles_secondary = trackedExercise.muscles_secondary,
+                                    equipment = trackedExercise.equipment,
+                                    image_url = trackedExercise.image_url.toList(),
+                                    is_main = trackedExercise.is_main,
+                                    is_front = trackedExercise.is_front,
+                                    muscle_name_main = trackedExercise.muscle_name_main,
+                                    image_url_main = trackedExercise.image_url_main.toList(),
+                                    image_url_secondary = trackedExercise.image_url_secondary.toList(),
+                                    muscle_name_secondary = trackedExercise.muscle_name_secondary
+                                )
+                            )).toMutableList(),
+                            lastUsedId = state.lastUsedId + 1,
+                            trackableExercisesSize = state.trackableExercisesSize + 1
+                        )
+                        onEvent(CreateWorkoutEvent.AddPageCount)
+                    }
                     preferences.removeTrackedExercise()
-                    onEvent(CreateWorkoutEvent.AddPageCount)
                 }
             }
 
@@ -359,7 +412,23 @@ class CreateWorkoutViewModel @Inject constructor(
             }
 
             is CreateWorkoutEvent.GetExerciseInfo -> {
-                getExerciseByName(event.exerciseName)
+                if(event.isSuperset){
+                    var name1 = ""
+                    var name2 = ""
+                    state.trackableExercises.forEach {
+                        if(it.position == event.position) {
+                            if(name1.isEmpty()) {
+                                name1 = it.name
+                            } else {
+                                name2 = it.name
+                            }
+                        }
+                    }
+                    getSupersetExerciseByName(name1, name2)
+                }
+                else {
+                    getExerciseByName(state.trackableExercises[event.position].name)
+                }
             }
 
             is CreateWorkoutEvent.GetAllExerciseInfo -> {
@@ -387,10 +456,10 @@ class CreateWorkoutViewModel @Inject constructor(
 
             is CreateWorkoutEvent.OnToggleExerciseDescription -> {
                 state = state.copy(
-                    exerciseInfo = state.exerciseInfo.map {
-                        if(it.exercise.id == event.exercise.exercise.id){
-                            it.copy(isDescrExpanded = !it.isDescrExpanded)
-                        } else it
+                    exerciseInfo = state.exerciseInfo.mapIndexed { index, trackableExerciseState ->
+                        if(trackableExerciseState.exercise.id == event.exercise.exercise.id && index == event.pos){
+                            trackableExerciseState.copy(isDescrExpanded = !trackableExerciseState.isDescrExpanded)
+                        } else trackableExerciseState
                     }
                 )
             }
@@ -421,6 +490,43 @@ class CreateWorkoutViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
     }
+    private fun getSupersetExerciseByName(name1: String, name2: String) {
+        getExerciseJob?.cancel()
+        getExerciseJob = searchExerciseUseCases
+            .getExerciseForName(name1)
+            .onEach { exercises ->
+                if(exercises.isEmpty()){
+                    _uiEvent.send(
+                        UiEvent.ShowSnackbar(
+                            UiText.StringResource(R.string.empty_results)
+                        )
+                    )
+                }
+                state = state.copy(
+                    exerciseInfo = exercises.map {
+                        TrackableExerciseState(exercise = it)
+                    }
+                )
+            }
+            .launchIn(viewModelScope)
+        getExerciseJob = searchExerciseUseCases
+            .getExerciseForName(name2)
+            .onEach { exercises ->
+                if(exercises.isEmpty()){
+                    _uiEvent.send(
+                        UiEvent.ShowSnackbar(
+                            UiText.StringResource(R.string.empty_results)
+                        )
+                    )
+                }
+                state = state.copy(
+                    exerciseInfo = state.exerciseInfo + exercises.map {
+                        TrackableExerciseState(exercise = it)
+                    }
+                )
+            }
+            .launchIn(viewModelScope)
+    }
 
     private fun trackWorkout(event: CreateWorkoutEvent.OnCreateWorkout){
         viewModelScope.launch {
@@ -437,9 +543,10 @@ class CreateWorkoutViewModel @Inject constructor(
                             reps = it.reps,
                             weight = it.weight,
                             rowId = it.id,
-                            position = it.id,
+                            position = it.position,
                             lastUsedId = state.lastUsedId,
-                            lastUsedDate = it.lastUsedDate
+                            lastUsedDate = it.lastUsedDate,
+                            isSuperset = it.isSuperset
                         )
                     )
                 }
@@ -449,7 +556,6 @@ class CreateWorkoutViewModel @Inject constructor(
     }
     private fun updateWorkout(event: CreateWorkoutEvent.OnUpdateWorkout){
         viewModelScope.launch {
-            var position = 0
             event.trackableExercise.forEach {
                 if(!it.isDeleted){
                     if(it.docId.isEmpty()){
@@ -464,9 +570,10 @@ class CreateWorkoutViewModel @Inject constructor(
                                 reps = it.reps,
                                 weight = it.weight,
                                 rowId = it.id,
-                                position = position,
+                                position = it.position,
                                 lastUsedId = state.lastUsedId,
-                                lastUsedDate = it.lastUsedDate
+                                lastUsedDate = it.lastUsedDate,
+                                isSuperset = it.isSuperset
                             )
                         )
                     } else {
@@ -481,13 +588,13 @@ class CreateWorkoutViewModel @Inject constructor(
                                 reps = it.reps,
                                 weight = it.weight,
                                 rowId = it.id,
-                                position = position,
+                                position = it.position,
                                 lastUsedId = state.lastUsedId,
-                                lastUsedDate = it.lastUsedDate
+                                lastUsedDate = it.lastUsedDate,
+                                isSuperset = it.isSuperset
                             )
                         )
                     }
-                    position+=1
                 } else if (it.docId.isNotEmpty()) {
                     storageService.deleteWorkoutTemplate(
                         WorkoutTemplate(
@@ -502,7 +609,8 @@ class CreateWorkoutViewModel @Inject constructor(
                             rowId = it.id,
                             position = it.position,
                             lastUsedId = state.lastUsedId,
-                            lastUsedDate = it.lastUsedDate
+                            lastUsedDate = it.lastUsedDate,
+                            isSuperset = it.isSuperset
                         )
                     )
                 }
@@ -528,7 +636,8 @@ class CreateWorkoutViewModel @Inject constructor(
                             rowId = it.id,
                             position = it.id,
                             lastUsedId = state.lastUsedId,
-                            lastUsedDate = null
+                            lastUsedDate = null,
+                            isSuperset = it.isSuperset
                         )
                     )
                 }
