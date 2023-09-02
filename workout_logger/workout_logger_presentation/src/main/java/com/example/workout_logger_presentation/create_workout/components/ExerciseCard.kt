@@ -187,10 +187,8 @@ fun ExerciseCard(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Top
                         ) {
-                            item {
-                                Spacer(modifier = Modifier.height(spacing.spaceMedium))
-                            }
                             items(count = trackableExercises[0]!!.sets) {
+                                Spacer(modifier = Modifier.height(spacing.spaceSmall))
                                 Row(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(16.dp))
@@ -266,10 +264,9 @@ fun ExerciseCard(
 //                                                }
 //                                            )
                                         }
-                                        Spacer(modifier = Modifier.height(spacing.spaceMedium))
                                     }
                                 }
-                                Spacer(modifier = Modifier.height(spacing.spaceMedium))
+                                Spacer(modifier = Modifier.height(spacing.spaceSmall))
                             }
                             item {
                                 Spacer(modifier = Modifier.height(spacing.spaceMedium))
