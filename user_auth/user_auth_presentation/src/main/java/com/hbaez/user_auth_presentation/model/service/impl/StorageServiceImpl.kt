@@ -61,7 +61,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                                 position = it.get("position").toString().toInt(),
                                 lastUsedId = it.get("lastUsedId").toString().toInt(),
                                 lastUsedDate = it.get("lastUsedDate").toString(),
-                                isSuperset = it.get("isSuperset").toString().toBoolean()
+                                isSuperset = it.get("superset").toString().toBoolean()
                             )
                         }
                     }
@@ -196,6 +196,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             updateData["rest"] = workoutTemplate.rest
             updateData["sets"] = workoutTemplate.sets
             updateData["weight"] = workoutTemplate.weight
+            updateData["superset"] = workoutTemplate.isSuperset
             workoutTemplateCollection(auth.currentUserId).document(workoutTemplate.id).update(updateData).await()
             return workoutTemplate.id
         }

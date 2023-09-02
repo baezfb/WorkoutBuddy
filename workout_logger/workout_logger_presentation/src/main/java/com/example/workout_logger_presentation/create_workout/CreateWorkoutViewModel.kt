@@ -43,6 +43,7 @@ class CreateWorkoutViewModel @Inject constructor(
     val uiEvent = _uiEvent.receiveAsFlow()
 
     private var getExerciseJob: Job? = null
+    private var getExerciseByNameJob: Job? = null
     private var getAllExerciseJob: Job? = null
 
     val workoutTemplates = storageService.workouts
@@ -491,6 +492,9 @@ class CreateWorkoutViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
     private fun getSupersetExerciseByName(name1: String, name2: String) {
+        state = state.copy(
+            exerciseInfo = List(2) { TrackableExerciseState(exercise = TrackedExercise(name=null, exerciseBase = null))}
+        )
         getExerciseJob?.cancel()
         getExerciseJob = searchExerciseUseCases
             .getExerciseForName(name1)
@@ -503,13 +507,16 @@ class CreateWorkoutViewModel @Inject constructor(
                     )
                 }
                 state = state.copy(
-                    exerciseInfo = exercises.map {
-                        TrackableExerciseState(exercise = it)
+                    exerciseInfo = state.exerciseInfo.mapIndexed { index, trackableExerciseState ->
+                        if(index == 0){
+                            TrackableExerciseState(exercise = exercises.first())
+                        } else trackableExerciseState
                     }
                 )
             }
             .launchIn(viewModelScope)
-        getExerciseJob = searchExerciseUseCases
+        getExerciseByNameJob?.cancel()
+        getExerciseByNameJob = searchExerciseUseCases
             .getExerciseForName(name2)
             .onEach { exercises ->
                 if(exercises.isEmpty()){
@@ -520,8 +527,10 @@ class CreateWorkoutViewModel @Inject constructor(
                     )
                 }
                 state = state.copy(
-                    exerciseInfo = state.exerciseInfo + exercises.map {
-                        TrackableExerciseState(exercise = it)
+                    exerciseInfo = state.exerciseInfo.mapIndexed { index, trackableExerciseState ->
+                        if(index == 1){
+                            TrackableExerciseState(exercise = exercises.first())
+                        } else trackableExerciseState
                     }
                 )
             }

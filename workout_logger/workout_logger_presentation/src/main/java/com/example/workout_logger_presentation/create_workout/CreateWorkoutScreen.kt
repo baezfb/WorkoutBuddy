@@ -1,5 +1,6 @@
 package com.example.workout_logger_presentation.create_workout
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -108,9 +109,14 @@ fun CreateWorkoutScreen(
     }
     LaunchedEffect(key1 = pagerState.currentPage, key2 = state.trackableExercises.size){
         if(state.trackableExercises.getOrNull(pagerState.currentPage) != null){
+            Log.println(Log.DEBUG, "CreateWorkoutScreen currentPage", pagerState.currentPage.toString())
+            Log.println(Log.DEBUG, "CreateWorkoutScreen isSuperset", state.trackableExercises[pagerState.currentPage].isSuperset.toString())
+            Log.println(Log.DEBUG, "CreateWorkoutScreen name", state.trackableExercises[pagerState.currentPage].name)
             if(state.trackableExercises[pagerState.currentPage].isSuperset){
+                Log.println(Log.DEBUG, "CreateWorkoutScreen launchedEffect", "isSuperset true")
                 viewModel.onEvent(CreateWorkoutEvent.GetExerciseInfo(pagerState.currentPage, true))
             } else {
+                Log.println(Log.DEBUG, "CreateWorkoutScreen launchedEffect", "isSuperset false")
                 viewModel.onEvent(CreateWorkoutEvent.GetExerciseInfo(pagerState.currentPage, false))
             }
         }
