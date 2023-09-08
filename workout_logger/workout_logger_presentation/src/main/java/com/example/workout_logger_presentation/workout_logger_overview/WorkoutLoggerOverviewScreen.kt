@@ -560,6 +560,10 @@ fun WorkoutLoggerOverviewScreen(
                                                                 viewModel.completedWorkouts[it]
                                                             )
                                                         )
+                                                        editingWorkoutItem.value = listOf(
+                                                            !(editingWorkoutItem.value[0] as Boolean),
+                                                            -1
+                                                        )
                                                     }
                                                     .padding(spacing.spaceSmall),
                                                 imageVector = Icons.Filled.Delete,
