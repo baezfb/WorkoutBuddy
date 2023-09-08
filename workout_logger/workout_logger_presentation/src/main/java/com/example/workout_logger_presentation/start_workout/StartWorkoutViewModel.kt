@@ -11,7 +11,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.example.workout_logger_domain.model.TrackedExercise
 import com.example.workout_logger_domain.use_case.ExerciseTrackerUseCases
+import com.example.workout_logger_presentation.create_workout.TrackableExerciseUiState
 import com.example.workout_logger_presentation.search_exercise.TrackableExerciseState
 import com.example.workout_logger_presentation.start_workout.components.TimerExpiredReceiver
 import com.hbaez.core.R
@@ -59,6 +61,7 @@ class StartWorkoutViewModel @Inject constructor(
     val uiEvent = _uiEvent.receiveAsFlow()
 
     private var getExerciseJob: Job? = null
+    private var getExerciseByNameJob: Job? = null
     private val workoutId: Int
     private val workoutName: String
 
@@ -67,9 +70,9 @@ class StartWorkoutViewModel @Inject constructor(
         workoutId = savedStateHandle["workoutId"] ?: -1
         workoutIds = (savedStateHandle["workoutIds"] ?: "").trim('[').trim(']').replace(" ","").split(',').toList()
         Log.println(Log.DEBUG, "workoutids viewmodel", workoutIds.toString())
-        
-        val initExercises: MutableList<LoggerListState?> = (List(workoutIds.size) { null }).toMutableList()
-        val initRoutine: MutableList<WorkoutTemplate?> = (List(workoutIds.size) { null }).toMutableList()
+
+        val initExercises: MutableList<LoggerListState> = emptyList<LoggerListState>().toMutableList()
+        val initRoutine: MutableList<WorkoutTemplate> = emptyList<WorkoutTemplate>().toMutableList()
         viewModelScope.launch {
             workoutTemplates.first().forEach {
                 //TODO: get completedWorkout by date it.lastUsedDate
@@ -108,13 +111,13 @@ class StartWorkoutViewModel @Inject constructor(
                             checkedColor = List(it.sets) { Color.DarkGray },
                         )
                     }
-                    initExercises[it.position] = currExercise
-                    initRoutine[it.position] = it
+                    initExercises.add(currExercise)
+                    initRoutine.add(it)
                 }
             }
             state = state.copy(
-                loggerListStates = initExercises.filterNotNull().toMutableList(),
-                routineWorkoutTemplate = initRoutine.filterNotNull()
+                loggerListStates = initExercises,
+                routineWorkoutTemplate = initRoutine
             )
         }
     }
@@ -128,18 +131,15 @@ class StartWorkoutViewModel @Inject constructor(
             }
             is StartWorkoutEvent.OnRepsChange -> {
                 Log.println(Log.DEBUG, "on reps change", event.reps)
-                var counter = 0
+                Log.println(Log.DEBUG, "loggerlsitstate size", state.loggerListStates.size.toString())
+                Log.println(Log.DEBUG, "onrepschange name", event.exerciseName)
                 state = state.copy(
                     loggerListStates = state.loggerListStates.map {
-                        if(counter == event.page){
-                            counter++
+                        if(it.position == event.page && it.exerciseName == event.exerciseName){
                             val tmp = it.reps.toMutableList()
                             tmp[event.index] = event.reps
                             it.copy(reps = tmp)
-                        } else {
-                            counter++
-                            it
-                        }
+                        } else it
                     }.toMutableList()
                 )
             }
@@ -152,18 +152,13 @@ class StartWorkoutViewModel @Inject constructor(
                 Log.println(Log.DEBUG, "loggerlist add item vm", state.loggerListStates.size.toString())
             }
             is StartWorkoutEvent.OnWeightChange -> {
-                var counter = 0
                 state = state.copy(
                     loggerListStates = state.loggerListStates.toList().map {
-                        if(counter == event.page){
-                            counter++
+                        if(it.position == event.page && it.exerciseName == event.exerciseName){
                             val tmp = it.weight.toMutableList()
                             tmp[event.index]=event.weight
                             it.copy(weight = tmp.toList())
-                        }else {
-                            counter++
-                            it
-                        }
+                        }else it
                     }.toMutableList()
                 )
             }
@@ -173,19 +168,14 @@ class StartWorkoutViewModel @Inject constructor(
                         startTime = Date()
                     )
                 }
-                var counter = 0
                 if(event.shouldUpdateTime){
                     state = state.copy(
                         loggerListStates = state.loggerListStates.toList().map {
-                            if(counter == event.page){
-                                counter++
+                            if(it.position == event.page){
                                 val tmp = it.isCompleted.toMutableList()
                                 tmp[event.index] = event.isChecked
                                 it.copy(isCompleted = tmp, timerStatus = TimerStatus.RUNNING)
-                            } else {
-                                counter++
-                                it
-                            }
+                            } else it
                         }.toMutableList(),
                         timerStatus = event.timerStatus,
                         pagerIndex = event.page,
@@ -198,15 +188,11 @@ class StartWorkoutViewModel @Inject constructor(
                 else {
                     state = state.copy(
                         loggerListStates = state.loggerListStates.toList().map {
-                            if(counter == event.page){
-                                counter++
+                            if(it.position == event.page){
                                 val tmp = it.isCompleted.toMutableList()
                                 tmp[event.index] = event.isChecked
                                 it.copy(isCompleted = tmp, timerStatus = TimerStatus.RUNNING)
-                            } else {
-                                counter++
-                                it
-                            }
+                            } else it
                         }.toMutableList()
                     )
                 }
@@ -305,7 +291,17 @@ class StartWorkoutViewModel @Inject constructor(
             }
 
             is StartWorkoutEvent.GetExerciseInfo -> {
-                getExerciseByName(event.exerciseName)
+                val nameList: MutableList<String> = mutableListOf()
+                state.loggerListStates.forEach {
+                    if (it.position == event.page){
+                        nameList.add(it.exerciseName)
+                    }
+                }
+                if(nameList.size == 1){
+                    getExerciseByName(nameList.first())
+                } else {
+                    getSupersetExerciseByName(name1 = nameList[0], name2 = nameList[1])
+                }
             }
 
             is StartWorkoutEvent.OnToggleExerciseDescription -> {
@@ -407,6 +403,7 @@ class StartWorkoutViewModel @Inject constructor(
                 ),
                 date = date
             )
+            // update lastUsedDate
             workoutTemplates.first().onEach {
                 Log.println(Log.DEBUG, "StartWorkoutViewModel workoutTemplates", it.name)
                 if(it.name == state.workoutName){
@@ -459,6 +456,51 @@ class StartWorkoutViewModel @Inject constructor(
                 state = state.copy(
                     exerciseInfo = exercises.map {
                         TrackableExerciseState(exercise = it)
+                    }
+                )
+            }
+            .launchIn(viewModelScope)
+    }
+    private fun getSupersetExerciseByName(name1: String, name2: String) {
+        state = state.copy(
+            exerciseInfo = List(2) { TrackableExerciseState(exercise = TrackedExercise(name=null, exerciseBase = null))}
+        )
+        getExerciseJob?.cancel()
+        getExerciseJob = startWorkoutUseCases
+            .getExerciseForName(name1)
+            .onEach { exercises ->
+                if(exercises.isEmpty()){
+                    _uiEvent.send(
+                        UiEvent.ShowSnackbar(
+                            UiText.StringResource(R.string.empty_results)
+                        )
+                    )
+                }
+                state = state.copy(
+                    exerciseInfo = state.exerciseInfo.mapIndexed { index, trackableExerciseState ->
+                        if(index == 0){
+                            TrackableExerciseState(exercise = exercises.first())
+                        } else trackableExerciseState
+                    }
+                )
+            }
+            .launchIn(viewModelScope)
+        getExerciseByNameJob?.cancel()
+        getExerciseByNameJob = startWorkoutUseCases
+            .getExerciseForName(name2)
+            .onEach { exercises ->
+                if(exercises.isEmpty()){
+                    _uiEvent.send(
+                        UiEvent.ShowSnackbar(
+                            UiText.StringResource(R.string.empty_results)
+                        )
+                    )
+                }
+                state = state.copy(
+                    exerciseInfo = state.exerciseInfo.mapIndexed { index, trackableExerciseState ->
+                        if(index == 1){
+                            TrackableExerciseState(exercise = exercises.first())
+                        } else trackableExerciseState
                     }
                 )
             }

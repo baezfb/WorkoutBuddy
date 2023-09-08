@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,13 +19,13 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,7 +36,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import com.example.workout_logger_presentation.components.AddButton
+import com.example.workout_logger_presentation.search_exercise.TrackableExerciseState
 import com.example.workout_logger_presentation.start_workout.LoggerListState
 import com.example.workout_logger_presentation.start_workout.TimerStatus
 import com.hbaez.core_ui.LocalSpacing
@@ -49,10 +48,11 @@ import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 fun ExerciseCard(
     page: Int,
     timerStatus: TimerStatus,
-    loggerListState: LoggerListState,
-    workoutTemplate: WorkoutTemplate,
-    onRepsChange: (reps: String, index: Int, id: Int) -> Unit,
-    onWeightChange: (weight: String, index: Int, id: Int) -> Unit,
+    trackableExercises: List<TrackableExerciseState>,
+    loggerListState: List<LoggerListState>,
+    workoutTemplate: List<WorkoutTemplate>,
+    onRepsChange: (reps: String, index: Int, id: Int, exerciseName: String) -> Unit,
+    onWeightChange: (weight: String, index: Int, id: Int, exerciseName: String) -> Unit,
     onCheckboxChange: (isCompleted: Boolean, index: Int, id: Int, page: Int) -> Unit,
     onRemoveSet: () -> Unit,
     onAddSet: () -> Unit
@@ -98,19 +98,51 @@ fun ExerciseCard(
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
+            Spacer(modifier = Modifier.height(spacing.spaceSmall))
             LazyColumn{
-                List(loggerListState.sets.toInt()) { it }.forEach {
+                List(loggerListState.first().sets.toInt()) { it }.forEach {
                     item {
-                        ExerciseCardRow(
-                            set = it + 1,
-                            loggerListState = loggerListState,
-                            workoutTemplate = workoutTemplate,
-                            index = it,
-                            onRepsChange = onRepsChange,
-                            onWeightChange = onWeightChange,
-                            onCheckboxChange = onCheckboxChange,
-                            page = page
-                        )
+                        if(workoutTemplate.size > 1) Divider()
+                        Row(
+                            modifier = Modifier,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = (it + 1).toString(),
+                                style = MaterialTheme.typography.displaySmall,
+                                modifier = Modifier.padding(spacing.spaceSmall)
+                            )
+                            Column {
+                                ExerciseCardRow(
+                                    loggerListState = loggerListState.first(),
+                                    workoutTemplate = workoutTemplate.first(),
+                                    index = it,
+                                    onRepsChange = onRepsChange,
+                                    onWeightChange = onWeightChange
+                                )
+                                if(workoutTemplate.size > 1){
+                                    Spacer(modifier = Modifier.height(spacing.spaceSmall))
+                                    ExerciseCardRow(
+                                        loggerListState = loggerListState.last(),
+                                        workoutTemplate = workoutTemplate.last(),
+                                        index = it,
+                                        onRepsChange = onRepsChange,
+                                        onWeightChange = onWeightChange
+                                    )
+                                }
+                            }
+                            Checkbox(
+                                modifier = Modifier.weight(1f),
+                                checked = loggerListState.first().isCompleted[it],
+                                onCheckedChange = { isChecked ->
+                                    onCheckboxChange(isChecked, it, loggerListState.first().id, page)
+                                },
+                                colors = CheckboxDefaults.colors(
+                                    checkedColor = Color.DarkGray /* TODO */
+                                )
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(spacing.spaceMedium))
                     }
                 }
                 item {
@@ -122,7 +154,7 @@ fun ExerciseCard(
                         Row(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(100f))
-                                .clickable(enabled = loggerListState.sets.toInt() > workoutTemplate.sets && timerStatus != TimerStatus.RUNNING) { onRemoveSet() }
+                                .clickable(enabled = loggerListState.first().sets.toInt() > workoutTemplate.first().sets && timerStatus != TimerStatus.RUNNING) { onRemoveSet() }
                                 .border(
                                     width = 1.dp,
                                     color = MaterialTheme.colorScheme.background,
@@ -136,7 +168,7 @@ fun ExerciseCard(
                                 text = "Del Set",
                                 maxLines = 2,
                                 style = MaterialTheme.typography.labelLarge,
-                                color = if(loggerListState.sets.toInt() > workoutTemplate.sets && timerStatus != TimerStatus.RUNNING) MaterialTheme.colorScheme.primary else Color.DarkGray
+                                color = if(loggerListState.first().sets.toInt() > workoutTemplate.first().sets && timerStatus != TimerStatus.RUNNING) MaterialTheme.colorScheme.primary else Color.DarkGray
                             )
                         }
                         Row(
@@ -168,26 +200,18 @@ fun ExerciseCard(
 
 @Composable
 fun ExerciseCardRow(
-    set: Int,
     loggerListState: LoggerListState,
     workoutTemplate: WorkoutTemplate,
     index: Int,
-    onRepsChange: (reps: String, index: Int, id: Int) -> Unit,
-    onWeightChange: (weight: String, index: Int, id: Int) -> Unit,
-    onCheckboxChange: (isCompleted: Boolean, index: Int, id: Int, page: Int) -> Unit,
-    page: Int
+    onRepsChange: (reps: String, index: Int, id: Int, exerciseName: String) -> Unit,
+    onWeightChange: (weight: String, index: Int, id: Int, exerciseName: String) -> Unit
 ){
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth(.7f),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            modifier = Modifier.weight(1f),
-            text= set.toString(),
-            style = MaterialTheme.typography.bodyMedium
-        )
         TextField(
             modifier = Modifier.weight(1f),
             placeholder = { Text(text = workoutTemplate.weight.getOrElse(index) { workoutTemplate.weight.last() }) },
@@ -196,7 +220,8 @@ fun ExerciseCardRow(
             singleLine = true,
             onValueChange = {
                 val filteredValue = it.filter { tmp -> tmp != '-' } // Filter out non-digit characters
-                onWeightChange(filteredValue, index, loggerListState.id) },
+                Log.println(Log.DEBUG, "onrepschange name", workoutTemplate.exerciseName)
+                onWeightChange(filteredValue, index, loggerListState.id, workoutTemplate.exerciseName) },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
                 onDone = {
@@ -218,7 +243,7 @@ fun ExerciseCardRow(
             singleLine = true,
             onValueChange = {
                 val filteredValue = it.filter { tmp -> !(tmp == '.' || tmp == '-') } // Filter out non-digit characters
-                onRepsChange(filteredValue, index, loggerListState.id)
+                onRepsChange(filteredValue, index, loggerListState.id, workoutTemplate.exerciseName)
                             },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
@@ -233,16 +258,5 @@ fun ExerciseCardRow(
                 unfocusedIndicatorColor = Color.Transparent
             )
         )
-        Checkbox(
-            modifier = Modifier.weight(1f),
-            checked = loggerListState.isCompleted[index],
-            onCheckedChange = {
-                onCheckboxChange(it, index, loggerListState.id, page)
-            },
-            colors = CheckboxDefaults.colors(
-                checkedColor = Color.DarkGray /* TODO */
-            )
-        )
-
     }
 }

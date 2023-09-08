@@ -8,9 +8,9 @@ sealed class StartWorkoutEvent {
 
     data class OnUpdateWorkoutName(val workoutName: String): StartWorkoutEvent()
 
-    data class OnRepsChange(val reps: String, val index: Int, val rowId: Int, val page: Int): StartWorkoutEvent()
+    data class OnRepsChange(val reps: String, val index: Int, val rowId: Int, val page: Int, val exerciseName: String): StartWorkoutEvent()
 
-    data class OnWeightChange(val weight: String, val index: Int, val rowId: Int, val page: Int): StartWorkoutEvent()
+    data class OnWeightChange(val weight: String, val index: Int, val rowId: Int, val page: Int, val exerciseName: String): StartWorkoutEvent()
 
     data class OnCheckboxChange(val isChecked: Boolean, val timerStatus: TimerStatus, val currRunningIndex: Int, val index: Int, val rowId: Int, val page: Int, val shouldUpdateTime: Boolean): StartWorkoutEvent()
 
@@ -28,7 +28,7 @@ sealed class StartWorkoutEvent {
 
     data class AddLoggerList(val loggerListState: LoggerListState): StartWorkoutEvent()
 
-    data class GetExerciseInfo(val exerciseName: String): StartWorkoutEvent()
+    data class GetExerciseInfo(val page: Int): StartWorkoutEvent()
 
     data class OnToggleExerciseDescription(val trackableExerciseState: TrackableExerciseState): StartWorkoutEvent()
 

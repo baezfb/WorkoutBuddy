@@ -77,8 +77,9 @@ fun StartWorkoutScreen(
     val coroutineScope = rememberCoroutineScope()
     val workoutTemplates = viewModel.workoutTemplates.collectAsStateWithLifecycle(emptyList())
     val workoutExerciseNames: MutableList<String?> = (List(viewModel.workoutIds.size) { null }).toMutableList()
-    val count = state.routineWorkoutTemplate.size
+    val count = state.routineWorkoutTemplate.distinctBy { it.position }.size
     val showExerciseInfoDialog = remember { mutableStateOf(false) }
+    val showExerciseInfoDialogSuperset = remember { mutableStateOf(false) }
     workoutTemplates.value.forEach {
         if(it.name == workoutName){
             workoutExerciseNames[it.position] = it.exerciseName
@@ -102,7 +103,9 @@ fun StartWorkoutScreen(
 
     LaunchedEffect(key1 = pagerState.currentPage, key2 = state.loggerListStates.size){
         if(state.loggerListStates.getOrNull(pagerState.currentPage) != null) {
-            viewModel.onEvent(StartWorkoutEvent.GetExerciseInfo(state.loggerListStates[pagerState.currentPage].exerciseName))
+            viewModel.onEvent(
+                StartWorkoutEvent.GetExerciseInfo(pagerState.currentPage)
+            )
         }
     }
 
@@ -113,6 +116,14 @@ fun StartWorkoutScreen(
                            viewModel.onEvent(StartWorkoutEvent.OnToggleExerciseDescription(state.exerciseInfo.first()))
                            },
             onDismiss = { showExerciseInfoDialog.value = false })
+    }
+    else if(showExerciseInfoDialogSuperset.value && state.exerciseInfo.isNotEmpty()){
+        ExerciseInfoDialog(
+            trackableExerciseState = state.exerciseInfo.last(),
+            onDescrClick = {
+                viewModel.onEvent(StartWorkoutEvent.OnToggleExerciseDescription(state.exerciseInfo.last()))
+            },
+            onDismiss = { showExerciseInfoDialogSuperset.value = false })
     }
     Scaffold(
         topBar = {
@@ -153,7 +164,8 @@ fun StartWorkoutScreen(
                 }
                 // get current exercise from workoutTemplates
                 // using workoutName and exerciseName
-                val currentExercise = state.routineWorkoutTemplate[page]
+                val currentExercise = state.routineWorkoutTemplate.filter { it.position == page }
+                val currentLoggerState = state.loggerListStates.filter { it.position == page }
 
                 Column{
                     Row{
@@ -164,33 +176,71 @@ fun StartWorkoutScreen(
                             style = MaterialTheme.typography.displaySmall
                         )
                         Spacer(modifier = Modifier.width(spacing.spaceSmall))
-                        Text(
-                            text = currentExercise.exerciseName,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1,
-                            style = MaterialTheme.typography.displaySmall,
-                            modifier = Modifier.fillMaxWidth(.75f)
-                        )
-                        Spacer(modifier = Modifier.width(spacing.spaceSmall))
-                        IconButton(
-                            onClick = {
-                                      showExerciseInfoDialog.value = true
-                                      },
-                            icon = Icons.Outlined.Info,
-                            padding = 0.dp
-                        )
+                        if(currentExercise.size == 1){
+                            Text(
+                                text = currentExercise.first().exerciseName,
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1,
+                                style = MaterialTheme.typography.displaySmall,
+                                modifier = Modifier.fillMaxWidth(.75f)
+                            )
+                            Spacer(modifier = Modifier.width(spacing.spaceSmall))
+                            IconButton(
+                                onClick = {
+                                    showExerciseInfoDialog.value = true
+                                },
+                                icon = Icons.Outlined.Info,
+                                padding = 0.dp
+                            )
+                        }
+                        else if(currentExercise.size > 1){
+                            Row(Modifier.fillMaxWidth(.9f)) {
+                                Text(
+                                    text = currentExercise.first().exerciseName,
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1,
+                                    style = MaterialTheme.typography.displaySmall,
+                                    modifier = Modifier.weight(.8f)
+                                )
+                                Spacer(modifier = Modifier.width(spacing.spaceSmall))
+                                IconButton(
+                                    onClick = {
+                                        showExerciseInfoDialog.value = true
+                                    },
+                                    icon = Icons.Outlined.Info,
+                                    padding = 0.dp
+                                )
+                                Spacer(modifier = Modifier.width(spacing.spaceSmall))
+                                Text(
+                                    text = currentExercise.last().exerciseName,
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1,
+                                    style = MaterialTheme.typography.displaySmall,
+                                    modifier = Modifier.weight(.8f)
+                                )
+                                Spacer(modifier = Modifier.width(spacing.spaceSmall))
+                                IconButton(
+                                    onClick = {
+                                        showExerciseInfoDialogSuperset.value = true
+                                    },
+                                    icon = Icons.Outlined.Info,
+                                    padding = 0.dp
+                                )
+                            }
+                        }
                     }
                     Spacer(modifier = Modifier.height(spacing.spaceMedium))
                     ExerciseCard(
                         page = page,
                         timerStatus = state.timerStatus,
-                        loggerListState = state.loggerListStates[page],
+                        trackableExercises = state.exerciseInfo,
+                        loggerListState = currentLoggerState,
                         workoutTemplate = currentExercise,
-                        onRepsChange = { reps, index, id ->
-                            viewModel.onEvent(StartWorkoutEvent.OnRepsChange(reps = reps, index = index, rowId = id, page = page))
+                        onRepsChange = { reps, index, id, exerciseName ->
+                            viewModel.onEvent(StartWorkoutEvent.OnRepsChange(reps = reps, index = index, rowId = id, page = page, exerciseName = exerciseName))
                         },
-                        onWeightChange = { weight, index, id ->
-                            viewModel.onEvent(StartWorkoutEvent.OnWeightChange(weight = weight, index = index, rowId = id, page = page))
+                        onWeightChange = { weight, index, id, exerciseName ->
+                            viewModel.onEvent(StartWorkoutEvent.OnWeightChange(weight = weight, index = index, rowId = id, page = page, exerciseName = exerciseName))
                         },
                         onCheckboxChange = { isChecked, index, id, page ->
                             if(isChecked && state.currRunningIndex != index && state.timerStatus == TimerStatus.RUNNING){ // non checked clicked while timer already running
@@ -199,7 +249,7 @@ fun StartWorkoutScreen(
                             }
                             if(isChecked && (state.timerStatus == TimerStatus.START || state.timerStatus == TimerStatus.FINISHED)){ // non checked clicked while timer not running
                                 viewModel.onEvent(StartWorkoutEvent.OnCheckboxChange(isChecked= true, timerStatus = TimerStatus.RUNNING, currRunningIndex = index, index = index, rowId = id, page = page, shouldUpdateTime = true))
-                                val wakeupTime = StartWorkoutViewModel.setAlarm(context = context, timeDuration = Duration.ofSeconds((currentExercise.rest.getOrElse(index) { currentExercise.rest.last() }).toLong()))
+                                val wakeupTime = StartWorkoutViewModel.setAlarm(context = context, timeDuration = Duration.ofSeconds((currentExercise.first().rest.getOrElse(index) { currentExercise.first().rest.last() }).toLong()))
                                 NotificationUtil.showTimerRunning(context, wakeupTime)
                                 viewModel.onEvent(StartWorkoutEvent.ChangeCheckboxColor(color = Color(255,153,51), id = id, index = index))
                             }
