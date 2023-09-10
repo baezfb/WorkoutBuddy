@@ -105,8 +105,7 @@ class CreateWorkoutViewModel @Inject constructor(
                     }
                 }
                 initTrackableExercises.sortBy { it.position }
-                val initTrackableExerciseSize = initTrackableExercises.filter { !it.isSuperset }.size
-                + (initTrackableExercises.filter { it.isSuperset }.size) / 2
+                val initTrackableExerciseSize = initTrackableExercises.filter { !it.isSuperset }.size + (initTrackableExercises.filter { it.isSuperset }.size / 2)
                 state = state.copy(
                     trackableExercises = initTrackableExercises,
                     trackableExercisesSize = initTrackableExerciseSize,
