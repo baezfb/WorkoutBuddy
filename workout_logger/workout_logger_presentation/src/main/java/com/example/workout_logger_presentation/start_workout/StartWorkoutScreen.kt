@@ -56,6 +56,7 @@ import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 import kotlinx.coroutines.launch
 import java.time.Duration
+import java.time.Month
 
 @RequiresApi(Build.VERSION_CODES.S)
 @OptIn(ExperimentalPagerApi::class)
@@ -131,12 +132,20 @@ fun StartWorkoutScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    modifier = Modifier
-                        .padding(spacing.spaceMedium),
-                    text = workoutName.uppercase(),
-                    style = MaterialTheme.typography.displayMedium
-                )
+                Column {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = spacing.spaceMedium, end = spacing.spaceMedium, top = spacing.spaceMedium),
+                        text = workoutName.uppercase(),
+                        style = MaterialTheme.typography.displayMedium
+                    )
+                    Text(
+                        modifier = Modifier
+                            .padding(horizontal = spacing.spaceMedium),
+                        text = "${Month.of(month).name} ${dayOfMonth}, $year".uppercase(),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
                 IconButton(
                     borderColor = MaterialTheme.colorScheme.outline,
                     modifier = Modifier

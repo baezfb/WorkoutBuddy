@@ -37,6 +37,7 @@ import com.example.workout_logger_presentation.start_exercise.components.Timer
 import com.hbaez.core.util.UiEvent
 import com.hbaez.core_ui.LocalSpacing
 import java.time.Duration
+import java.time.Month
 
 @RequiresApi(Build.VERSION_CODES.S)
 @OptIn(ExperimentalCoilApi::class)
@@ -76,8 +77,14 @@ fun StartExerciseScreen(
         topBar = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                Text(
+                    modifier = Modifier
+                        .padding(spacing.spaceMedium),
+                    text = "${Month.of(month).name} ${dayOfMonth}, $year".uppercase(),
+                    style = MaterialTheme.typography.bodyMedium
+                )
                 IconButton(
                     borderColor = MaterialTheme.colorScheme.outline,
                     modifier = Modifier
