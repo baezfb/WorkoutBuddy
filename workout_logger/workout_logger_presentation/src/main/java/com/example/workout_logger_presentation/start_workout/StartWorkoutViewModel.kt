@@ -242,7 +242,6 @@ class StartWorkoutViewModel @Inject constructor(
                     if(state.timerStatus == TimerStatus.RUNNING){
                         return@breaking
                     }
-                    var counter = 0
                     event.trackableExercises.forEach{// for each exercise
                         val repsList = mutableListOf<String>()
                         val weightList = mutableListOf<String>()
@@ -288,7 +287,6 @@ class StartWorkoutViewModel @Inject constructor(
                             trackCompletedWorkout(it, repsList, weightList, isCompletedList.toList(), event.dayOfMonth, event.month, event.year)
                             trackCalendarDate(event.year, event.month, event.dayOfMonth)
                         }
-                        counter++
                     }
                     viewModelScope.launch {
                         _uiEvent.send(UiEvent.NavigateUp)
@@ -333,11 +331,9 @@ class StartWorkoutViewModel @Inject constructor(
             }
 
             is StartWorkoutEvent.OnRemoveSet -> {
-                var counter = 0
                 state = state.copy(
                     loggerListStates = state.loggerListStates.toList().map {
-                        if(counter == event.page){
-                            counter++
+                        if(it.position == event.page){
                             val tmpRest = it.rest.toMutableList()
                             tmpRest.removeAt(it.rest.size - 1)
                             val tmpReps = it.reps.toMutableList()
@@ -356,20 +352,15 @@ class StartWorkoutViewModel @Inject constructor(
                                 isCompleted = tmpCompleted.toList(),
                                 checkedColor = tmpColor.toList()
                             )
-                        } else {
-                            counter++
-                            it
-                        }
+                        } else it
                     }.toMutableList()
                 )
             }
 
             is StartWorkoutEvent.OnAddSet -> {
-                var counter = 0
                 state = state.copy(
                     loggerListStates = state.loggerListStates.toList().map {
-                        if(counter == event.page){
-                            counter++
+                        if(it.position == event.page){
                             it.copy(
                                 sets = (it.sets.toInt() + 1).toString(),
                                 rest = it.rest + it.rest.last(),
@@ -378,10 +369,7 @@ class StartWorkoutViewModel @Inject constructor(
                                 isCompleted = it.isCompleted + false,
                                 checkedColor = it.checkedColor + Color.DarkGray
                             )
-                        } else {
-                            counter++
-                            it
-                        }
+                        } else it
                     }.toMutableList()
                 )
             }
