@@ -150,7 +150,7 @@ class CreateWorkoutViewModel @Inject constructor(
             is CreateWorkoutEvent.OnTrackableExerciseUiRestChange -> {
                 state = state.copy(
                     trackableExercises = state.trackableExercises.toList().map {
-                        if(it.position == event.page && it.name == event.exercise){
+                        if(it.position == event.page){ // update rest for all exercises in that page (if superset)
                             val tmp = it.rest.toMutableList()
                             tmp[event.index] = event.rest
                             it.copy(rest = tmp.toList())

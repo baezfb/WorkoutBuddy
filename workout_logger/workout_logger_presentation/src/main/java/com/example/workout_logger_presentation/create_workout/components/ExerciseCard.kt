@@ -39,12 +39,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import com.example.workout_logger_presentation.components.AddButton
 import com.example.workout_logger_presentation.components.IconButton
 import com.example.workout_logger_presentation.create_workout.CreateWorkoutTableRow
+import com.example.workout_logger_presentation.create_workout.EditTableCell
 import com.example.workout_logger_presentation.create_workout.TrackableExerciseUiState
 import com.example.workout_logger_presentation.start_workout.TimerStatus
 import com.hbaez.core.R
@@ -191,6 +193,7 @@ fun ExerciseCard(
                                 Spacer(modifier = Modifier.height(spacing.spaceSmall))
                                 Row(
                                     modifier = Modifier
+                                        .fillMaxWidth()
                                         .clip(RoundedCornerShape(16.dp))
                                         .background(MaterialTheme.colorScheme.primaryContainer)
                                         .padding(horizontal=spacing.spaceMedium),
@@ -199,16 +202,13 @@ fun ExerciseCard(
                                     Text(
                                         text = (it + 1).toString(),
                                         style = MaterialTheme.typography.displaySmall,
-                                        modifier = Modifier.padding(spacing.spaceSmall)
+                                        modifier = Modifier.padding(spacing.spaceSmall).weight(.15f)
                                     )
-                                    Column {
-                                        Spacer(modifier = Modifier.height(spacing.spaceMedium))
+                                    Column(Modifier.weight(0.65f)) {
                                         CreateWorkoutTableRow(
                                             onRepsChange = { text -> onRepsChange(text, it, trackableExercises[0]!!.name) },
-                                            onRestChange = { text ->  onRestChange(text, it, trackableExercises[0]!!.name) },
                                             onWeightChange = { text -> onWeightChange(text, it, trackableExercises[0]!!.name) },
                                             reps = trackableExercises[0]!!.reps[it],
-                                            rest = trackableExercises[0]!!.rest[it],
                                             weight = trackableExercises[0]!!.weight[it],
                                             hasExercise = true
                                         )
@@ -236,10 +236,8 @@ fun ExerciseCard(
                                             Spacer(modifier = Modifier.height(spacing.spaceSmall))
                                             CreateWorkoutTableRow(
                                                 onRepsChange = { text -> onRepsChange(text, it, trackableExercises[1]!!.name) },
-                                                onRestChange = { text ->  onRestChange(text, it, trackableExercises[1]!!.name) },
                                                 onWeightChange = { text -> onWeightChange(text, it, trackableExercises[1]!!.name) },
                                                 reps = trackableExercises[1]!!.reps[it],
-                                                rest = trackableExercises[1]!!.rest[it],
                                                 weight = trackableExercises[1]!!.weight[it],
                                                 hasExercise = true
                                             )
@@ -265,6 +263,18 @@ fun ExerciseCard(
 //                                            )
                                         }
                                     }
+                                    EditTableCell(
+                                        label = stringResource(id = R.string.rest),
+                                        text = trackableExercises[0]!!.rest[it],
+                                        weight = .25f,
+                                        keyboardType = KeyboardType.Number,
+                                        onValueChange = { textChange ->
+                                            val filteredValue = textChange.filter { tmp -> !(tmp == '.' || tmp == '-') } // Filter out non-digit characters
+                                            onRestChange(filteredValue, it, trackableExercises[0]!!.name)
+                                        },
+                                        borderColor = MaterialTheme.colorScheme.primaryContainer,
+                                        backgroundColor = Color.Transparent
+                                    )
                                 }
                                 Spacer(modifier = Modifier.height(spacing.spaceSmall))
                             }

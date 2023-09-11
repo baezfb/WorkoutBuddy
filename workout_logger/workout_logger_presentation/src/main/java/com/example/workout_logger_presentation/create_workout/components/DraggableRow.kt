@@ -182,10 +182,8 @@ fun DraggableRow(
         ){
             CreateWorkoutTableRow(
                 onRepsChange = { onRepsChange(it) },
-                onRestChange = { onRestChange(it) },
                 onWeightChange = { onWeightChange(it) },
                 reps = reps,
-                rest = rest,
                 weight = weight,
                 hasExercise = hasExercise
             )

@@ -115,6 +115,8 @@ class StartWorkoutViewModel @Inject constructor(
                     initRoutine.add(it)
                 }
             }
+            initExercises.sortBy { it.position }
+            initRoutine.sortBy { it.position }
             state = state.copy(
                 loggerListStates = initExercises,
                 routineWorkoutTemplate = initRoutine
@@ -163,6 +165,10 @@ class StartWorkoutViewModel @Inject constructor(
                 )
             }
             is StartWorkoutEvent.OnCheckboxChange -> {
+                Log.println(Log.DEBUG, "event.page", event.page.toString())
+                Log.println(Log.DEBUG, "event.index", event.index.toString())
+                Log.println(Log.DEBUG, "loggerListStates rest size", state.loggerListStates[event.page].rest.size.toString())
+                Log.println(Log.DEBUG, "loggerListStates rest", state.loggerListStates[event.page].rest.toString())
                 if(state.currRunningIndex != event.currRunningIndex && state.timerStatus != TimerStatus.RUNNING){
                     state = state.copy(
                         startTime = Date()

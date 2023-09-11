@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
@@ -27,43 +28,16 @@ import com.hbaez.core.R
 @Composable
 fun CreateWorkoutTableRow(
     onRepsChange: (String) -> Unit,
-    onRestChange: (String) -> Unit,
     onWeightChange: (String) -> Unit,
     reps: String,
-    rest: String,
     weight: String,
     hasExercise: Boolean
 ){
     val spacing = LocalSpacing.current
-
-    Spacer(modifier = Modifier.height(spacing.spaceMedium))
     Row(
+        verticalAlignment = Alignment.CenterVertically
 //        modifier = Modifier.border(2.dp, MaterialTheme.colorScheme.onPrimaryContainer, RectangleShape)
     ){
-        EditTableCell(
-            label = stringResource(id = R.string.reps),
-            text = reps,
-            weight = .20f,
-            keyboardType = KeyboardType.Number,
-            onValueChange = {
-                val filteredValue = it.filter { tmp -> !(tmp == '.' || tmp == '-') } // Filter out non-digit characters
-                onRepsChange(filteredValue)
-            },
-            borderColor = MaterialTheme.colorScheme.primaryContainer,
-            backgroundColor = Color.Transparent
-        )
-        EditTableCell(
-            label = stringResource(id = R.string.rest),
-            text = rest,
-            weight = .25f,
-            keyboardType = KeyboardType.Number,
-            onValueChange = {
-                val filteredValue = it.filter { tmp -> !(tmp == '.' || tmp == '-') } // Filter out non-digit characters
-                onRestChange(filteredValue)
-            },
-            borderColor = MaterialTheme.colorScheme.primaryContainer,
-            backgroundColor = Color.Transparent
-        )
         EditTableCell(
             label = stringResource(id = R.string.weight),
             text = weight,
@@ -76,9 +50,20 @@ fun CreateWorkoutTableRow(
             borderColor = MaterialTheme.colorScheme.primaryContainer,
             backgroundColor = Color.Transparent
         )
+        EditTableCell(
+            label = stringResource(id = R.string.reps),
+            text = reps,
+            weight = .20f,
+            keyboardType = KeyboardType.Number,
+            onValueChange = {
+                val filteredValue = it.filter { tmp -> !(tmp == '.' || tmp == '-') } // Filter out non-digit characters
+                onRepsChange(filteredValue)
+            },
+            borderColor = MaterialTheme.colorScheme.primaryContainer,
+            backgroundColor = Color.Transparent
+        )
 
     }
-    Spacer(modifier = Modifier.height(spacing.spaceMedium))
 }
 
 @Composable
