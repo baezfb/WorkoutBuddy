@@ -221,10 +221,12 @@ class CreateWorkoutViewModel @Inject constructor(
                     if(trackedExercise.rowId < state.pageCount){
                         var currentSets = 0
                         // update original exercise to superset status
+                        var firstRest: List<String> = emptyList()
                         state = state.copy(
                             trackableExercises = state.trackableExercises.map {
                                 if(it.position == trackedExercise.rowId){
                                     currentSets = it.sets
+                                    firstRest = it.rest
                                     it.copy(isSuperset = true)
                                 } else it
                             }
@@ -238,7 +240,7 @@ class CreateWorkoutViewModel @Inject constructor(
                                 isSuperset = true,
                                 sets = currentSets,
                                 reps = List(currentSets) { "" },
-                                rest = List(currentSets) { "" },
+                                rest = firstRest,
                                 weight = List(currentSets) { "" },
                                 exercise = TrackedExercise(
                                     id = trackedExercise.id,
