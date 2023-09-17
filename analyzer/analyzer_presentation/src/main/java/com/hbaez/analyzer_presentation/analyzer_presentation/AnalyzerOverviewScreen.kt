@@ -10,14 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -28,11 +23,11 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.annotation.ExperimentalCoilApi
 import com.hbaez.core_ui.LocalSpacing
+import java.time.DayOfWeek
 
 @ExperimentalCoilApi
 @Composable
@@ -49,9 +44,9 @@ fun AnalyzerOverviewScreen(
     ){
         Text("Analyzer placeholder", textAlign = TextAlign.Center)
 
-        ActivityChart(weeklyContributions = listOf(10,50,0,0,0,15,12,0,0,12,0,0,0,0,0,0,0,18))
+        ActivityChart(weeklyContributions = state.activityCountList)
 
-        Text(state.currentContributionIndex.toString(), textAlign = TextAlign.Center)
+        Text(state.date.with(DayOfWeek.SUNDAY).minusDays((51 - state.currentActivityIndex) * 7L).toString(), textAlign = TextAlign.Center)
     }
 }
 
@@ -66,7 +61,8 @@ fun ActivityChart(
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val cellCount = 13
     val cellPadding = spacing.spaceExtraSmall
-    val maxValue = weeklyContributions.maxOrNull() ?: 0
+    val maxValue = (weeklyContributions.maxOrNull() ?: 1).coerceAtLeast(1)
+    Log.println(Log.DEBUG, "activityCountList", weeklyContributions.toString())
 
     Box(
         modifier = Modifier
@@ -84,8 +80,8 @@ fun ActivityChart(
                             (screenWidth.toPx() - spacing.spaceSmall.toPx() * 2 - (cellCount - 1) * cellPadding.toPx()) / cellCount
                         val columnIndex = (offset.x / (cellSize + cellPadding.toPx())).toInt()
                         val rowIndex = (offset.y / (cellSize + cellPadding.toPx())).toInt()
-                        val cellIndex = columnIndex + rowIndex * cellCount
-                        viewModel.onEvent(AnalyzerEvent.onContributionChartClick(cellIndex))
+                        val cellIndex = rowIndex + columnIndex * 4
+                        viewModel.onEvent(AnalyzerEvent.OnContributionChartClick(cellIndex))
 //                    onCellClick(cellIndex)
                         Log.println(Log.DEBUG, "squareTapped", cellIndex.toString())
                         Log.println(Log.DEBUG, "squareTapped column", columnIndex.toString())
