@@ -191,8 +191,8 @@ fun WorkoutLoggerOverviewScreen(
                         showDialogEdit.value = true
                     },
                     title = R.string.workout_routine,
-                    text1 = stringResource(id = R.string.create_routine),
-                    text2 = stringResource(id = R.string.edit_routine)
+                    text1 = stringResource(id = R.string.create),
+                    text2 = stringResource(id = R.string.edit)
                 )
             }
             "exercise" -> {
@@ -206,8 +206,8 @@ fun WorkoutLoggerOverviewScreen(
                         showExerciseEdit.value = true
                     },
                     title = R.string.exercise,
-                    text1 = stringResource(id = R.string.create_exercise),
-                    text2 = stringResource(id = R.string.edit_exercise)
+                    text1 = stringResource(id = R.string.create),
+                    text2 = stringResource(id = R.string.edit)
                 )
             }
         }
