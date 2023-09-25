@@ -22,6 +22,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,20 +44,22 @@ fun AnalyzerOverviewScreen(
 
     Column(
         Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
+//        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         Text("Analyzer placeholder", textAlign = TextAlign.Center)
 
-        ActivityChart(weeklyContributions = state.activityCountList)
+        ActivityChart(weeklyContributions = state.activityCountList, monthValue = state.date.monthValue)
 
-        Text(state.date.with(DayOfWeek.SUNDAY).minusDays((51 - state.currentActivityIndex) * 7L).toString(), textAlign = TextAlign.Center)
+        Text(state.date.with(DayOfWeek.MONDAY).minusDays((51 - state.currentActivityIndex) * 7L).toString(), textAlign = TextAlign.Center)
     }
 }
 
+@OptIn(ExperimentalTextApi::class)
 @Composable
 fun ActivityChart(
     weeklyContributions: List<Int>,
+    monthValue: Int,
     viewModel: AnalyzerOverviewModel = hiltViewModel()
 ) {
     val spacing = LocalSpacing.current
@@ -63,11 +70,16 @@ fun ActivityChart(
     val cellPadding = spacing.spaceExtraSmall
     val maxValue = (weeklyContributions.maxOrNull() ?: 1).coerceAtLeast(1)
     Log.println(Log.DEBUG, "activityCountList", weeklyContributions.toString())
-
+    val textMeasurer = rememberTextMeasurer()
+    val style = TextStyle(
+        fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+        color = MaterialTheme.colorScheme.onBackground,
+//        background = Color.Red.copy(alpha = 0.2f)
+    )
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(((screenWidth - spacing.spaceSmall * 2 - (3 * cellPadding.value).dp) / cellCount) * 4)
+            .height(((screenWidth - spacing.spaceSmall * 2 - (3 * cellPadding.value).dp) / cellCount) * 5)
     ) {
         Canvas(
             modifier = Modifier
@@ -82,20 +94,70 @@ fun ActivityChart(
                         val rowIndex = (offset.y / (cellSize + cellPadding.toPx())).toInt()
                         val cellIndex = rowIndex + columnIndex * 4
                         viewModel.onEvent(AnalyzerEvent.OnContributionChartClick(cellIndex))
-//                    onCellClick(cellIndex)
-                        Log.println(Log.DEBUG, "squareTapped", cellIndex.toString())
-                        Log.println(Log.DEBUG, "squareTapped column", columnIndex.toString())
-                        Log.println(Log.DEBUG, "squareTapped row", rowIndex.toString())
                     }
                 }
         ) {
+            // Label quarterly months
+            val q1 = 12 - monthValue
+            val q2 = (15 - monthValue) % 12
+            val q3 = (18 - monthValue) % 12
+            val q4 = (21 - monthValue) % 12
             // Calculate the cellSize based on screen width and the number of columns
             val cellSize = (screenWidth.toPx() - spacing.spaceSmall.toPx() * 2 - (cellCount - 1) * cellPadding.toPx()) / cellCount
 
-            // Draw the chart cells here based on weeklyContributions
-            // You'll need to iterate through weeklyContributions and draw each cell
+            // iterate through weeklyContributions and draw each cell
             for (i in 0 until 13) {
-                for (j in 0 until 4) {
+                when(i) {
+                    q1 -> {
+                        drawText(
+                            textMeasurer = textMeasurer,
+                            text = "Jan",
+                            style = style,
+                            topLeft = Offset(
+                                x = i * (cellSize + cellPadding.toPx()),
+                                y = 0f,
+                            )
+                        )
+                    }
+                    q2 -> {
+                        drawText(
+                            textMeasurer = textMeasurer,
+                            text = "Mar",
+                            style = style,
+                            topLeft = Offset(
+                                x = i * (cellSize + cellPadding.toPx()),
+                                y = 0f,
+                            )
+                        )
+                    }
+                    q3 -> {
+                        drawText(
+                            textMeasurer = textMeasurer,
+                            text = "Jun",
+                            style = style,
+                            topLeft = Offset(
+                                x = i * (cellSize + cellPadding.toPx()),
+                                y = 0f,
+                            )
+                        )
+                    }
+                    q4 -> {
+                        drawText(
+                            textMeasurer = textMeasurer,
+                            text = "Sept",
+                            style = style,
+                            topLeft = Offset(
+                                x = i * (cellSize + cellPadding.toPx()),
+                                y = 0f,
+                            )
+                        )
+                    }
+
+                }
+                if(i == q1){
+
+                }
+                for (j in 1 until 5) {
                     val contributionCount = weeklyContributions.getOrNull(i * 4 + j) ?: 0
                     val color = getCellColor(contributionCount, maxValue, startColor, endColor)
                     drawRoundRect(
@@ -110,11 +172,12 @@ fun ActivityChart(
     }
 }
 
-private fun getCellColor(contributionCount: Int, maxValue: Int, startColor: Color, endColor: Color): Color {
-    // Define your color logic here
-    // You can use a gradient or a set of predefined colors
-    // For simplicity, we'll use a gradient from green to red
+private fun getCellColor(
+    contributionCount: Int,
+    maxValue: Int,
+    startColor: Color,
+    endColor: Color
+): Color {
     val fraction = contributionCount.toFloat() / maxValue.toFloat()
-    val color = lerp(startColor, endColor, fraction)
-    return color
+    return lerp(startColor, endColor, fraction)
 }
