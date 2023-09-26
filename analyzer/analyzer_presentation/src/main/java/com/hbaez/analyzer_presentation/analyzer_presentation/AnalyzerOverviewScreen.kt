@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
@@ -47,7 +48,12 @@ fun AnalyzerOverviewScreen(
 //        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        Text("Analyzer placeholder", textAlign = TextAlign.Center)
+        Text(
+            modifier = Modifier.fillMaxWidth().padding(spacing.spaceMedium),
+            text = "Personal Stats",
+            textAlign = TextAlign.Start,
+            style = MaterialTheme.typography.headlineMedium
+        )
 
         ActivityChart(weeklyContributions = state.activityCountList, monthValue = state.date.monthValue)
 
