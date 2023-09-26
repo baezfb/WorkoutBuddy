@@ -79,6 +79,7 @@
     <string name="delete_routine">Delete Routine?</string>
     <string name="routine_name">Workout Routine Name</string>
     <string name="exercise">Exercise</string>
+    <string name="workout_activity">Workout Activity</string>
     <string name="exercise_template">Exercise Template</string>
     <string name="routine_template">Workout Template</string>
     <string name="workout_routine">Workout Routine</string>

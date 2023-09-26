@@ -14,6 +14,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.time.DayOfWeek
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -49,7 +50,8 @@ class AnalyzerOverviewModel @Inject constructor(
         when(event) {
             is AnalyzerEvent.OnContributionChartClick -> {
                 state = state.copy(
-                    currentActivityIndex = event.index
+                    currentActivityIndex = event.index,
+                    currentActivityDate = state.date.with(DayOfWeek.MONDAY).minusDays((51 - state.currentActivityIndex) * 7L)
                 )
             }
         }
