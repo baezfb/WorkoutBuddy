@@ -71,11 +71,10 @@ class AnalyzerOverviewModel @Inject constructor(
     }
 
     private fun getWorkoutsForWeek(startDate: LocalDate) {
-//        getWorkoutsForDateJob?.cancel()
-        for (i in 0 until 7) {
-            val currentDate = startDate.plusDays(i.toLong())
-//            getWorkoutsForDateJob =
-            viewModelScope.launch {
+        getWorkoutsForDateJob?.cancel()
+        getWorkoutsForDateJob = viewModelScope.launch {
+            for (i in 0 until 7) {
+                val currentDate = startDate.plusDays(i.toLong())
                 val currentDateCompletedWorkouts = storageService.getCompletedWorkoutByDate(currentDate.toString()).toMutableList()
                 currentDateCompletedWorkouts.forEach { completedWorkout ->
                     coroutineScope {
