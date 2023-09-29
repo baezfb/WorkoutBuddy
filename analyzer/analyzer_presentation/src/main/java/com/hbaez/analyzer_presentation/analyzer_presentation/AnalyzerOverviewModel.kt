@@ -1,17 +1,25 @@
 package com.hbaez.analyzer_presentation.analyzer_presentation
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hbaez.analyzer_presentation.analyzer_presentation.components.CalculateActivityIndexFromDate
+import com.hbaez.core.R
 import com.hbaez.core.domain.preferences.Preferences
 import com.hbaez.core.util.UiEvent
+import com.hbaez.core.util.UiText
 import com.hbaez.user_auth_presentation.model.service.StorageService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -26,6 +34,7 @@ class AnalyzerOverviewModel @Inject constructor(
 
     var state by mutableStateOf(AnalyzerState())
         private set
+    private var getWorkoutsForDateJob: Job? = null
 
     val workoutTemplates = storageService.workouts
 
@@ -49,11 +58,63 @@ class AnalyzerOverviewModel @Inject constructor(
     fun onEvent(event: AnalyzerEvent){
         when(event) {
             is AnalyzerEvent.OnContributionChartClick -> {
-                state = state.copy(
-                    currentActivityIndex = event.index,
-                    currentActivityDate = state.date.with(DayOfWeek.MONDAY).minusDays((51 - state.currentActivityIndex) * 7L)
-                )
+                if(state.currentActivityDate != state.date.with(DayOfWeek.MONDAY).minusDays((51 - state.currentActivityIndex) * 7L)){
+                    state = state.copy(
+                        currentActivityIndex = event.index,
+                        currentActivityDate = state.date.with(DayOfWeek.MONDAY).minusDays((51 - state.currentActivityIndex) * 7L),
+                        workoutList = emptyList()
+                    )
+                    getWorkoutsForWeek(state.currentActivityDate)
+                }
             }
         }
+    }
+
+    private fun getWorkoutsForWeek(startDate: LocalDate) {
+//        getWorkoutsForDateJob?.cancel()
+        for (i in 0 until 7) {
+            val currentDate = startDate.plusDays(i.toLong())
+//            getWorkoutsForDateJob =
+            viewModelScope.launch {
+                val currentDateCompletedWorkouts = storageService.getCompletedWorkoutByDate(currentDate.toString()).toMutableList()
+                currentDateCompletedWorkouts.forEach { completedWorkout ->
+                    coroutineScope {
+                        var found = false
+                        state = state.copy(
+                            workoutList = state.workoutList.map {
+                                if(it[0] == completedWorkout.workoutName){
+                                    found = true
+                                    listOf(it[0], (it[1].toInt() + 1).toString())
+                                } else it
+                            }
+                        )
+                        if(!found) {
+                            val newWorkoutList = state.workoutList.toMutableList()
+                            newWorkoutList.add(listOf(completedWorkout.workoutName, "1"))
+                            state = state.copy(
+                                workoutList = newWorkoutList.toList()
+                            )
+                        }
+                    }
+                }
+            }
+        }
+//        getWorkoutsForDateJob?.cancel()
+//        getWorkoutsForDateJob = exerciseTrackerUseCases
+//            .getExerciseForName()
+//            .onEach { exercises ->
+//                if(exercises.isEmpty()) {
+//                    _uiEvent.send(
+//                        UiEvent.ShowSnackbar(
+//                            UiText.StringResource(R.string.empty_results)
+//                        )
+//                    )
+//                }
+//                state = state.copy(
+//                    trackableExercise = exercises.map {
+//                        TrackableExerciseState(exercise = it)
+//                    }
+//                )
+//            }.launchIn(viewModelScope)
     }
 }

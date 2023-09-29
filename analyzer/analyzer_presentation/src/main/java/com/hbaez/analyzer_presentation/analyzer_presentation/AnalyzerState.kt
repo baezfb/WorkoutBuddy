@@ -6,5 +6,6 @@ data class AnalyzerState(
     val date: LocalDate = LocalDate.now(),
     val currentActivityIndex: Int = -1,
     val currentActivityDate: LocalDate = LocalDate.now(),
-    val activityCountList: List<Int> = List(52) { 0 }
+    val activityCountList: List<Int> = List(52) { 0 },
+    val workoutList: List<List<String>> = mutableListOf()
 )

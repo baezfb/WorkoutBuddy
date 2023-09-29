@@ -6,6 +6,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -57,25 +58,58 @@ fun AnalyzerOverviewScreen(
             style = MaterialTheme.typography.headlineMedium
         )
 
-        ActivityChart(weeklyContributions = state.activityCountList, monthValue = state.date.monthValue)
-
-        Text(
-            stringResource(id = R.string.workout_activity),
-            textAlign = TextAlign.Start,
-            modifier = Modifier
-                .padding(horizontal = spacing.spaceSmall)
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                "${state.currentActivityDate.month.name} ${state.currentActivityDate.dayOfMonth}, ${state.currentActivityDate.year}",
+                stringResource(id = R.string.workout_activity),
                 textAlign = TextAlign.Start,
                 modifier = Modifier
                     .padding(horizontal = spacing.spaceSmall)
             )
-            Divider(Modifier.padding(end = spacing.spaceSmall))
+            ActivityChart(weeklyContributions = state.activityCountList, monthValue = state.date.monthValue)
+            Spacer(modifier = Modifier.height(spacing.spaceSmall))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "${state.currentActivityDate.month.name} ${state.currentActivityDate.dayOfMonth}, ${state.currentActivityDate.year}",
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier
+                        .padding(horizontal = spacing.spaceSmall)
+                )
+                Divider(Modifier.padding(end = spacing.spaceSmall))
+            }
+            Spacer(Modifier.height(spacing.spaceMedium))
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if(state.workoutList.isEmpty()){
+                    Text(
+                        stringResource(id = R.string.no_activity),
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        modifier = Modifier
+                            .padding(horizontal = spacing.spaceSmall)
+                    )
+                } else {
+                    Text(
+                        "Completed ${state.workoutList.fold(0) { accumulator, element -> accumulator + element[1].toInt() }} exercises in ${state.workoutList.size} workouts.",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .padding(horizontal = spacing.spaceSmall)
+                    )
+                    state.workoutList.forEach {
+                        Text(
+                            "${it[0]} (${it[1]} exercises)",
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier.padding(start = spacing.spaceMedium)
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -117,7 +151,7 @@ fun ActivityChart(
                             (screenWidth.toPx() - spacing.spaceSmall.toPx() * 2 - (cellCount - 1) * cellPadding.toPx()) / cellCount
                         val columnIndex = (offset.x / (cellSize + cellPadding.toPx())).toInt()
                         var rowIndex = (offset.y / (cellSize + cellPadding.toPx())).toInt()
-                        if(rowIndex != 0){
+                        if (rowIndex != 0) {
                             rowIndex--
                             val cellIndex = rowIndex + columnIndex * 4
                             viewModel.onEvent(AnalyzerEvent.OnContributionChartClick(cellIndex))
