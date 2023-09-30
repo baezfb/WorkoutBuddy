@@ -2,16 +2,26 @@ package com.hbaez.analyzer_presentation.analyzer_presentation
 
 import android.util.Log
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +45,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.annotation.ExperimentalCoilApi
 import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
+import com.hbaez.user_auth_presentation.components.FlatButton
 
 @ExperimentalCoilApi
 @Composable
@@ -95,18 +106,80 @@ fun AnalyzerOverviewScreen(
                             .padding(horizontal = spacing.spaceSmall)
                     )
                 } else {
-                    Text(
-                        "Completed ${state.workoutList.fold(0) { accumulator, element -> accumulator + element[1].toInt() }} exercises in ${state.workoutList.size} workouts.",
-                        textAlign = TextAlign.Center,
+                    Row(
                         modifier = Modifier
-                            .padding(horizontal = spacing.spaceSmall)
-                    )
-                    state.workoutList.forEach {
-                        Text(
-                            "${it[0]} (${it[1]} exercises)",
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier.padding(start = spacing.spaceMedium)
-                        )
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(horizontal = spacing.spaceSmall),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Box(
+                                modifier = Modifier.border(2.dp, MaterialTheme.colorScheme.surfaceVariant, CircleShape),
+                                contentAlignment = Alignment.Center,
+                                content = {
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowForward,
+                                        contentDescription = "tmp",
+                                        modifier = Modifier.padding(spacing.spaceExtraSmall), // Adjust the size of the icon
+                                        tint = MaterialTheme.colorScheme.onSurface // Change the icon color as needed
+                                    )
+                                }
+                            )
+                            Divider(
+                                modifier = Modifier
+                                    .padding(spacing.spaceSmall)
+                                    .fillMaxHeight()
+                                    .width(2.dp)
+                            )
+                        }
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.Start
+                        ) {
+                            Text(
+                                "${state.workoutList.fold(0) { accumulator, element -> accumulator + element[1].toInt() }} exercises in ${state.workoutList.size} workouts.",
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.displaySmall,
+                                modifier = Modifier
+                                    .padding(horizontal = spacing.spaceSmall)
+                            )
+                            Spacer(modifier = Modifier.height(spacing.spaceSmall))
+                            state.workoutList.forEach {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        it[0],
+                                        textAlign = TextAlign.Start,
+                                        style = MaterialTheme.typography.labelLarge,
+                                        modifier = Modifier.padding(start = spacing.spaceLarge)
+                                    )
+                                    Text(
+                                        "(${it[1]} exercises)",
+                                        textAlign = TextAlign.Start,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.surfaceTint,
+                                        modifier = Modifier.padding(start = spacing.spaceExtraSmall)
+                                    )
+
+                                }
+                                Spacer(modifier = Modifier.height(spacing.spaceExtraSmall))
+                            }
+                        }
+                    }
+                    FlatButton(
+                        text = R.string.show_more_activity,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                shape = RoundedCornerShape(100f)
+                            )
+                    ) {
+                        /*TODO Navigate to Overview screen with selected date (+1 week, so selected date is Monday)*/
                     }
                 }
             }
