@@ -58,12 +58,14 @@ class AnalyzerOverviewModel @Inject constructor(
     fun onEvent(event: AnalyzerEvent){
         when(event) {
             is AnalyzerEvent.OnContributionChartClick -> {
+                val currentActivityDate = state.date.with(DayOfWeek.MONDAY).minusDays((51 - event.index) * 7L)
                 state = state.copy(
                     currentActivityIndex = event.index,
-                    currentActivityDate = state.date.with(DayOfWeek.MONDAY).minusDays((51 - event.index) * 7L),
-                    workoutList = emptyList()
+                    currentActivityDate = currentActivityDate,
+                    workoutList = emptyList(),
+                    exerciseList = emptyList()
                 )
-                getWorkoutsForWeek(state.date.with(DayOfWeek.MONDAY).minusDays((51 - event.index) * 7L))
+                getWorkoutsForWeek(currentActivityDate)
             }
         }
     }

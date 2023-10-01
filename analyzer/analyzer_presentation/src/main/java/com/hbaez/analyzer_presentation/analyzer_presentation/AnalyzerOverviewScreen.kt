@@ -354,7 +354,7 @@ fun ActivityChart(
                     }
                 }
                 for (j in 1 until 5) {
-                    val contributionCount = weeklyContributions.getOrNull(i * 4 + j) ?: 0
+                    val contributionCount = weeklyContributions.getOrNull(i * 4 + (j - 1)) ?: 0
                     val color = getCellColor(contributionCount, maxValue, startColor, endColor)
                     drawRoundRect(
                         color = color,
