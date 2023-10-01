@@ -58,16 +58,12 @@ class AnalyzerOverviewModel @Inject constructor(
     fun onEvent(event: AnalyzerEvent){
         when(event) {
             is AnalyzerEvent.OnContributionChartClick -> {
-                Log.println(Log.DEBUG, "debugging", "reached analyzer viewmodel")
-                if(state.currentActivityDate != state.date.with(DayOfWeek.MONDAY).minusDays((51 - state.currentActivityIndex) * 7L)){
-                    Log.println(Log.DEBUG, "debugging", "reached analyzer viewmodel if statement")
-                    state = state.copy(
-                        currentActivityIndex = event.index,
-                        currentActivityDate = state.date.with(DayOfWeek.MONDAY).minusDays((51 - state.currentActivityIndex) * 7L),
-                        workoutList = emptyList()
-                    )
-//                    getWorkoutsForWeek(state.currentActivityDate)
-                }
+                state = state.copy(
+                    currentActivityIndex = event.index,
+                    currentActivityDate = state.date.with(DayOfWeek.MONDAY).minusDays((51 - state.currentActivityIndex) * 7L),
+                    workoutList = emptyList()
+                )
+                getWorkoutsForWeek(state.currentActivityDate)
             }
         }
     }

@@ -41,6 +41,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.annotation.ExperimentalCoilApi
@@ -220,7 +221,9 @@ fun AnalyzerOverviewScreen(
                                             it,
                                             textAlign = TextAlign.Start,
                                             style = MaterialTheme.typography.labelLarge,
-                                            modifier = Modifier.padding(start = spacing.spaceLarge)
+                                            modifier = Modifier.padding(start = spacing.spaceLarge),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
                                     }
                                     Spacer(modifier = Modifier.height(spacing.spaceExtraSmall))
@@ -261,12 +264,10 @@ fun ActivityChart(
     val cellCount = 13
     val cellPadding = spacing.spaceExtraSmall
     val maxValue = (weeklyContributions.maxOrNull() ?: 1).coerceAtLeast(1)
-    Log.println(Log.DEBUG, "activityCountList", weeklyContributions.toString())
     val textMeasurer = rememberTextMeasurer()
     val style = TextStyle(
         fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-        color = MaterialTheme.colorScheme.onBackground,
-//        background = Color.Red.copy(alpha = 0.2f)
+        color = MaterialTheme.colorScheme.onBackground
     )
     Box(
         modifier = Modifier
@@ -280,12 +281,10 @@ fun ActivityChart(
                 .height(((screenWidth - spacing.spaceSmall * 2 - (3 * cellPadding.value).dp) / cellCount) * 5)
                 .pointerInput(true) {
                     detectTapGestures { offset ->
-                        Log.println(Log.DEBUG, "Canvas offset", offset.toString())
                         val cellSize =
                             (screenWidth.toPx() - spacing.spaceSmall.toPx() * 2 - (cellCount - 1) * cellPadding.toPx()) / cellCount
                         val columnIndex = (offset.x / (cellSize + cellPadding.toPx())).toInt()
                         var rowIndex = (offset.y / (cellSize + cellPadding.toPx())).toInt()
-                        Log.println(Log.DEBUG, "rowIndex", rowIndex.toString())
                         if (rowIndex != 0) {
                             rowIndex--
                             val cellIndex = rowIndex + columnIndex * 4
