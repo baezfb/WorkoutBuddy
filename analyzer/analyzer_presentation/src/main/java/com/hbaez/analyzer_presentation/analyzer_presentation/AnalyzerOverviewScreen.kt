@@ -32,6 +32,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
@@ -80,7 +81,7 @@ fun AnalyzerOverviewScreen(
                 modifier = Modifier
                     .padding(horizontal = spacing.spaceSmall)
             )
-            ActivityChart(weeklyContributions = state.activityCountList, monthValue = state.date.monthValue)
+            ActivityChart(weeklyContributions = state.activityCountList, monthValue = state.date.monthValue, currentActivityIndex = state.currentActivityIndex)
             Spacer(modifier = Modifier.height(spacing.spaceSmall))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -255,9 +256,11 @@ fun AnalyzerOverviewScreen(
 fun ActivityChart(
     weeklyContributions: List<Int>,
     monthValue: Int,
+    currentActivityIndex: Int,
     viewModel: AnalyzerOverviewModel = hiltViewModel()
 ) {
     val spacing = LocalSpacing.current
+    val borderColor = MaterialTheme.colorScheme.primary
     val startColor = MaterialTheme.colorScheme.surfaceVariant
     val endColor = Color.Green
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -302,6 +305,7 @@ fun ActivityChart(
             val cellSize = (screenWidth.toPx() - spacing.spaceSmall.toPx() * 2 - (cellCount - 1) * cellPadding.toPx()) / cellCount
 
             // iterate through weeklyContributions and draw each cell
+            var index = 0
             for (i in 0 until 13) {
                 when(i) {
                     q1 -> {
@@ -358,6 +362,16 @@ fun ActivityChart(
                         size = Size(cellSize - cellPadding.toPx(), cellSize - cellPadding.toPx()),
                         cornerRadius = CornerRadius(spacing.spaceExtraSmall.toPx())
                     )
+                    if(index == currentActivityIndex){
+                        drawRoundRect(
+                            color = borderColor, // Specify the border color
+                            topLeft = Offset(i * (cellSize + cellPadding.toPx()), j * (cellSize + cellPadding.toPx())),
+                            size = Size(cellSize - cellPadding.toPx(), cellSize - cellPadding.toPx()),
+                            cornerRadius = CornerRadius(spacing.spaceExtraSmall.toPx()), // Use the same corner radius as the filled rectangle
+                            style = Stroke(width = 2.dp.toPx()) // Specify the border width
+                        )
+                    }
+                    index++
                 }
             }
         }

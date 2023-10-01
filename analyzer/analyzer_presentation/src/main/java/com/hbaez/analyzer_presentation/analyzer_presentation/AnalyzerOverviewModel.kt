@@ -60,10 +60,10 @@ class AnalyzerOverviewModel @Inject constructor(
             is AnalyzerEvent.OnContributionChartClick -> {
                 state = state.copy(
                     currentActivityIndex = event.index,
-                    currentActivityDate = state.date.with(DayOfWeek.MONDAY).minusDays((51 - state.currentActivityIndex) * 7L),
+                    currentActivityDate = state.date.with(DayOfWeek.MONDAY).minusDays((51 - event.index) * 7L),
                     workoutList = emptyList()
                 )
-                getWorkoutsForWeek(state.currentActivityDate)
+                getWorkoutsForWeek(state.date.with(DayOfWeek.MONDAY).minusDays((51 - event.index) * 7L))
             }
         }
     }
@@ -104,22 +104,5 @@ class AnalyzerOverviewModel @Inject constructor(
                 }
             }
         }
-//        getWorkoutsForDateJob?.cancel()
-//        getWorkoutsForDateJob = exerciseTrackerUseCases
-//            .getExerciseForName()
-//            .onEach { exercises ->
-//                if(exercises.isEmpty()) {
-//                    _uiEvent.send(
-//                        UiEvent.ShowSnackbar(
-//                            UiText.StringResource(R.string.empty_results)
-//                        )
-//                    )
-//                }
-//                state = state.copy(
-//                    trackableExercise = exercises.map {
-//                        TrackableExerciseState(exercise = it)
-//                    }
-//                )
-//            }.launchIn(viewModelScope)
     }
 }
