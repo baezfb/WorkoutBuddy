@@ -5,6 +5,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -169,6 +170,65 @@ fun AnalyzerOverviewScreen(
                             }
                         }
                     }
+                    Spacer(modifier = Modifier.height(spacing.spaceSmall))
+                    if(state.exerciseList.isNotEmpty()) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(IntrinsicSize.Min)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(horizontal = spacing.spaceSmall),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Box(
+                                    modifier = Modifier.border(2.dp, MaterialTheme.colorScheme.surfaceVariant, CircleShape),
+                                    contentAlignment = Alignment.Center,
+                                    content = {
+                                        Icon(
+                                            imageVector = Icons.Default.ArrowForward,
+                                            contentDescription = "tmp",
+                                            modifier = Modifier.padding(spacing.spaceExtraSmall), // Adjust the size of the icon
+                                            tint = MaterialTheme.colorScheme.onSurface // Change the icon color as needed
+                                        )
+                                    }
+                                )
+                                Divider(
+                                    modifier = Modifier
+                                        .padding(spacing.spaceSmall)
+                                        .fillMaxHeight()
+                                        .width(2.dp)
+                                )
+                            }
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    "Completed ${state.exerciseList.size} solo exercises.",
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.displaySmall,
+                                    modifier = Modifier
+                                        .padding(horizontal = spacing.spaceSmall)
+                                )
+                                Spacer(modifier = Modifier.height(spacing.spaceSmall))
+                                state.exerciseList.forEach {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            it,
+                                            textAlign = TextAlign.Start,
+                                            style = MaterialTheme.typography.labelLarge,
+                                            modifier = Modifier.padding(start = spacing.spaceLarge)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(spacing.spaceExtraSmall))
+                                }
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(spacing.spaceSmall))
                     FlatButton(
                         text = R.string.show_more_activity,
                         modifier = Modifier
@@ -220,10 +280,12 @@ fun ActivityChart(
                 .height(((screenWidth - spacing.spaceSmall * 2 - (3 * cellPadding.value).dp) / cellCount) * 5)
                 .pointerInput(true) {
                     detectTapGestures { offset ->
+                        Log.println(Log.DEBUG, "Canvas offset", offset.toString())
                         val cellSize =
                             (screenWidth.toPx() - spacing.spaceSmall.toPx() * 2 - (cellCount - 1) * cellPadding.toPx()) / cellCount
                         val columnIndex = (offset.x / (cellSize + cellPadding.toPx())).toInt()
                         var rowIndex = (offset.y / (cellSize + cellPadding.toPx())).toInt()
+                        Log.println(Log.DEBUG, "rowIndex", rowIndex.toString())
                         if (rowIndex != 0) {
                             rowIndex--
                             val cellIndex = rowIndex + columnIndex * 4

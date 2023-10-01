@@ -58,13 +58,15 @@ class AnalyzerOverviewModel @Inject constructor(
     fun onEvent(event: AnalyzerEvent){
         when(event) {
             is AnalyzerEvent.OnContributionChartClick -> {
+                Log.println(Log.DEBUG, "debugging", "reached analyzer viewmodel")
                 if(state.currentActivityDate != state.date.with(DayOfWeek.MONDAY).minusDays((51 - state.currentActivityIndex) * 7L)){
+                    Log.println(Log.DEBUG, "debugging", "reached analyzer viewmodel if statement")
                     state = state.copy(
                         currentActivityIndex = event.index,
                         currentActivityDate = state.date.with(DayOfWeek.MONDAY).minusDays((51 - state.currentActivityIndex) * 7L),
                         workoutList = emptyList()
                     )
-                    getWorkoutsForWeek(state.currentActivityDate)
+//                    getWorkoutsForWeek(state.currentActivityDate)
                 }
             }
         }
@@ -88,11 +90,19 @@ class AnalyzerOverviewModel @Inject constructor(
                             }
                         )
                         if(!found) {
-                            val newWorkoutList = state.workoutList.toMutableList()
-                            newWorkoutList.add(listOf(completedWorkout.workoutName, "1"))
-                            state = state.copy(
-                                workoutList = newWorkoutList.toList()
-                            )
+                            if(completedWorkout.workoutName != ""){
+                                val newWorkoutList = state.workoutList.toMutableList()
+                                newWorkoutList.add(listOf(completedWorkout.workoutName, "1"))
+                                state = state.copy(
+                                    workoutList = newWorkoutList.toList()
+                                )
+                            } else{
+                                if(!state.exerciseList.contains(completedWorkout.exerciseName)) {
+                                    state = state.copy(
+                                        exerciseList = state.exerciseList + completedWorkout.exerciseName
+                                    )
+                                }
+                            }
                         }
                     }
                 }
