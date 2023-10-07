@@ -52,6 +52,7 @@ class AnalyzerOverviewModel @Inject constructor(
             state = state.copy(
                 activityCountList = activityList
             )
+            onEvent(AnalyzerEvent.OnContributionChartClick(51))
         }
     }
 
