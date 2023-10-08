@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.workout_logger_domain.use_case.ExerciseTrackerUseCases
@@ -36,6 +37,7 @@ import java.time.LocalDate
 
 @HiltViewModel
 class WorkoutLoggerOverviewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     preferences: Preferences,
     private val exerciseTrackerUseCases: ExerciseTrackerUseCases,
     private val storageService: StorageService
@@ -72,6 +74,13 @@ class WorkoutLoggerOverviewModel @Inject constructor(
         }
     }
     init {
+        val date = savedStateHandle["date"] ?: ""
+        Log.println(Log.DEBUG,"overview savedstate date", date)
+        if(date.isNotEmpty()){
+            state = state.copy(
+                date = LocalDate.parse(date)
+            )
+        }
         refreshWorkouts()
         refreshExercises()
         executeSearch()

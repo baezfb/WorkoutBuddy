@@ -83,6 +83,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import com.hbaez.core.R
+import java.time.LocalDate
 
 @ExperimentalComposeUiApi
 @ExperimentalCoilApi
@@ -134,13 +135,13 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                     modifier = Modifier.fillMaxSize(),
                     snackbarHost = { SnackbarHost(snackbarHostState) },
                     bottomBar = {
-                        if( currentRoute == Route.WORKOUT_OVERVIEW || currentRoute == Route.TRACKER_OVERVIEW
+                        if( currentRoute?.startsWith(Route.WORKOUT_OVERVIEW) == true || currentRoute == Route.TRACKER_OVERVIEW
                             || currentRoute == Route.APP_SETTINGS || currentRoute == Route.ANALYZER_OVERVIEW || currentRoute == Route.CHAT_BOT){
                             BottomNavigationBar(
                                 items = listOf(
                                     BottomNavItem(
                                         name = "Workout",
-                                        route = Route.WORKOUT_OVERVIEW,
+                                        route = Route.WORKOUT_OVERVIEW + "/${LocalDate.now()}",
                                         icon = Icons.Default.Notifications
                                     ),
                                     BottomNavItem(
@@ -184,7 +185,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                         composable(Route.SPLASH){
                             SplashScreen(
                                 openAndPopUp = { route, popup ->
-                                    navController.navigate(route) {
+                                    navController.navigate(Route.WORKOUT_OVERVIEW + "/${LocalDate.now()}") {
                                         launchSingleTop = true
                                         popUpTo(popup) { inclusive = true }
                                     }
@@ -286,7 +287,15 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                 }
                             )
                         }
-                        composable(Route.WORKOUT_OVERVIEW) {
+                        composable(
+                            route = Route.WORKOUT_OVERVIEW +
+                                    "/{date}",
+                            arguments = listOf(
+                                navArgument("date") {
+                                    type = NavType.StringType
+                                }
+                            )
+                        ) {
                             Column(modifier = Modifier.padding(bottom = 58.dp)){
                                 WorkoutLoggerOverviewScreen(
                                     onNavigateToCreateWorkout = {
@@ -553,7 +562,9 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                         }
                         composable(Route.ANALYZER_OVERVIEW) {
                             AnalyzerOverviewScreen(
-                                /*TODO*/
+                                onNavigateToWorkoutOverview = { date ->
+                                    navController.navigate(Route.WORKOUT_OVERVIEW + "/${date}")
+                                }
                             )
                         }
                         composable(Route.WEAR_OVERVIEW) {
@@ -572,7 +583,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                     navController.navigate(Route.USER_AUTH_SIGNUP)
                                 },
                                 onNavigateToHome = {
-                                    navController.navigate(Route.WORKOUT_OVERVIEW)
+                                    navController.navigate(Route.WORKOUT_OVERVIEW + LocalDate.now().toString())
                                 },
                                 openAndPopUp = { route, popup ->
                                     navController.navigate(route) {

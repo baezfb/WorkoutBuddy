@@ -49,11 +49,13 @@ import coil.annotation.ExperimentalCoilApi
 import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.user_auth_presentation.components.FlatButton
+import java.time.LocalDate
 
 @ExperimentalCoilApi
 @Composable
 fun AnalyzerOverviewScreen(
-    viewModel: AnalyzerOverviewModel = hiltViewModel()
+    viewModel: AnalyzerOverviewModel = hiltViewModel(),
+    onNavigateToWorkoutOverview: (date: LocalDate) -> Unit
 ){
     val spacing = LocalSpacing.current
     val state = viewModel.state
@@ -243,7 +245,7 @@ fun AnalyzerOverviewScreen(
                                 shape = RoundedCornerShape(100f)
                             )
                     ) {
-                        /*TODO Navigate to Overview screen with selected date (+1 week, so selected date is Monday)*/
+                        onNavigateToWorkoutOverview(state.currentActivityDate.plusDays(6L))
                     }
                 }
             }
