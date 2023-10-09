@@ -75,6 +75,7 @@ class WorkoutLoggerOverviewModel @Inject constructor(
     }
     init {
         val date = savedStateHandle["date"] ?: ""
+        savedStateHandle.remove<String>("date")
         Log.println(Log.DEBUG,"overview savedstate date", date)
         if(date.isNotEmpty()){
             state = state.copy(

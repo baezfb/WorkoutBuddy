@@ -141,7 +141,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                 items = listOf(
                                     BottomNavItem(
                                         name = "Workout",
-                                        route = Route.WORKOUT_OVERVIEW + "/${LocalDate.now()}",
+                                        route = if(currentRoute.startsWith(Route.WORKOUT_OVERVIEW)) currentRoute else Route.WORKOUT_OVERVIEW + "/${LocalDate.now()}",
                                         icon = Icons.Default.Notifications
                                     ),
                                     BottomNavItem(
@@ -184,7 +184,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                     ){
                         composable(Route.SPLASH){
                             SplashScreen(
-                                openAndPopUp = { route, popup ->
+                                openAndPopUp = { _, popup ->
                                     navController.navigate(Route.WORKOUT_OVERVIEW + "/${LocalDate.now()}") {
                                         launchSingleTop = true
                                         popUpTo(popup) { inclusive = true }
