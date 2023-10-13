@@ -15,10 +15,14 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Divider
@@ -46,6 +50,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.annotation.ExperimentalCoilApi
+import com.hbaez.analyzer_presentation.analyzer_presentation.components.LineChart
 import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.user_auth_presentation.components.FlatButton
@@ -60,122 +65,63 @@ fun AnalyzerOverviewScreen(
     val spacing = LocalSpacing.current
     val state = viewModel.state
 
-    Column(
-        Modifier.fillMaxSize(),
-//        verticalArrangement = Arrangement.Center,
+    LazyColumn(
+        Modifier
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(spacing.spaceMedium),
-            text = "Personal Stats",
-            textAlign = TextAlign.Start,
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        item {
             Text(
-                stringResource(id = R.string.workout_activity),
-                textAlign = TextAlign.Start,
                 modifier = Modifier
-                    .padding(horizontal = spacing.spaceSmall)
+                    .fillMaxWidth()
+                    .padding(spacing.spaceMedium),
+                text = "Personal Stats",
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.headlineMedium
             )
-            ActivityChart(weeklyContributions = state.activityCountList, monthValue = state.date.monthValue, currentActivityIndex = state.currentActivityIndex)
-            Spacer(modifier = Modifier.height(spacing.spaceSmall))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+        }
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
                 Text(
-                    "${state.currentActivityDate.month.name} ${state.currentActivityDate.dayOfMonth}, ${state.currentActivityDate.year}",
+                    stringResource(id = R.string.workout_activity),
                     textAlign = TextAlign.Start,
                     modifier = Modifier
                         .padding(horizontal = spacing.spaceSmall)
                 )
-                Divider(Modifier.padding(end = spacing.spaceSmall))
-            }
-            Spacer(Modifier.height(spacing.spaceMedium))
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                if(state.workoutList.isEmpty()){
+                ActivityChart(weeklyContributions = state.activityCountList, monthValue = state.date.monthValue, currentActivityIndex = state.currentActivityIndex)
+                Spacer(modifier = Modifier.height(spacing.spaceSmall))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        stringResource(id = R.string.no_activity),
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        "${state.currentActivityDate.month.name} ${state.currentActivityDate.dayOfMonth}, ${state.currentActivityDate.year}",
+                        textAlign = TextAlign.Start,
                         modifier = Modifier
                             .padding(horizontal = spacing.spaceSmall)
                     )
-                } else {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(IntrinsicSize.Min)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(horizontal = spacing.spaceSmall),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Box(
-                                modifier = Modifier.border(2.dp, MaterialTheme.colorScheme.surfaceVariant, CircleShape),
-                                contentAlignment = Alignment.Center,
-                                content = {
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowForward,
-                                        contentDescription = "tmp",
-                                        modifier = Modifier.padding(spacing.spaceExtraSmall), // Adjust the size of the icon
-                                        tint = MaterialTheme.colorScheme.onSurface // Change the icon color as needed
-                                    )
-                                }
-                            )
-                            Divider(
-                                modifier = Modifier
-                                    .padding(spacing.spaceSmall)
-                                    .fillMaxHeight()
-                                    .width(2.dp)
-                            )
-                        }
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                "${state.workoutList.fold(0) { accumulator, element -> accumulator + element[1].toInt() }} exercises in ${state.workoutList.size} workouts.",
-                                textAlign = TextAlign.Center,
-                                style = MaterialTheme.typography.displaySmall,
-                                modifier = Modifier
-                                    .padding(horizontal = spacing.spaceSmall)
-                            )
-                            Spacer(modifier = Modifier.height(spacing.spaceSmall))
-                            state.workoutList.forEach {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        it[0],
-                                        textAlign = TextAlign.Start,
-                                        style = MaterialTheme.typography.labelLarge,
-                                        modifier = Modifier.padding(start = spacing.spaceLarge)
-                                    )
-                                    Text(
-                                        "(${it[1]} exercises)",
-                                        textAlign = TextAlign.Start,
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = MaterialTheme.colorScheme.surfaceTint,
-                                        modifier = Modifier.padding(start = spacing.spaceExtraSmall)
-                                    )
-
-                                }
-                                Spacer(modifier = Modifier.height(spacing.spaceExtraSmall))
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(spacing.spaceSmall))
-                    if(state.exerciseList.isNotEmpty()) {
+                    Divider(Modifier.padding(end = spacing.spaceSmall))
+                }
+                Spacer(Modifier.height(spacing.spaceMedium))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = spacing.spaceExtraExtraLarge),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = if (state.workoutList.isEmpty()) Arrangement.Center else Arrangement.Top
+                ) {
+                    if(state.workoutList.isEmpty()){
+                        Text(
+                            stringResource(id = R.string.no_activity),
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            modifier = Modifier
+                                .padding(horizontal = spacing.spaceSmall)
+                        )
+                    } else {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -209,46 +155,117 @@ fun AnalyzerOverviewScreen(
                                 horizontalAlignment = Alignment.Start
                             ) {
                                 Text(
-                                    "Completed ${state.exerciseList.size} solo exercises.",
+                                    "${state.workoutList.fold(0) { accumulator, element -> accumulator + element[1].toInt() }} exercises in ${state.workoutList.size} workouts.",
                                     textAlign = TextAlign.Center,
                                     style = MaterialTheme.typography.displaySmall,
                                     modifier = Modifier
                                         .padding(horizontal = spacing.spaceSmall)
                                 )
                                 Spacer(modifier = Modifier.height(spacing.spaceSmall))
-                                state.exerciseList.forEach {
+                                state.workoutList.forEach {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
-                                            it,
+                                            it[0],
                                             textAlign = TextAlign.Start,
                                             style = MaterialTheme.typography.labelLarge,
-                                            modifier = Modifier.padding(start = spacing.spaceLarge),
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
+                                            modifier = Modifier.padding(start = spacing.spaceLarge)
                                         )
+                                        Text(
+                                            "(${it[1]} exercises)",
+                                            textAlign = TextAlign.Start,
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = MaterialTheme.colorScheme.surfaceTint,
+                                            modifier = Modifier.padding(start = spacing.spaceExtraSmall)
+                                        )
+
                                     }
                                     Spacer(modifier = Modifier.height(spacing.spaceExtraSmall))
                                 }
                             }
                         }
-                    }
-                    Spacer(modifier = Modifier.height(spacing.spaceSmall))
-                    FlatButton(
-                        text = R.string.show_more_activity,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = RoundedCornerShape(100f)
-                            )
-                    ) {
-                        onNavigateToWorkoutOverview(state.currentActivityDate.plusDays(6L))
+                        Spacer(modifier = Modifier.height(spacing.spaceSmall))
+                        if(state.exerciseList.isNotEmpty()) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(IntrinsicSize.Min)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(horizontal = spacing.spaceSmall),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Box(
+                                        modifier = Modifier.border(2.dp, MaterialTheme.colorScheme.surfaceVariant, CircleShape),
+                                        contentAlignment = Alignment.Center,
+                                        content = {
+                                            Icon(
+                                                imageVector = Icons.Default.ArrowForward,
+                                                contentDescription = "tmp",
+                                                modifier = Modifier.padding(spacing.spaceExtraSmall), // Adjust the size of the icon
+                                                tint = MaterialTheme.colorScheme.onSurface // Change the icon color as needed
+                                            )
+                                        }
+                                    )
+                                    Divider(
+                                        modifier = Modifier
+                                            .padding(spacing.spaceSmall)
+                                            .fillMaxHeight()
+                                            .width(2.dp)
+                                    )
+                                }
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    Text(
+                                        "Completed ${state.exerciseList.size} solo exercises.",
+                                        textAlign = TextAlign.Center,
+                                        style = MaterialTheme.typography.displaySmall,
+                                        modifier = Modifier
+                                            .padding(horizontal = spacing.spaceSmall)
+                                    )
+                                    Spacer(modifier = Modifier.height(spacing.spaceSmall))
+                                    state.exerciseList.forEach {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(
+                                                it,
+                                                textAlign = TextAlign.Start,
+                                                style = MaterialTheme.typography.labelLarge,
+                                                modifier = Modifier.padding(start = spacing.spaceLarge),
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(spacing.spaceExtraSmall))
+                                    }
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(spacing.spaceSmall))
+                        FlatButton(
+                            text = R.string.show_more_activity,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    shape = RoundedCornerShape(100f)
+                                )
+                        ) {
+                            onNavigateToWorkoutOverview(state.currentActivityDate.plusDays(6L))
+                        }
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(spacing.spaceMedium))
+        }
+        item {
+            LineChart()
+            Spacer(modifier = Modifier.height(spacing.spaceExtraExtraLarge))
         }
     }
 }

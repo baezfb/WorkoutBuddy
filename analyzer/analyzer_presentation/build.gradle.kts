@@ -9,5 +9,6 @@ dependencies {
 
     "implementation"(Coil.coilCompose)
     "implementation"(Coil.coilSvg)
+    "implementation"("co.yml:ycharts:2.1.0")
 //    "implementation" ("com.google.accompanist:accompanist-pager:0.23.1")
 }
