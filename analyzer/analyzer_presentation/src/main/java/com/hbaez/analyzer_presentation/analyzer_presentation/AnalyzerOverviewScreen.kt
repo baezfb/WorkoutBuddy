@@ -49,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import co.yml.charts.common.model.Point
 import coil.annotation.ExperimentalCoilApi
 import com.hbaez.analyzer_presentation.analyzer_presentation.components.LineChart
 import com.hbaez.core.R
@@ -264,7 +265,9 @@ fun AnalyzerOverviewScreen(
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
         }
         item {
-            LineChart()
+            if(state.graph1_weightPointsData.isNotEmpty()){
+                LineChart(state.graph1_weightPointsData)
+            }
             Spacer(modifier = Modifier.height(spacing.spaceExtraExtraLarge))
         }
     }

@@ -1,5 +1,6 @@
 package com.hbaez.analyzer_presentation.analyzer_presentation
 
+import co.yml.charts.common.model.Point
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
@@ -53,6 +54,7 @@ class AnalyzerOverviewModel @Inject constructor(
                 activityCountList = activityList
             )
             onEvent(AnalyzerEvent.OnContributionChartClick(51))
+            onEvent(AnalyzerEvent.OnChooseExerciseGraphOne(state.graph1_exerciseName))
         }
     }
 
@@ -67,6 +69,40 @@ class AnalyzerOverviewModel @Inject constructor(
                     exerciseList = emptyList()
                 )
                 getWorkoutsForWeek(currentActivityDate)
+            }
+
+            is AnalyzerEvent.OnChooseExerciseGraphOne -> {
+                viewModelScope.launch {
+                    // fetch exercise dates
+                    val exerciseDates = storageService.getExerciseDate(event.exerciseName)
+
+                    // fetch completed exercise info
+                    val weightPointsData = mutableListOf<List<Point>>()
+                    val repsPointsData = mutableListOf<List<Point>>()
+                    exerciseDates.exerciseDates.forEach { date ->
+                        storageService.getCompletedWorkoutByDate(date).forEach { completedWorkout ->
+                            if(completedWorkout.exerciseName == event.exerciseName){
+                                val currWeightList = mutableListOf<Point>()
+                                completedWorkout.weight.forEachIndexed { index, s ->
+                                    currWeightList.add(Point(index.toFloat(), s.toFloat()))
+                                }
+                                weightPointsData.add(currWeightList.toList())
+
+                                val currRepsList = mutableListOf<Point>()
+                                completedWorkout.reps.forEachIndexed { index, s ->
+                                    currRepsList.add(Point(index.toFloat(), s.toFloat()))
+                                }
+                                repsPointsData.add(currRepsList.toList())
+                            }
+                        }
+                    }
+                    state = state.copy(
+                        graph1_exerciseName = event.exerciseName,
+                        graph1_weightPointsData = weightPointsData,
+                        graph1_repsPointsData = repsPointsData
+                    )
+                    Log.println(Log.DEBUG, "pointsData", weightPointsData.toString())
+                }
             }
         }
     }
