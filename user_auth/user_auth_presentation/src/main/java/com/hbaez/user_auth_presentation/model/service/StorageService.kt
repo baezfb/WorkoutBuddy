@@ -3,6 +3,7 @@ package com.hbaez.user_auth_presentation.model.service
 import com.hbaez.core.domain.model.UserInfo
 import com.hbaez.user_auth_presentation.model.CalendarDates
 import com.hbaez.user_auth_presentation.model.CompletedWorkout
+import com.hbaez.user_auth_presentation.model.ExerciseDates
 import com.hbaez.user_auth_presentation.model.ExerciseTemplate
 import com.hbaez.user_auth_presentation.model.Task
 import com.hbaez.user_auth_presentation.model.WorkoutTemplate
@@ -29,6 +30,8 @@ interface StorageService {
     suspend fun saveExerciseTemplate(exerciseTemplate: ExerciseTemplate): String
     suspend fun updateExerciseTemplate(exerciseTemplate: ExerciseTemplate): String
     suspend fun saveCalendarDate(calendarDates: CalendarDates)
+    suspend fun saveExerciseDate(exerciseName: String, exerciseDate: ExerciseDates)
+    suspend fun getExerciseDate(exerciseName: String): ExerciseDates
     suspend fun save(task: Task): String
     suspend fun update(task: Task)
     suspend fun delete(taskId: String)

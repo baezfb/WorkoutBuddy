@@ -16,6 +16,7 @@ import com.hbaez.core.util.UiEvent
 import com.hbaez.core.util.UiText
 import com.hbaez.user_auth_presentation.model.CalendarDates
 import com.hbaez.user_auth_presentation.model.CompletedWorkout
+import com.hbaez.user_auth_presentation.model.ExerciseDates
 import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 import com.hbaez.user_auth_presentation.model.service.StorageService
 import com.himanshoe.kalendar.KalendarEvent
@@ -172,6 +173,10 @@ class WorkoutLoggerOverviewModel @Inject constructor(
                         calendarDates.remove(state.date.toString())
                         Log.println(Log.DEBUG, "calendarDates", calendarDates.toString())
                         storageService.saveCalendarDate(CalendarDates(calendarDates.toList()))
+                        val exerciseDates = storageService.getExerciseDate(event.completedWorkout.exerciseName)
+                        val newExerciseDates = exerciseDates.exerciseDates.toMutableList()
+                        newExerciseDates.remove(state.date.toString())
+                        storageService.saveExerciseDate(event.completedWorkout.exerciseName, ExerciseDates(newExerciseDates.toList()))
                     }
                     imageUrls.clear()
                     refreshWorkouts()

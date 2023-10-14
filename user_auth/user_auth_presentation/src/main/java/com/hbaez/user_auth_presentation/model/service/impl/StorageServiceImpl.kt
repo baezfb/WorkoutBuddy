@@ -16,6 +16,7 @@ import com.hbaez.core.domain.model.GoalType
 import com.hbaez.core.domain.model.UserInfo
 import com.hbaez.user_auth_presentation.model.CalendarDates
 import com.hbaez.user_auth_presentation.model.CompletedWorkout
+import com.hbaez.user_auth_presentation.model.ExerciseDates
 import com.hbaez.user_auth_presentation.model.ExerciseTemplate
 import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -291,6 +292,27 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         }
     }
 
+    override suspend fun saveExerciseDate(exerciseName: String, exerciseDate: ExerciseDates) {
+        trace(SAVE_EXERCISE_DATE) {
+            val documentRef = exerciseDateCollection(auth.currentUserId).document(exerciseName)
+            documentRef.set(exerciseDate, SetOptions.merge())
+        }
+    }
+
+    override suspend fun getExerciseDate(exerciseName: String): ExerciseDates {
+        var exerciseDates = ExerciseDates(emptyList())
+        exerciseDateCollection(auth.currentUserId).document(exerciseName).get().addOnSuccessListener { document ->
+            exerciseDates = if(document.exists()){
+                ExerciseDates(
+                    exerciseDates = (document.get("exerciseDates") as List<*>).filterIsInstance<String>()
+                )
+            } else {
+                ExerciseDates(exerciseDates = emptyList())
+            }
+        }.await()
+        return exerciseDates
+    }
+
     override suspend fun save(task: Task): String =
         trace(SAVE_TASK_TRACE) { userInfoCollection(auth.currentUserId).add(task).await().id }
 
@@ -325,6 +347,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     private fun calendarDateCollection(uid: String): CollectionReference =
         firestore.collection(USER_COLLECTION).document(uid).collection(CALENDAR_DATES)
 
+    private fun exerciseDateCollection(uid: String): CollectionReference =
+        firestore.collection(USER_COLLECTION).document(uid).collection(EXERCISE_DATES)
+
     companion object {
         private const val USER_COLLECTION = "users"
         private const val TASK_COLLECTION = "tasks"
@@ -338,10 +363,12 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         private const val DELETE_COMPLETED_WORKOUT = "deleteCompletedWorkout"
         private const val UPDATE_COMPLETED_WORKOUT = "updateCompletedWorkout"
         private const val SAVE_CALENDAR_DATE = "saveCalendarDate"
+        private const val SAVE_EXERCISE_DATE = "saveExerciseDate"
         private const val UPDATE_TASK_TRACE = "updateTask"
         private const val WORKOUT_TEMPLATE = "workouts"
         private const val COMPLETED_WORKOUT = "completed_workouts"
         private const val EXERCISE_TEMPLATE = "exercises"
         private const val CALENDAR_DATES = "calendarDates"
+        private const val EXERCISE_DATES = "exerciseDates"
     }
 }

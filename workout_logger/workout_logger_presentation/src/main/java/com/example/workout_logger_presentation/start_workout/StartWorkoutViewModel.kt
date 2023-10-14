@@ -23,6 +23,7 @@ import com.hbaez.core.util.UiText
 import com.hbaez.user_auth_presentation.AuthViewModel
 import com.hbaez.user_auth_presentation.model.CalendarDates
 import com.hbaez.user_auth_presentation.model.CompletedWorkout
+import com.hbaez.user_auth_presentation.model.ExerciseDates
 import com.hbaez.user_auth_presentation.model.WorkoutTemplate
 import com.hbaez.user_auth_presentation.model.service.LogService
 import com.hbaez.user_auth_presentation.model.service.StorageService
@@ -286,6 +287,7 @@ class StartWorkoutViewModel @Inject constructor(
                         if(repsList.isNotEmpty() && weightList.isNotEmpty()){
                             trackCompletedWorkout(it, repsList, weightList, isCompletedList.toList(), event.dayOfMonth, event.month, event.year)
                             trackCalendarDate(event.year, event.month, event.dayOfMonth)
+                            trackExerciseDate(it.exerciseName, event.year, event.month, event.dayOfMonth)
                         }
                     }
                     viewModelScope.launch {
@@ -430,6 +432,17 @@ class StartWorkoutViewModel @Inject constructor(
             if(LocalDate.of(year, month, dayOfMonth).toString() !in storageService.calendarDates.first().calendarDates){
                 storageService.saveCalendarDate(
                     CalendarDates(storageService.calendarDates.first().calendarDates + LocalDate.of(year, month, dayOfMonth).toString())
+                )
+            }
+        }
+    }
+
+    private fun trackExerciseDate(exerciseName: String, year: Int, month: Int, dayOfMonth: Int){
+        viewModelScope.launch {
+            if(LocalDate.of(year, month, dayOfMonth).toString() !in storageService.getExerciseDate(exerciseName).exerciseDates){
+                storageService.saveExerciseDate(
+                    exerciseName,
+                    ExerciseDates(storageService.getExerciseDate(exerciseName).exerciseDates + LocalDate.of(year, month, dayOfMonth).toString())
                 )
             }
         }
