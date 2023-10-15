@@ -265,9 +265,7 @@ fun AnalyzerOverviewScreen(
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
         }
         item {
-            if(state.graph1_weightPointsData.isNotEmpty()){
-                LineChart(state.graph1_weightPointsData)
-            }
+            LineChart(state.graph1_weightPointsData)
             Spacer(modifier = Modifier.height(spacing.spaceExtraExtraLarge))
         }
     }

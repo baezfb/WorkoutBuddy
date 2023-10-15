@@ -23,21 +23,29 @@ import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
 import co.yml.charts.ui.linechart.model.ShadowUnderLine
 
 @Composable
-fun LineChart(pointsData: List<List<Point>>){
+fun LineChart(pointData: List<List<Point>>){
     val steps = 4
+    val pointsData: List<List<Point>>
+    var maxY = (pointData.flatten().maxByOrNull { it.y }?.y ?: 100f).toInt()
+    var minY = (pointData.flatten().minByOrNull { it.y }?.y ?: 0f).toInt()
+
+    // add extra line if (maxY - minY = 0)
+    if(maxY - minY == 0){
+        pointsData = pointData.toMutableList()
+        pointsData.add(listOf(Point(0f, 0f)))
+        minY = 0
+    } else pointsData = pointData
 
     val xAxisData = AxisData.Builder()
         .axisStepSize(100.dp)
         .backgroundColor(Color.Transparent)
-        .steps((pointsData.maxByOrNull { it.size }?.size ?: 1) - 1)
+        .steps((pointsData.maxByOrNull { it.size }?.size ?: 5) - 1)
         .labelData { i -> "Set ${i + 1}" }
         .labelAndAxisLinePadding(15.dp)
         .axisLineColor(MaterialTheme.colorScheme.tertiary)
         .axisLabelColor(MaterialTheme.colorScheme.tertiary)
         .build()
 
-    val maxY = (pointsData.flatten().maxByOrNull { it.y }?.y ?: 0f).toInt()
-    val minY = (pointsData.flatten().minByOrNull { it.y }?.y ?: 0f).toInt()
     val yAxisData = AxisData.Builder()
         .steps(steps)
         .backgroundColor(Color.Transparent)
@@ -52,29 +60,52 @@ fun LineChart(pointsData: List<List<Point>>){
 
     val lineChartData = LineChartData(
         linePlotData = LinePlotData(
-            lines = pointsData.mapIndexed { index, pointsList ->
-                Line(
-                    dataPoints = pointsList,
-                    LineStyle(
-                        color = getLineColor(index, pointsData.size, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.tertiary),
-                        lineType = LineType.Straight(isDotted = false)
-                    ),
-                    IntersectionPoint(
-                        color = getLineColor(index, pointsData.size, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.tertiary)
-                    ),
-                    SelectionHighlightPoint(color = MaterialTheme.colorScheme.tertiary),
-                    ShadowUnderLine(
-                        alpha = 0.5f,
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                getLineColor(index, pointsData.size, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.inversePrimary),
-                                Color.Transparent
+            lines = if(pointsData.isNotEmpty()) {
+                pointsData.mapIndexed { index, pointsList ->
+                    Line(
+                        dataPoints = pointsList,
+                        LineStyle(
+                            color = getLineColor(index, pointsData.size, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.tertiary),
+                            lineType = LineType.Straight(isDotted = false)
+                        ),
+                        IntersectionPoint(
+                            color = getLineColor(index, pointsData.size, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.tertiary)
+                        ),
+                        SelectionHighlightPoint(color = MaterialTheme.colorScheme.tertiary),
+                        ShadowUnderLine(
+                            alpha = 0.5f,
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    getLineColor(index, pointsData.size, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.inversePrimary),
+                                    Color.Transparent
+                                )
                             )
-                        )
-                    ),
-                    SelectionHighlightPopUp()
-                )
-            },
+                        ),
+                        SelectionHighlightPopUp()
+                    )
+                }
+            } else {
+                   listOf(Line(
+                       dataPoints = listOf(Point(0f, 0f), Point(1f, 1f), Point(2f, 2f), Point(3f, 3f)),
+                       LineStyle(
+                           color = getLineColor(1, 1, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.tertiary),
+                           lineType = LineType.Straight(isDotted = false)
+                       ),
+                       IntersectionPoint(
+                           color = getLineColor(1, 1, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.tertiary)
+                       ),
+                       SelectionHighlightPoint(color = MaterialTheme.colorScheme.tertiary),
+                       ShadowUnderLine(
+                           alpha = 0.5f,
+                           brush = Brush.verticalGradient(
+                               colors = listOf(
+                                   getLineColor(1, 1, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.inversePrimary),
+                                   Color.Transparent
+                               )
+                           )
+                       )
+                   ))
+                   },
         ),
         backgroundColor = MaterialTheme.colorScheme.surface,
         xAxisData = xAxisData,
@@ -85,7 +116,7 @@ fun LineChart(pointsData: List<List<Point>>){
     co.yml.charts.ui.linechart.LineChart(
         modifier = Modifier
             .fillMaxWidth()
-            .height(350.dp),
+            .height(250.dp),
         lineChartData = lineChartData
     )
 }
