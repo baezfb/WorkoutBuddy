@@ -88,18 +88,18 @@ fun LineChart(pointData: List<List<Point>>){
                    listOf(Line(
                        dataPoints = listOf(Point(0f, 0f), Point(1f, 1f), Point(2f, 2f), Point(3f, 3f)),
                        LineStyle(
-                           color = getLineColor(1, 1, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.tertiary),
+                           color = getLineColor(1, 1, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.outlineVariant),
                            lineType = LineType.Straight(isDotted = false)
                        ),
                        IntersectionPoint(
-                           color = getLineColor(1, 1, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.tertiary)
+                           color = getLineColor(1, 1, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.outline)
                        ),
                        SelectionHighlightPoint(color = MaterialTheme.colorScheme.tertiary),
                        ShadowUnderLine(
                            alpha = 0.5f,
                            brush = Brush.verticalGradient(
                                colors = listOf(
-                                   getLineColor(1, 1, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.inversePrimary),
+                                   getLineColor(1, 1, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.outlineVariant),
                                    Color.Transparent
                                )
                            )
