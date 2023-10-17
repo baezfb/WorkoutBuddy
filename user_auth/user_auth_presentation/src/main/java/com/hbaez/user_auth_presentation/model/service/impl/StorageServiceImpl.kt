@@ -301,15 +301,20 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
     override suspend fun getExerciseDate(exerciseName: String): ExerciseDates {
         var exerciseDates = ExerciseDates(emptyList())
-        exerciseDateCollection(auth.currentUserId).document(exerciseName).get().addOnSuccessListener { document ->
-            exerciseDates = if(document.exists()){
-                ExerciseDates(
-                    exerciseDates = (document.get("exerciseDates") as List<*>).filterIsInstance<String>()
-                )
-            } else {
-                ExerciseDates(exerciseDates = emptyList())
-            }
-        }.await()
+        try {
+            exerciseDateCollection(auth.currentUserId).document(exerciseName).get().addOnSuccessListener { document ->
+                exerciseDates = if(document.exists()){
+                    ExerciseDates(
+                        exerciseDates = (document.get("exerciseDates") as List<*>).filterIsInstance<String>()
+                    )
+                } else {
+                    ExerciseDates(exerciseDates = emptyList())
+                }
+            }.await()
+        }
+        catch (e: Exception) {
+            exerciseDates = ExerciseDates(emptyList())
+        }
         return exerciseDates
     }
 

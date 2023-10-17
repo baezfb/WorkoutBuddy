@@ -7,8 +7,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.workout_logger_domain.use_case.ExerciseTrackerUseCases
 import com.hbaez.analyzer_presentation.analyzer_presentation.components.CalculateActivityIndexFromDate
 import com.hbaez.core.R
+import com.hbaez.core.domain.model.TrackedExercise
 import com.hbaez.core.domain.preferences.Preferences
 import com.hbaez.core.util.UiEvent
 import com.hbaez.core.util.UiText
@@ -30,12 +32,15 @@ import javax.inject.Inject
 @HiltViewModel
 class AnalyzerOverviewModel @Inject constructor(
     private val storageService: StorageService,
-    private val preferences: Preferences
+    private val preferences: Preferences,
+    private val exerciseTrackerUseCases: ExerciseTrackerUseCases,
 ): ViewModel(){
 
     var state by mutableStateOf(AnalyzerState())
         private set
     private var getWorkoutsForDateJob: Job? = null
+
+    private var getAllExercisesJob: Job? = null
 
     val workoutTemplates = storageService.workouts
 
@@ -43,6 +48,9 @@ class AnalyzerOverviewModel @Inject constructor(
     val uiEvent = _uiEvent.receiveAsFlow()
 
     init {
+
+        executeSearch()
+
         viewModelScope.launch {
             val activityList = MutableList(52) { 0 } // 52 weeks
             storageService.calendarDates.first().calendarDates.forEach {
@@ -104,6 +112,12 @@ class AnalyzerOverviewModel @Inject constructor(
                     Log.println(Log.DEBUG, "pointsData", weightPointsData.toString())
                 }
             }
+
+            AnalyzerEvent.OnGraphOneDropDownMenuClick -> {
+                state = state.copy(
+                    graph1_dropDownMenuExpanded = !state.graph1_dropDownMenuExpanded
+                )
+            }
         }
     }
 
@@ -143,5 +157,42 @@ class AnalyzerOverviewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun executeSearch() {
+        getAllExercisesJob?.cancel()
+        getAllExercisesJob = exerciseTrackerUseCases
+            .getExerciseForName(state.graph1_exerciseName.trim())
+            .onEach { exercises ->
+                if(exercises.isEmpty()) {
+                    _uiEvent.send(
+                        UiEvent.ShowSnackbar(
+                            UiText.StringResource(R.string.empty_results)
+                        )
+                    )
+                }
+                state = state.copy(
+                    exerciseNameList = exercises.map {
+                        it.name!!
+//                        TrackedExercise(
+//                            rowId = it.id?.toIntOrNull() ?: -1,
+//                            id = it.id,
+//                            name = it.name!!,
+//                            exerciseBase = it.exerciseBase ?: 0,
+//                            description = it.description ?: "",
+//                            muscles = it.muscles ?: "",
+//                            muscles_secondary = it.muscles_secondary ?: "",
+//                            equipment = it.equipment ?: "",
+//                            image_url = emptySet(),
+//                            is_main = null,
+//                            is_front = null,
+//                            muscle_name_main = null,
+//                            image_url_main = emptySet(),
+//                            image_url_secondary = emptySet(),
+//                            muscle_name_secondary = null
+//                        )
+                    }
+                )
+            }.launchIn(viewModelScope)
     }
 }

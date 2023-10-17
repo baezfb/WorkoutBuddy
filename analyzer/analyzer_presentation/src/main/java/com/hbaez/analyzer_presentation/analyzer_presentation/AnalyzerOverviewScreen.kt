@@ -22,16 +22,26 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -40,10 +50,12 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -52,11 +64,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import co.yml.charts.common.model.Point
 import coil.annotation.ExperimentalCoilApi
 import com.hbaez.analyzer_presentation.analyzer_presentation.components.LineChart
+import com.hbaez.analyzer_presentation.analyzer_presentation.components.SearchTextFieldDropdown
 import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.user_auth_presentation.components.FlatButton
 import java.time.LocalDate
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalCoilApi
 @Composable
 fun AnalyzerOverviewScreen(
@@ -265,7 +279,57 @@ fun AnalyzerOverviewScreen(
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
         }
         item {
-            LineChart(state.graph1_weightPointsData)
+            ExposedDropdownMenuBox(
+                expanded = state.graph1_dropDownMenuExpanded,
+                onExpandedChange = {
+                    viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownMenuClick)
+                }
+            ) {
+                OutlinedTextField(
+                    value = state.graph1_exerciseName,
+                    onValueChange = { /*TODO*/ },
+                    singleLine = true,
+                    keyboardActions = KeyboardActions(
+                        onSearch = {
+                            defaultKeyboardAction(ImeAction.Search)
+                        }
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done,
+                    ),
+                    textStyle = TextStyle(MaterialTheme.colorScheme.onBackground),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(5.dp))
+                        .padding(2.dp)
+                        .shadow(
+                            elevation = 2.dp,
+                            shape = RoundedCornerShape(5.dp)
+                        )
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxWidth(.75f)
+                        .padding(end = spacing.spaceMedium)
+                        .menuAnchor(),
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.graph1_dropDownMenuExpanded)
+                    }
+                )
+                ExposedDropdownMenu(
+                    expanded = state.graph1_dropDownMenuExpanded,
+                    onDismissRequest = {
+                        viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownMenuClick)
+                    }
+                ) {
+                    state.exerciseNameList.forEach { selectionOption ->
+                        DropdownMenuItem(
+                            text = { Text(text = selectionOption) },
+                            onClick = {
+                                viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownMenuClick)
+                            }
+                        )
+                    }
+                }
+            }
+//            LineChart(state.graph1_repsPointsData)
             Spacer(modifier = Modifier.height(spacing.spaceExtraExtraLarge))
         }
     }
