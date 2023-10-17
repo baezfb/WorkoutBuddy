@@ -287,7 +287,7 @@ fun AnalyzerOverviewScreen(
             ) {
                 OutlinedTextField(
                     value = state.graph1_exerciseName,
-                    onValueChange = { /*TODO*/ },
+                    onValueChange = { viewModel.onEvent(AnalyzerEvent.OnExerciseNameChange(it)) },
                     singleLine = true,
                     keyboardActions = KeyboardActions(
                         onSearch = {
@@ -324,12 +324,13 @@ fun AnalyzerOverviewScreen(
                             text = { Text(text = selectionOption) },
                             onClick = {
                                 viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownMenuClick)
+                                viewModel.onEvent(AnalyzerEvent.OnExerciseNameChange(selectionOption))
                             }
                         )
                     }
                 }
             }
-//            LineChart(state.graph1_repsPointsData)
+            LineChart(state.graph1_repsPointsData)
             Spacer(modifier = Modifier.height(spacing.spaceExtraExtraLarge))
         }
     }

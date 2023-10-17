@@ -118,6 +118,14 @@ class AnalyzerOverviewModel @Inject constructor(
                     graph1_dropDownMenuExpanded = !state.graph1_dropDownMenuExpanded
                 )
             }
+
+            is AnalyzerEvent.OnExerciseNameChange -> {
+                state = state.copy(
+                    graph1_exerciseName = event.exerciseName
+                )
+                executeSearch()
+                onEvent(AnalyzerEvent.OnChooseExerciseGraphOne(event.exerciseName))
+            }
         }
     }
 
