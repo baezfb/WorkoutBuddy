@@ -124,7 +124,6 @@ class AnalyzerOverviewModel @Inject constructor(
                     graph1_exerciseName = event.exerciseName
                 )
                 executeSearch()
-                onEvent(AnalyzerEvent.OnChooseExerciseGraphOne(event.exerciseName))
             }
         }
     }

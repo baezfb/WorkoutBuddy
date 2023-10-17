@@ -325,6 +325,7 @@ fun AnalyzerOverviewScreen(
                             onClick = {
                                 viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownMenuClick)
                                 viewModel.onEvent(AnalyzerEvent.OnExerciseNameChange(selectionOption))
+                                viewModel.onEvent(AnalyzerEvent.OnChooseExerciseGraphOne(selectionOption))
                             }
                         )
                     }
