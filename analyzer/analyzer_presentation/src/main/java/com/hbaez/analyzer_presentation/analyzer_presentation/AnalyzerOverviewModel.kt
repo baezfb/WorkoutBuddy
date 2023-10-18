@@ -113,9 +113,15 @@ class AnalyzerOverviewModel @Inject constructor(
                 }
             }
 
-            AnalyzerEvent.OnGraphOneDropDownMenuClick -> {
+            is AnalyzerEvent.OnGraphOneDropDownMenuClick -> {
                 state = state.copy(
                     graph1_dropDownMenuExpanded = !state.graph1_dropDownMenuExpanded
+                )
+            }
+
+            is AnalyzerEvent.OnGraphOneDropDownOptionClick -> {
+                state = state.copy(
+                    graph1_dropDownOptionExpanded = !state.graph1_dropDownOptionExpanded
                 )
             }
 
@@ -124,6 +130,12 @@ class AnalyzerOverviewModel @Inject constructor(
                     graph1_exerciseName = event.exerciseName
                 )
                 executeSearch()
+            }
+
+            is AnalyzerEvent.OnChooseOptionGraphOne -> {
+                state = state.copy(
+                    graph1_option = event.option
+                )
             }
         }
     }

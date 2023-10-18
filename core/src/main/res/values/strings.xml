@@ -66,6 +66,8 @@
     <string name="high">High</string>
     <string name="medium">Medium</string>
     <string name="years">years</string>
+    <string name="yaxis">Y-Axis</string>
+    <string name="xaxis">X-Axis</string>
     <string name="whats_your_weight">What\'s your weight?</string>
     <string name="low">Low</string>
     <string name="gain">Gain</string>

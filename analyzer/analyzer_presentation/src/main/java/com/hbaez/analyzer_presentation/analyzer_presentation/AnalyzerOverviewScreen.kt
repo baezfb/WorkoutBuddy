@@ -50,6 +50,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -302,12 +303,12 @@ fun AnalyzerOverviewScreen(
                     style = MaterialTheme.typography.titleLarge
                 )
                 Row(
-                    Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = spacing.spaceExtraSmall),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     ExposedDropdownMenuBox(
                         modifier = Modifier
-                            .fillMaxWidth(.66f)
-                            .padding(start = spacing.spaceMedium),
+                            .weight(1.5f),
                         expanded = state.graph1_dropDownMenuExpanded,
                         onExpandedChange = {
                             viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownMenuClick)
@@ -318,25 +319,19 @@ fun AnalyzerOverviewScreen(
                             label = { Text(text = stringResource(id = R.string.exercise)) },
                             onValueChange = { viewModel.onEvent(AnalyzerEvent.OnExerciseNameChange(it)) },
                             singleLine = true,
-                            keyboardActions = KeyboardActions(
-                                onSearch = {
-                                    defaultKeyboardAction(ImeAction.Search)
-                                }
-                            ),
                             keyboardOptions = KeyboardOptions(
+                                capitalization = KeyboardCapitalization.Words,
                                 imeAction = ImeAction.Done,
                             ),
                             textStyle = TextStyle(MaterialTheme.colorScheme.onPrimaryContainer),
                             modifier = Modifier
                                 .clip(RoundedCornerShape(5.dp))
-                                .padding(2.dp)
                                 .shadow(
                                     elevation = 2.dp,
                                     shape = RoundedCornerShape(5.dp)
                                 )
                                 .background(MaterialTheme.colorScheme.primaryContainer)
                                 .fillMaxWidth()
-                                .padding(end = spacing.spaceMedium)
                                 .menuAnchor(),
                             trailingIcon = {
                                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.graph1_dropDownMenuExpanded)
@@ -360,11 +355,65 @@ fun AnalyzerOverviewScreen(
                             }
                         }
                     }
-                    
+                    Spacer(modifier = Modifier.width(spacing.spaceSmall))
+                    ExposedDropdownMenuBox(
+                        modifier = Modifier
+                            .weight(1f),
+                        expanded = state.graph1_dropDownOptionExpanded,
+                        onExpandedChange = {
+                            viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownOptionClick)
+                        }
+                    ) {
+                        OutlinedTextField(
+                            enabled = false,
+                            value = state.graph1_option,
+                            label = { Text(text = stringResource(id = R.string.yaxis))},
+                            singleLine = true,
+                            onValueChange = { viewModel.onEvent(AnalyzerEvent.OnExerciseNameChange(it)) },
+                            textStyle = TextStyle(MaterialTheme.colorScheme.onPrimaryContainer),
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(5.dp))
+                                .shadow(
+                                    elevation = 2.dp,
+                                    shape = RoundedCornerShape(5.dp)
+                                )
+                                .background(MaterialTheme.colorScheme.primaryContainer)
+                                .fillMaxWidth()
+                                .menuAnchor(),
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.graph1_dropDownOptionExpanded)
+                            }
+                        )
+                        ExposedDropdownMenu(
+                            expanded = state.graph1_dropDownOptionExpanded,
+                            onDismissRequest = {
+                                viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownOptionClick)
+                            }
+                        ) {
+                            val repsString = stringResource(id = R.string.reps)
+                            DropdownMenuItem(
+                                text = { Text(text = repsString) },
+                                onClick = {
+                                    viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownOptionClick)
+                                    viewModel.onEvent(AnalyzerEvent.OnChooseOptionGraphOne(repsString))
+                                }
+                            )
+                            val weightString = stringResource(id = R.string.weight)
+                            DropdownMenuItem(
+                                text = { Text(text = weightString) },
+                                onClick = {
+                                    viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownOptionClick)
+                                    viewModel.onEvent(AnalyzerEvent.OnChooseOptionGraphOne(weightString))
+                                }
+                            )
+                        }
+                    }
                 }
-                LineChart(state.graph1_repsPointsData)
-                Spacer(modifier = Modifier.height(spacing.spaceExtraExtraLarge))
+
+                LineChart(if(state.graph1_option == stringResource(id = R.string.reps)) state.graph1_repsPointsData else state.graph1_weightPointsData)
+                Spacer(modifier = Modifier.height(spacing.spaceMedium))
             }
+            Spacer(modifier = Modifier.height(spacing.spaceExtraExtraLarge))
         }
     }
 }

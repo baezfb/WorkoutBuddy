@@ -13,9 +13,11 @@ data class AnalyzerState(
     val workoutList: List<List<String>> = mutableListOf(),
     val exerciseList: List<String> = emptyList(),
     val graph1_exerciseName: String = "",
+    val graph1_option: String = "Reps",
     val graph1_weightPointsData: List<List<Point>> = emptyList(),
     val graph1_repsPointsData: List<List<Point>> = emptyList(),
     val graph1_dropDownMenuExpanded: Boolean = false,
+    val graph1_dropDownOptionExpanded: Boolean = false,
     val graph1_dropDownMenuOptions: List<String> = emptyList(),
     val exerciseNameList: List<String> = emptyList()
 )
