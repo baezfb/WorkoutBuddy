@@ -1,7 +1,9 @@
 package com.hbaez.analyzer_presentation.analyzer_presentation.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -38,7 +40,7 @@ fun LineChart(pointData: List<List<Point>>){
 
     val xAxisData = AxisData.Builder()
         .axisStepSize(100.dp)
-        .backgroundColor(Color.Transparent)
+        .backgroundColor(MaterialTheme.colorScheme.primaryContainer)
         .steps((pointsData.maxByOrNull { it.size }?.size ?: 5) - 1)
         .labelData { i -> "Set ${i + 1}" }
         .labelAndAxisLinePadding(15.dp)
@@ -48,7 +50,7 @@ fun LineChart(pointData: List<List<Point>>){
 
     val yAxisData = AxisData.Builder()
         .steps(steps)
-        .backgroundColor(Color.Transparent)
+        .backgroundColor(MaterialTheme.colorScheme.primaryContainer)
         .labelAndAxisLinePadding(20.dp)
         .labelData { i ->
             val yScale = (maxY - minY).toFloat() / steps
@@ -77,7 +79,7 @@ fun LineChart(pointData: List<List<Point>>){
                             brush = Brush.verticalGradient(
                                 colors = listOf(
                                     getLineColor(index + 1, pointsData.size, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.inversePrimary),
-                                    Color.Transparent
+                                    MaterialTheme.colorScheme.primaryContainer
                                 )
                             )
                         ),
@@ -88,35 +90,37 @@ fun LineChart(pointData: List<List<Point>>){
                    listOf(Line(
                        dataPoints = listOf(Point(0f, 0f), Point(1f, 1f), Point(2f, 2f), Point(3f, 3f)),
                        LineStyle(
-                           color = getLineColor(1, 1, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.outlineVariant),
+                           color = getLineColor(1, 1, MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.inversePrimary),
                            lineType = LineType.Straight(isDotted = false)
                        ),
                        IntersectionPoint(
-                           color = getLineColor(1, 1, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.outline)
+                           color = getLineColor(1, 1, MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.inversePrimary)
                        ),
                        SelectionHighlightPoint(color = MaterialTheme.colorScheme.tertiary),
                        ShadowUnderLine(
                            alpha = 0.5f,
                            brush = Brush.verticalGradient(
                                colors = listOf(
-                                   getLineColor(1, 1, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.outlineVariant),
-                                   Color.Transparent
+                                   getLineColor(1, 1, MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.inversePrimary),
+                                   MaterialTheme.colorScheme.primaryContainer
                                )
                            )
                        )
                    ))
                    },
         ),
-        backgroundColor = MaterialTheme.colorScheme.surface,
+        backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+        paddingRight = 0.dp,
         xAxisData = xAxisData,
         yAxisData = yAxisData,
-        gridLines = GridLines(color = MaterialTheme.colorScheme.outlineVariant)
+        gridLines = GridLines(color = MaterialTheme.colorScheme.onPrimaryContainer)
     )
 
     co.yml.charts.ui.linechart.LineChart(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(250.dp),
+            .height(250.dp)
+            .padding(end = 0.dp)
+            .fillMaxWidth(),
         lineChartData = lineChartData
     )
 }

@@ -80,6 +80,8 @@
     <string name="routine_name">Workout Routine Name</string>
     <string name="exercise">Exercise</string>
     <string name="workout_activity">Workout Activity</string>
+    <string name="exercise_activity">Exercise Activity</string>
+    <string name="activity_overview">Activity Overview</string>
     <string name="no_activity">No activity logged for this week.</string>
     <string name="show_more_activity">Show more activity</string>
     <string name="exercise_template">Exercise Template</string>

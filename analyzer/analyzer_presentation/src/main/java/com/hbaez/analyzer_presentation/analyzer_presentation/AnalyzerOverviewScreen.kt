@@ -1,6 +1,5 @@
 package com.hbaez.analyzer_presentation.analyzer_presentation
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,20 +11,16 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Divider
@@ -50,7 +45,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
@@ -61,10 +55,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import co.yml.charts.common.model.Point
 import coil.annotation.ExperimentalCoilApi
+import com.hbaez.analyzer_presentation.analyzer_presentation.components.ActivityChart
 import com.hbaez.analyzer_presentation.analyzer_presentation.components.LineChart
-import com.hbaez.analyzer_presentation.analyzer_presentation.components.SearchTextFieldDropdown
 import com.hbaez.core.R
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.user_auth_presentation.components.FlatButton
@@ -90,21 +83,28 @@ fun AnalyzerOverviewScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(spacing.spaceMedium),
-                text = "Personal Stats",
+                text = stringResource(id = R.string.activity_overview),
                 textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.headlineMedium
+                style = MaterialTheme.typography.titleLarge
             )
-        }
-        item {
             Column(
                 modifier = Modifier
+                    .clip(RoundedCornerShape(spacing.spaceLarge))
+                    .padding(spacing.spaceExtraSmall)
+                    .shadow(
+                        elevation = 2.dp,
+                        shape = RoundedCornerShape(spacing.spaceLarge)
+                    )
+                    .background(MaterialTheme.colorScheme.primaryContainer)
                     .fillMaxWidth()
             ) {
                 Text(
-                    stringResource(id = R.string.workout_activity),
-                    textAlign = TextAlign.Start,
                     modifier = Modifier
-                        .padding(horizontal = spacing.spaceSmall)
+                        .fillMaxWidth()
+                        .padding(spacing.spaceMedium),
+                    text = stringResource(id = R.string.workout_activity),
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.titleLarge
                 )
                 ActivityChart(weeklyContributions = state.activityCountList, monthValue = state.date.monthValue, currentActivityIndex = state.currentActivityIndex)
                 Spacer(modifier = Modifier.height(spacing.spaceSmall))
@@ -132,7 +132,7 @@ fun AnalyzerOverviewScreen(
                         Text(
                             stringResource(id = R.string.no_activity),
                             textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            color = MaterialTheme.colorScheme.inverseSurface,
                             modifier = Modifier
                                 .padding(horizontal = spacing.spaceSmall)
                         )
@@ -147,14 +147,14 @@ fun AnalyzerOverviewScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Box(
-                                    modifier = Modifier.border(2.dp, MaterialTheme.colorScheme.surfaceVariant, CircleShape),
+                                    modifier = Modifier.border(2.dp, MaterialTheme.colorScheme.onPrimaryContainer, CircleShape),
                                     contentAlignment = Alignment.Center,
                                     content = {
                                         Icon(
                                             imageVector = Icons.Default.ArrowForward,
                                             contentDescription = "tmp",
                                             modifier = Modifier.padding(spacing.spaceExtraSmall), // Adjust the size of the icon
-                                            tint = MaterialTheme.colorScheme.onSurface // Change the icon color as needed
+                                            tint = MaterialTheme.colorScheme.onPrimaryContainer // Change the icon color as needed
                                         )
                                     }
                                 )
@@ -162,7 +162,8 @@ fun AnalyzerOverviewScreen(
                                     modifier = Modifier
                                         .padding(spacing.spaceSmall)
                                         .fillMaxHeight()
-                                        .width(2.dp)
+                                        .width(2.dp),
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
                             }
                             Column(
@@ -212,14 +213,14 @@ fun AnalyzerOverviewScreen(
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Box(
-                                        modifier = Modifier.border(2.dp, MaterialTheme.colorScheme.surfaceVariant, CircleShape),
+                                        modifier = Modifier.border(2.dp, MaterialTheme.colorScheme.onPrimaryContainer, CircleShape),
                                         contentAlignment = Alignment.Center,
                                         content = {
                                             Icon(
                                                 imageVector = Icons.Default.ArrowForward,
                                                 contentDescription = "tmp",
                                                 modifier = Modifier.padding(spacing.spaceExtraSmall), // Adjust the size of the icon
-                                                tint = MaterialTheme.colorScheme.onSurface // Change the icon color as needed
+                                                tint = MaterialTheme.colorScheme.onPrimaryContainer // Change the icon color as needed
                                             )
                                         }
                                     )
@@ -227,7 +228,8 @@ fun AnalyzerOverviewScreen(
                                         modifier = Modifier
                                             .padding(spacing.spaceSmall)
                                             .fillMaxHeight()
-                                            .width(2.dp)
+                                            .width(2.dp),
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer
                                     )
                                 }
                                 Column(
@@ -264,212 +266,97 @@ fun AnalyzerOverviewScreen(
                         FlatButton(
                             text = R.string.show_more_activity,
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .fillMaxWidth(.95f)
                                 .border(
                                     width = 1.dp,
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                                     shape = RoundedCornerShape(100f)
                                 )
                         ) {
                             onNavigateToWorkoutOverview(state.currentActivityDate.plusDays(6L))
                         }
+                        Spacer(modifier = Modifier.height(spacing.spaceSmall))
                     }
                 }
             }
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
         }
         item {
-            ExposedDropdownMenuBox(
-                expanded = state.graph1_dropDownMenuExpanded,
-                onExpandedChange = {
-                    viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownMenuClick)
-                }
+            Column(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(spacing.spaceLarge))
+                    .padding(spacing.spaceExtraSmall)
+                    .shadow(
+                        elevation = 2.dp,
+                        shape = RoundedCornerShape(spacing.spaceLarge)
+                    )
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .fillMaxWidth()
             ) {
-                OutlinedTextField(
-                    value = state.graph1_exerciseName,
-                    onValueChange = { viewModel.onEvent(AnalyzerEvent.OnExerciseNameChange(it)) },
-                    singleLine = true,
-                    keyboardActions = KeyboardActions(
-                        onSearch = {
-                            defaultKeyboardAction(ImeAction.Search)
-                        }
-                    ),
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done,
-                    ),
-                    textStyle = TextStyle(MaterialTheme.colorScheme.onBackground),
+                Text(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(5.dp))
-                        .padding(2.dp)
-                        .shadow(
-                            elevation = 2.dp,
-                            shape = RoundedCornerShape(5.dp)
-                        )
-                        .background(MaterialTheme.colorScheme.background)
-                        .fillMaxWidth(.75f)
-                        .padding(end = spacing.spaceMedium)
-                        .menuAnchor(),
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.graph1_dropDownMenuExpanded)
-                    }
+                        .fillMaxWidth()
+                        .padding(spacing.spaceMedium),
+                    text = stringResource(id = R.string.exercise_activity),
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.titleLarge
                 )
-                ExposedDropdownMenu(
+                ExposedDropdownMenuBox(
+                    modifier = Modifier.fillMaxWidth(.66f).padding(start = spacing.spaceMedium),
                     expanded = state.graph1_dropDownMenuExpanded,
-                    onDismissRequest = {
+                    onExpandedChange = {
                         viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownMenuClick)
                     }
                 ) {
-                    state.exerciseNameList.forEach { selectionOption ->
-                        DropdownMenuItem(
-                            text = { Text(text = selectionOption) },
-                            onClick = {
-                                viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownMenuClick)
-                                viewModel.onEvent(AnalyzerEvent.OnExerciseNameChange(selectionOption))
-                                viewModel.onEvent(AnalyzerEvent.OnChooseExerciseGraphOne(selectionOption))
+                    OutlinedTextField(
+                        value = state.graph1_exerciseName,
+                        onValueChange = { viewModel.onEvent(AnalyzerEvent.OnExerciseNameChange(it)) },
+                        singleLine = true,
+                        keyboardActions = KeyboardActions(
+                            onSearch = {
+                                defaultKeyboardAction(ImeAction.Search)
                             }
-                        )
-                    }
-                }
-            }
-            LineChart(state.graph1_repsPointsData)
-            Spacer(modifier = Modifier.height(spacing.spaceExtraExtraLarge))
-        }
-    }
-}
-
-@OptIn(ExperimentalTextApi::class)
-@Composable
-fun ActivityChart(
-    weeklyContributions: List<Int>,
-    monthValue: Int,
-    currentActivityIndex: Int,
-    viewModel: AnalyzerOverviewModel = hiltViewModel()
-) {
-    val spacing = LocalSpacing.current
-    val borderColor = MaterialTheme.colorScheme.primary
-    val startColor = MaterialTheme.colorScheme.surfaceVariant
-    val endColor = Color.Green
-    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-    val cellCount = 13
-    val cellPadding = spacing.spaceExtraSmall
-    val maxValue = (weeklyContributions.maxOrNull() ?: 1).coerceAtLeast(1)
-    val textMeasurer = rememberTextMeasurer()
-    val style = TextStyle(
-        fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-        color = MaterialTheme.colorScheme.onBackground
-    )
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(((screenWidth - spacing.spaceSmall * 2 - (3 * cellPadding.value).dp) / cellCount) * 5)
-    ) {
-        Canvas(
-            modifier = Modifier
-                .padding(horizontal = spacing.spaceSmall)
-                .fillMaxWidth()
-                .height(((screenWidth - spacing.spaceSmall * 2 - (3 * cellPadding.value).dp) / cellCount) * 5)
-                .pointerInput(true) {
-                    detectTapGestures { offset ->
-                        val cellSize =
-                            (screenWidth.toPx() - spacing.spaceSmall.toPx() * 2 - (cellCount - 1) * cellPadding.toPx()) / cellCount
-                        val columnIndex = (offset.x / (cellSize + cellPadding.toPx())).toInt()
-                        var rowIndex = (offset.y / (cellSize + cellPadding.toPx())).toInt()
-                        if (rowIndex != 0) {
-                            rowIndex--
-                            val cellIndex = rowIndex + columnIndex * 4
-                            viewModel.onEvent(AnalyzerEvent.OnContributionChartClick(cellIndex))
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done,
+                        ),
+                        textStyle = TextStyle(MaterialTheme.colorScheme.onPrimaryContainer),
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(5.dp))
+                            .padding(2.dp)
+                            .shadow(
+                                elevation = 2.dp,
+                                shape = RoundedCornerShape(5.dp)
+                            )
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .fillMaxWidth()
+                            .padding(end = spacing.spaceMedium)
+                            .menuAnchor(),
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.graph1_dropDownMenuExpanded)
+                        }
+                    )
+                    ExposedDropdownMenu(
+                        expanded = state.graph1_dropDownMenuExpanded,
+                        onDismissRequest = {
+                            viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownMenuClick)
+                        }
+                    ) {
+                        state.exerciseNameList.forEach { selectionOption ->
+                            DropdownMenuItem(
+                                text = { Text(text = selectionOption) },
+                                onClick = {
+                                    viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownMenuClick)
+                                    viewModel.onEvent(AnalyzerEvent.OnExerciseNameChange(selectionOption))
+                                    viewModel.onEvent(AnalyzerEvent.OnChooseExerciseGraphOne(selectionOption))
+                                }
+                            )
                         }
                     }
                 }
-        ) {
-            // Label quarterly months
-            val q1 = 12 - monthValue
-            val q2 = (15 - monthValue) % 12
-            val q3 = (18 - monthValue) % 12
-            val q4 = (21 - monthValue) % 12
-            // Calculate the cellSize based on screen width and the number of columns
-            val cellSize = (screenWidth.toPx() - spacing.spaceSmall.toPx() * 2 - (cellCount - 1) * cellPadding.toPx()) / cellCount
-
-            // iterate through weeklyContributions and draw each cell
-            var index = 0
-            for (i in 0 until 13) {
-                when(i) {
-                    q1 -> {
-                        drawText(
-                            textMeasurer = textMeasurer,
-                            text = "Jan",
-                            style = style,
-                            topLeft = Offset(
-                                x = i * (cellSize + cellPadding.toPx()),
-                                y = 0f,
-                            )
-                        )
-                    }
-                    q2 -> {
-                        drawText(
-                            textMeasurer = textMeasurer,
-                            text = "Mar",
-                            style = style,
-                            topLeft = Offset(
-                                x = i * (cellSize + cellPadding.toPx()),
-                                y = 0f,
-                            )
-                        )
-                    }
-                    q3 -> {
-                        drawText(
-                            textMeasurer = textMeasurer,
-                            text = "Jun",
-                            style = style,
-                            topLeft = Offset(
-                                x = i * (cellSize + cellPadding.toPx()),
-                                y = 0f,
-                            )
-                        )
-                    }
-                    q4 -> {
-                        drawText(
-                            textMeasurer = textMeasurer,
-                            text = "Sept",
-                            style = style,
-                            topLeft = Offset(
-                                x = i * (cellSize + cellPadding.toPx()),
-                                y = 0f,
-                            )
-                        )
-                    }
-                }
-                for (j in 1 until 5) {
-                    val contributionCount = weeklyContributions.getOrNull(i * 4 + (j - 1)) ?: 0
-                    val color = getCellColor(contributionCount, maxValue, startColor, endColor)
-                    drawRoundRect(
-                        color = color,
-                        topLeft = Offset(i * (cellSize + cellPadding.toPx()), j * (cellSize + cellPadding.toPx())),
-                        size = Size(cellSize - cellPadding.toPx(), cellSize - cellPadding.toPx()),
-                        cornerRadius = CornerRadius(spacing.spaceExtraSmall.toPx())
-                    )
-                    if(index == currentActivityIndex){
-                        drawRoundRect(
-                            color = borderColor, // Specify the border color
-                            topLeft = Offset(i * (cellSize + cellPadding.toPx()), j * (cellSize + cellPadding.toPx())),
-                            size = Size(cellSize - cellPadding.toPx(), cellSize - cellPadding.toPx()),
-                            cornerRadius = CornerRadius(spacing.spaceExtraSmall.toPx()), // Use the same corner radius as the filled rectangle
-                            style = Stroke(width = 2.dp.toPx()) // Specify the border width
-                        )
-                    }
-                    index++
-                }
+                LineChart(state.graph1_repsPointsData)
+                Spacer(modifier = Modifier.height(spacing.spaceExtraExtraLarge))
             }
         }
     }
-}
-
-private fun getCellColor(
-    contributionCount: Int,
-    maxValue: Int,
-    startColor: Color,
-    endColor: Color
-): Color {
-    val fraction = contributionCount.toFloat() / maxValue.toFloat()
-    return lerp(startColor, endColor, fraction)
 }
