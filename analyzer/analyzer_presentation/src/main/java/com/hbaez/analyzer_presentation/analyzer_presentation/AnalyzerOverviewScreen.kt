@@ -301,58 +301,66 @@ fun AnalyzerOverviewScreen(
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.titleLarge
                 )
-                ExposedDropdownMenuBox(
-                    modifier = Modifier.fillMaxWidth(.66f).padding(start = spacing.spaceMedium),
-                    expanded = state.graph1_dropDownMenuExpanded,
-                    onExpandedChange = {
-                        viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownMenuClick)
-                    }
+                Row(
+                    Modifier.fillMaxWidth()
                 ) {
-                    OutlinedTextField(
-                        value = state.graph1_exerciseName,
-                        onValueChange = { viewModel.onEvent(AnalyzerEvent.OnExerciseNameChange(it)) },
-                        singleLine = true,
-                        keyboardActions = KeyboardActions(
-                            onSearch = {
-                                defaultKeyboardAction(ImeAction.Search)
-                            }
-                        ),
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Done,
-                        ),
-                        textStyle = TextStyle(MaterialTheme.colorScheme.onPrimaryContainer),
+                    ExposedDropdownMenuBox(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(5.dp))
-                            .padding(2.dp)
-                            .shadow(
-                                elevation = 2.dp,
-                                shape = RoundedCornerShape(5.dp)
-                            )
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                            .fillMaxWidth()
-                            .padding(end = spacing.spaceMedium)
-                            .menuAnchor(),
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.graph1_dropDownMenuExpanded)
-                        }
-                    )
-                    ExposedDropdownMenu(
+                            .fillMaxWidth(.66f)
+                            .padding(start = spacing.spaceMedium),
                         expanded = state.graph1_dropDownMenuExpanded,
-                        onDismissRequest = {
+                        onExpandedChange = {
                             viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownMenuClick)
                         }
                     ) {
-                        state.exerciseNameList.forEach { selectionOption ->
-                            DropdownMenuItem(
-                                text = { Text(text = selectionOption) },
-                                onClick = {
-                                    viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownMenuClick)
-                                    viewModel.onEvent(AnalyzerEvent.OnExerciseNameChange(selectionOption))
-                                    viewModel.onEvent(AnalyzerEvent.OnChooseExerciseGraphOne(selectionOption))
+                        OutlinedTextField(
+                            value = state.graph1_exerciseName,
+                            label = { Text(text = stringResource(id = R.string.exercise)) },
+                            onValueChange = { viewModel.onEvent(AnalyzerEvent.OnExerciseNameChange(it)) },
+                            singleLine = true,
+                            keyboardActions = KeyboardActions(
+                                onSearch = {
+                                    defaultKeyboardAction(ImeAction.Search)
                                 }
-                            )
+                            ),
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Done,
+                            ),
+                            textStyle = TextStyle(MaterialTheme.colorScheme.onPrimaryContainer),
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(5.dp))
+                                .padding(2.dp)
+                                .shadow(
+                                    elevation = 2.dp,
+                                    shape = RoundedCornerShape(5.dp)
+                                )
+                                .background(MaterialTheme.colorScheme.primaryContainer)
+                                .fillMaxWidth()
+                                .padding(end = spacing.spaceMedium)
+                                .menuAnchor(),
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.graph1_dropDownMenuExpanded)
+                            }
+                        )
+                        ExposedDropdownMenu(
+                            expanded = state.graph1_dropDownMenuExpanded,
+                            onDismissRequest = {
+                                viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownMenuClick)
+                            }
+                        ) {
+                            state.exerciseNameList.forEach { selectionOption ->
+                                DropdownMenuItem(
+                                    text = { Text(text = selectionOption) },
+                                    onClick = {
+                                        viewModel.onEvent(AnalyzerEvent.OnGraphOneDropDownMenuClick)
+                                        viewModel.onEvent(AnalyzerEvent.OnExerciseNameChange(selectionOption))
+                                        viewModel.onEvent(AnalyzerEvent.OnChooseExerciseGraphOne(selectionOption))
+                                    }
+                                )
+                            }
                         }
                     }
+                    
                 }
                 LineChart(state.graph1_repsPointsData)
                 Spacer(modifier = Modifier.height(spacing.spaceExtraExtraLarge))
