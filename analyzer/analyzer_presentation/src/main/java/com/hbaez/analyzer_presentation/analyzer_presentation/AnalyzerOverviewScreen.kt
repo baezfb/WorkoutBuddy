@@ -276,7 +276,7 @@ fun AnalyzerOverviewScreen(
                         ) {
                             onNavigateToWorkoutOverview(state.currentActivityDate.plusDays(6L))
                         }
-                        Spacer(modifier = Modifier.height(spacing.spaceSmall))
+                        Spacer(modifier = Modifier.height(spacing.spaceMedium))
                     }
                 }
             }
