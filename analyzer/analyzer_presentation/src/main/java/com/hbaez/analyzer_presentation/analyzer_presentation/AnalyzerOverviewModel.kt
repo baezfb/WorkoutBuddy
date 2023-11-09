@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -55,8 +56,16 @@ class AnalyzerOverviewModel @Inject constructor(
             val activityList = MutableList(52) { 0 } // 52 weeks
             storageService.calendarDates.first().calendarDates.forEach {
                 val currDate = LocalDate.parse(it)
-                val index = CalculateActivityIndexFromDate(currDate, state.date)
-                activityList[index] += 1
+                Log.println(Log.DEBUG, "currDate, state.date", currDate.toString() + "  " + state.date.toString())
+                if(currDate.isAfter(state.date)) {
+                    val index = 51
+                    activityList[index] += 1
+                }
+                else {
+                    val index = CalculateActivityIndexFromDate(currDate, state.date)
+                    Log.println(Log.DEBUG, "index", index.toString())
+                    activityList[index] += 1
+                }
             }
             state = state.copy(
                 activityCountList = activityList

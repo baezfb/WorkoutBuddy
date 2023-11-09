@@ -7,6 +7,6 @@ fun CalculateActivityIndexFromDate(
     date: LocalDate,
     endDate: LocalDate
 ): Int {
-    val weeksBetween = ChronoUnit.WEEKS.between(date, endDate)
-    return 51 - weeksBetween.toInt()
+    val weeksBetween = ChronoUnit.WEEKS.between(date, endDate.minusDays(1))
+    return 50 - weeksBetween.toInt()
 }

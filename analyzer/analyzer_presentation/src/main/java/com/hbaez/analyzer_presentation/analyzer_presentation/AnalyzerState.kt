@@ -6,7 +6,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 
 data class AnalyzerState(
-    val date: LocalDate = LocalDate.now(),
+    val date: LocalDate = LocalDate.now().minusDays((LocalDate.now().dayOfWeek.value - (DayOfWeek.MONDAY.value)).toLong()),
     val currentActivityIndex: Int = 51,
     val currentActivityDate: LocalDate = date.with(DayOfWeek.MONDAY).minusDays((51 - currentActivityIndex) * 7L),
     val activityCountList: List<Int> = List(52) { 0 },
