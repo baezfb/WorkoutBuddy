@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -30,6 +32,12 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val properties = Properties().apply {
+            load(project.rootProject.file("local.properties").inputStream())
+        }
+        val openAiKey = properties.getProperty("OPENAI_KEY") ?: "NoKey"
+        buildConfigField("String", "OPENAI_KEY", "\"$openAiKey\"")
     }
 
     buildTypes {
@@ -39,6 +47,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -146,4 +155,6 @@ dependencies {
 //    androidTestImplementation(Testing.testRunner)
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.17.0")
+
+    implementation("co.yml:ychat:1.4.1")
 }

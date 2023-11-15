@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -27,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -39,8 +41,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.wear.remote.interactions.RemoteActivityHelper
+import co.yml.ychat.domain.model.ChatMessage
 import coil.annotation.ExperimentalCoilApi
 import com.example.chatbot_presentation.chat_overview.ChatScreen
+import com.example.chatbot_presentation.chat_overview.model.ChatDefaults
+import com.example.chatbot_presentation.chat_overview.theme.DefaultColors
 import com.example.workout_logger_presentation.create_exercise.CreateExerciseScreen
 import com.example.workout_logger_presentation.create_workout.CreateWorkoutScreen
 import com.example.workout_logger_presentation.search_exercise.SearchExerciseScreen
@@ -155,11 +160,11 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                                         route = Route.ANALYZER_OVERVIEW,
                                         icon = Icons.Default.Person
                                     ),
-//                                    BottomNavItem(
-//                                        name = "Chat",
-//                                        route = Route.CHAT_BOT,
-//                                        icon = Icons.Default.Face
-//                                    ),
+                                    BottomNavItem(
+                                        name = "Chat",
+                                        route = Route.CHAT_BOT,
+                                        icon = Icons.Default.Face
+                                    ),
                                     BottomNavItem(
                                         name = "Settings",
                                         route = Route.APP_SETTINGS,
@@ -624,7 +629,35 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                             )
                         }
                         composable(Route.CHAT_BOT) {
-                            ChatScreen()
+                            ChatScreen(
+                                apiKey = BuildConfig.OPENAI_KEY,
+                                chatDefaults = ChatDefaults(
+                                    defaultColors = DefaultColors(
+                                        backgroundColor = MaterialTheme.colorScheme.background,
+                                        userBalloonColor = MaterialTheme.colorScheme.primaryContainer,
+                                        userBalloonTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        botBalloonColor = MaterialTheme.colorScheme.primary,
+                                        botBalloonTextColor = MaterialTheme.colorScheme.onPrimary,
+                                        inputFieldBackgroundColor = MaterialTheme.colorScheme.surface,
+                                        inputFieldTextColor = MaterialTheme.colorScheme.onSurface,
+                                        inputFieldHintColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        inputFieldFocusedIndicatorColor = MaterialTheme.colorScheme.onBackground,
+                                        inputFieldUnfocusedIndicatorColor = MaterialTheme.colorScheme.onBackground,
+                                        cursorColor = MaterialTheme.colorScheme.onBackground,
+                                        sendButtonColor = MaterialTheme.colorScheme.secondary,
+                                        dividerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.12F),
+                                        loadingTextColor = MaterialTheme.colorScheme.background.copy(alpha = 0.30F),
+                                        errorTextColor = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.60F),
+                                    ),
+                                    preSeededMessages = arrayListOf(
+                                        ChatMessage(
+                                            role = "system",
+                                            content = String.format(stringResource(id = R.string.chatgpt_preseed_msg), 23, "male", "beginner", 69, 190, "low", "lose", "upper body")
+                                        )
+                                    ),
+                                    isLogErrorEnabled = true
+                                )
+                            )
                         }
                     }
                 }

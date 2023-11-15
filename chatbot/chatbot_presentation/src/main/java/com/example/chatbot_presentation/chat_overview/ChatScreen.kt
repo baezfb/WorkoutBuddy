@@ -1,51 +1,122 @@
 package com.example.chatbot_presentation.chat_overview
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.hbaez.core.R
-import com.hbaez.core_ui.LocalSpacing
-import com.hexascribe.chatbotbuilder.ChatBot
-import com.hexascribe.chatbotbuilder.base.RoleEnum
+import com.example.chatbot_presentation.chat_overview.components.BalloonBotMessage
+import com.example.chatbot_presentation.chat_overview.components.BalloonBotTyping
+import com.example.chatbot_presentation.chat_overview.components.BalloonUserMessage
+import com.example.chatbot_presentation.chat_overview.components.SendInputField
+import com.example.chatbot_presentation.chat_overview.model.ChatDefaults
+import com.example.chatbot_presentation.chat_overview.model.MessageType
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Divider
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.unit.dp
+import co.yml.ychat.YChat
+import com.hbaez.core_ui.LocalSpacing
+
 @Composable
 fun ChatScreen(
-    viewModel: ChatViewModel = hiltViewModel()
-){
+    apiKey: String,
+    chatDefaults: ChatDefaults = ChatDefaults(),
+    chatState: ChatState = rememberChatState(apiKey, chatDefaults),
+) {
     val spacing = LocalSpacing.current
-    val state = viewModel.state
-    Scaffold(
-        content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = spacing.spaceExtraLarge + spacing.spaceSmall)
-            ) {
-                val chatBot = ChatBot.Builder("PLACEHOLDER")
-                    .addMessage(RoleEnum.ASSISTANT, "Hi, how can I help you today?")
-                    .addPreSeededMessage(RoleEnum.SYSTEM, "You are a helpful personal trainer")
-                    .addPreSeededMessage(RoleEnum.SYSTEM, String.format(stringResource(id = R.string.chatgpt_preseed_msg), 23, "male", "beginner", 69, 190, "low", "lose", "upper body"))
-                    .setInputFieldBorderWidth(1)
-                    .build()
-                chatBot.ComposeScreen()
+    Column(
+        Modifier
+            .background(chatDefaults.colors.backgroundColor)
+            .fillMaxHeight()
+            .padding(bottom = spacing.spaceExtraExtraLarge)
+    ) {
+        val scrollState = rememberLazyListState()
+        val messages = chatState.messages
+        LazyColumn(
+            state = scrollState,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier
+                .weight(1F)
+                .padding(horizontal = 8.dp),
+        ) {
+            item { Spacer(modifier = Modifier.padding(top = 16.dp)) }
+            items(messages) { item ->
+                when (item) {
+                    is MessageType.User ->
+                        BalloonUserMessage(
+                            item.text,
+                            chatDefaults,
+                            item.isError,
+                            onTryAgain = { chatState.onTryAgain(it) }
+                        )
+
+                    is MessageType.Bot ->
+                        BalloonBotMessage(item.text, chatDefaults)
+
+                    is MessageType.Loading ->
+                        BalloonBotTyping(chatDefaults)
+                }
             }
         }
+        SenderMessageSection(chatState, chatDefaults)
+    }
+}
+
+@Composable
+private fun SenderMessageSection(
+    chatState: ChatState,
+    chatDefaults: ChatDefaults
+) {
+    Box {
+        Divider(color = chatDefaults.colors.dividerColor)
+        SendInputField(
+            value = chatState.message.value,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            chatDefaults = chatDefaults,
+            isButtonVisible = chatState.onButtonVisible.value,
+            hint = chatDefaults.inputFieldHint,
+            onTextChanged = { chatState.onMessage(it) },
+            onButtonClick = { chatState.sendMessage() }
+        )
+    }
+}
+
+@Composable
+private fun rememberChatState(
+    apiKey: String,
+    chatDefaults: ChatDefaults,
+): ChatState {
+    val yChat = YChat.create(apiKey)
+    val coroutine = rememberCoroutineScope()
+    val chatState =
+        ChatState(chatDefaults, yChat, coroutine)
+    return remember { chatState }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppBar(title: String) {
+    TopAppBar(
+        title = { Text(text = title) },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            titleContentColor = MaterialTheme.colorScheme.onSecondary
+        )
     )
 }
-//
-//@Composable
-//fun AppBar(title: String) {
-//    TopAppBar(
-//        title = { Text(text = title) },
-//        colors = TopAppBarColors(
-//            MaterialTheme.colors.primary,
-//        contentColor = MaterialTheme.colors.onSecondary
-//    )
-//}

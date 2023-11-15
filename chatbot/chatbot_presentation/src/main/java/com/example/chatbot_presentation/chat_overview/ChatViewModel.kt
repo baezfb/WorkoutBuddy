@@ -18,8 +18,8 @@ class ChatViewModel @Inject constructor(
     logService: LogService
 ): AuthViewModel(logService) {
 
-    var state by mutableStateOf(ChatState())
-        private set
+//    var state by mutableStateOf(ChatState())
+//        private set
 
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
