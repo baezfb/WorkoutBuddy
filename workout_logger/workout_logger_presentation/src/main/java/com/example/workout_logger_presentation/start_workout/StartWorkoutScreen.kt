@@ -2,6 +2,7 @@ package com.example.workout_logger_presentation.start_workout
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -34,10 +36,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -54,6 +58,7 @@ import com.google.accompanist.pager.rememberPagerState
 import com.hbaez.core.util.UiEvent
 import com.hbaez.core_ui.LocalSpacing
 import com.hbaez.user_auth_presentation.model.WorkoutTemplate
+import com.hbaez.workout_logger_presentation.R
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.Month
@@ -191,15 +196,17 @@ fun StartWorkoutScreen(
                                 overflow = TextOverflow.Ellipsis,
                                 maxLines = 1,
                                 style = MaterialTheme.typography.displaySmall,
-                                modifier = Modifier.fillMaxWidth(.75f)
+                                modifier = Modifier
+                                    .fillMaxWidth(.75f)
+                                    .clickable {
+                                        showExerciseInfoDialog.value = true
+                                    }
                             )
                             Spacer(modifier = Modifier.width(spacing.spaceSmall))
-                            IconButton(
-                                onClick = {
-                                    showExerciseInfoDialog.value = true
-                                },
-                                icon = Icons.Outlined.Info,
-                                padding = 0.dp
+                            Image(
+                                painter = painterResource(id = com.hbaez.core.R.drawable.find_replace),
+                                contentDescription = "find_replace image",
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground)
                             )
                         }
                         else if(currentExercise.size > 1){
