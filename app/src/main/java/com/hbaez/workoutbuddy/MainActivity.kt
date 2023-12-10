@@ -405,6 +405,7 @@ class MainActivity : ComponentActivity(), OnCapabilityChangedListener {
                             val year = it.arguments?.getInt("year")!!
 //                            val workoutIds = it.arguments?.getString("workoutIds")!!
                             StartWorkoutScreen(
+                                snackbarHostState = snackbarHostState,
                                 workoutName = workoutName,
                                 dayOfMonth = dayOfMonth,
                                 month = month,

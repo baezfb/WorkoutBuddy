@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,6 +28,9 @@ import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +53,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.annotation.ExperimentalCoilApi
 import com.example.workout_logger_presentation.components.ExerciseInfoDialog
 import com.example.workout_logger_presentation.components.IconButton
+import com.example.workout_logger_presentation.search_exercise.SearchExerciseScreen
 import com.example.workout_logger_presentation.start_workout.components.Timer
 import com.example.workout_logger_presentation.start_workout.components.ExerciseCard
 import com.example.workout_logger_presentation.start_workout.components.NotificationUtil
@@ -64,10 +69,11 @@ import java.time.Duration
 import java.time.Month
 
 @RequiresApi(Build.VERSION_CODES.S)
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
 @ExperimentalCoilApi
 @Composable
 fun StartWorkoutScreen(
+    snackbarHostState: SnackbarHostState,
     workoutName: String,
     dayOfMonth: Int,
     month: Int,
@@ -86,6 +92,7 @@ fun StartWorkoutScreen(
     val count = state.routineWorkoutTemplate.distinctBy { it.position }.size
     val showExerciseInfoDialog = remember { mutableStateOf(false) }
     val showExerciseInfoDialogSuperset = remember { mutableStateOf(false) }
+    val showSearchExerciseBottomSheet = remember { mutableStateOf(false) }
     workoutTemplates.value.forEach {
         if(it.name == workoutName){
             workoutExerciseNames[it.position] = it.exerciseName
@@ -131,6 +138,23 @@ fun StartWorkoutScreen(
             },
             onDismiss = { showExerciseInfoDialogSuperset.value = false })
     }
+    if(showSearchExerciseBottomSheet.value) {
+        ModalBottomSheet(
+            modifier = Modifier.fillMaxHeight(),
+            onDismissRequest = {
+                showSearchExerciseBottomSheet.value = !showSearchExerciseBottomSheet.value
+            }
+        ) {
+            SearchExerciseScreen(
+                snackBarHost = snackbarHostState,
+                rowId = pagerState.currentPage,
+                onNavigateUp = {
+                    showSearchExerciseBottomSheet.value = !showSearchExerciseBottomSheet.value
+                    viewModel.onEvent(StartWorkoutEvent.ReplaceExercise)
+                }
+            )
+        }
+    }
     Scaffold(
         topBar = {
             Row(
@@ -172,7 +196,7 @@ fun StartWorkoutScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 count = count,
                 contentPadding = PaddingValues(spacing.spaceSmall)
-            ) {page ->
+            ) { page ->
                 if(pagerState.targetPage != pagerState.currentPage){
                     viewModel.onEvent(StartWorkoutEvent.OnChangePage(pagerState.targetPage))
                 }
@@ -190,9 +214,9 @@ fun StartWorkoutScreen(
                             style = MaterialTheme.typography.displaySmall
                         )
                         Spacer(modifier = Modifier.width(spacing.spaceSmall))
-                        if(currentExercise.size == 1){
+                        if(currentLoggerState.size == 1){
                             Text(
-                                text = currentExercise.first().exerciseName,
+                                text = state.loggerListStates.first { it.position == page }.exerciseName,
                                 overflow = TextOverflow.Ellipsis,
                                 maxLines = 1,
                                 style = MaterialTheme.typography.displaySmall,
@@ -206,7 +230,11 @@ fun StartWorkoutScreen(
                             Image(
                                 painter = painterResource(id = com.hbaez.core.R.drawable.find_replace),
                                 contentDescription = "find_replace image",
-                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground)
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
+                                modifier = Modifier
+                                    .clickable {
+                                        showSearchExerciseBottomSheet.value = true
+                                    }
                             )
                         }
                         else if(currentExercise.size > 1){

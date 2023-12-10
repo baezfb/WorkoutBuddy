@@ -375,6 +375,23 @@ class StartWorkoutViewModel @Inject constructor(
                     }.toMutableList()
                 )
             }
+
+            is StartWorkoutEvent.ReplaceExercise -> {
+                val newExercise = preferences.loadTrackedExercise()
+                if(newExercise.rowId != -1) {
+                    state = state.copy(
+                        loggerListStates = state.loggerListStates.map {
+                            if(it.position == newExercise.rowId) {
+                                it.copy(
+                                    exerciseName = newExercise.name,
+                                    exerciseId = newExercise.id
+                                )
+                            } else it
+                        }.toMutableList()
+                    )
+                    onEvent(StartWorkoutEvent.GetExerciseInfo(newExercise.rowId))
+                }
+            }
         }
     }
 
