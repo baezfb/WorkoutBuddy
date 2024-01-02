@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.unit.dp
 import co.yml.ychat.YChat
+import com.example.chatbot_presentation.chat_overview.components.BalloonUserButton
 import com.hbaez.core_ui.LocalSpacing
 
 @Composable
@@ -71,6 +72,15 @@ fun ChatScreen(
 
                     is MessageType.Loading ->
                         BalloonBotTyping(chatDefaults)
+
+                    is MessageType.UserButton -> {
+                        BalloonUserButton(
+                            text = item.text,
+                            chatDefaults = chatDefaults,
+                            onClick = {
+
+                            })
+                    }
                 }
             }
         }

@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -113,6 +114,52 @@ internal fun BalloonBotMessage(
                     .padding(vertical = 8.dp),
                 color = chatDefaults.colors.botBalloonTextColor,
                 style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+internal fun BalloonUserButton(
+    text: String,
+    chatDefaults: ChatDefaults = ChatDefaults(),
+    onClick: () -> Unit = {}
+) {
+    Column(
+        Modifier
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                modifier = Modifier
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = 16.dp,
+                            topEnd = 16.dp,
+                            bottomStart = 16.dp,
+                        )
+                    )
+                    .clickable { onClick() }
+                    .background(chatDefaults.colors.backgroundColor)
+                    .border(2.dp, chatDefaults.colors.userBalloonTextColor, RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 16.dp))
+                    .padding(horizontal = 16.dp)
+                    .padding(vertical = 8.dp),
+                text = text,
+                style = MaterialTheme.typography.bodyMedium,
+                color = chatDefaults.colors.userBalloonTextColor
+            )
+        }
+        AnimatedVisibility(visible = true, enter = scaleIn(), exit = scaleOut()) {
+            Text(
+                chatDefaults.suggestionText,
+                style = MaterialTheme.typography.labelSmall,
+                color = chatDefaults.colors.errorTextColor,
             )
         }
     }

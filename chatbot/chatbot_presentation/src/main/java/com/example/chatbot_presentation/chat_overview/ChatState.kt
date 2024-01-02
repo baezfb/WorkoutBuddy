@@ -94,6 +94,8 @@ class ChatState(
             else null
         }
         this.messages.addAll(chatMessages)
+        this.messages.add(MessageType.Bot("Hello! How can I assist you today?"))
+        this.messages.add(MessageType.UserButton("Recommend a workout routine"))
     }
 
     private fun verifyButtonVisible() {

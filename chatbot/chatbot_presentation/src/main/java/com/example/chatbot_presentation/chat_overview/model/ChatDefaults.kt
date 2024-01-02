@@ -24,6 +24,7 @@ data class ChatDefaults(
     var preSeededMessages: ArrayList<ChatMessage> = ArrayList(),
     var messages: ArrayList<ChatMessage> = ArrayList(),
     var errorText: String = "Not Delivered. Tap to try again.",
+    var suggestionText: String = "Suggestion.",
     var loadingText: String = "Typing",
     var inputFieldBorderWidth: Int = 1,
     var inputFieldCornerRadius: Int = 8,
