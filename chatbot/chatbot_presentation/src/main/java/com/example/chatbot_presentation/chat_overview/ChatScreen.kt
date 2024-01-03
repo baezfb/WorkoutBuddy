@@ -30,15 +30,19 @@ import androidx.compose.material3.Divider
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import co.yml.ychat.YChat
+import com.example.chatbot_presentation.chat_overview.components.BalloonRoutineForm
 import com.example.chatbot_presentation.chat_overview.components.BalloonUserButton
 import com.hbaez.core_ui.LocalSpacing
+import kotlinx.coroutines.flow.first
 
 @Composable
 fun ChatScreen(
     apiKey: String,
     chatDefaults: ChatDefaults = ChatDefaults(),
     chatState: ChatState = rememberChatState(apiKey, chatDefaults),
+    viewModel: ChatViewModel = hiltViewModel()
 ) {
     val spacing = LocalSpacing.current
     Column(
@@ -78,8 +82,14 @@ fun ChatScreen(
                             text = item.text,
                             chatDefaults = chatDefaults,
                             onClick = {
-
+                                /*TODO*/
                             })
+                    }
+
+                    is MessageType.RoutineForm -> {
+                        if (viewModel.workoutNames.isNotEmpty()) {
+                            BalloonRoutineForm(viewModel.workoutNames, chatDefaults)
+                        }
                     }
                 }
             }

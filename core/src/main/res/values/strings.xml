@@ -183,4 +183,6 @@
     <string name="workout_buddy_mobile_wear_screen">Wear Companion</string>
     <string name="google_web_client_id">671045417709-ptmqk08pbpodn73km2qih085m8fs48i7.apps.googleusercontent.com</string>
     <string name="chatgpt_preseed_msg">"Your user is a %d year old %s, with a %s fitness level, that measures %d inches in height, weighs %d pounds, has a %s physical activity level, and wants to %s weight."</string>
+    <string name="update_question">"Update?"</string>
+    <string name="fill_out_form_bot_message">"Sure! Please take a moment to provide the following information:"</string>
 </resources>
