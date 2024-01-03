@@ -21,19 +21,62 @@ class ChatViewModel @Inject constructor(
     private val storageService: StorageService,
     logService: LogService
 ): AuthViewModel(logService) {
+    var routineFormState by mutableStateOf(RoutineFormState())
+        private set
 
 //    var state by mutableStateOf(ChatState())
 //        private set
+
     var workoutNames: List<String> = emptyList()
-
     private val _uiEvent = Channel<UiEvent>()
-    val uiEvent = _uiEvent.receiveAsFlow()
 
+    val uiEvent = _uiEvent.receiveAsFlow()
     init {
         viewModelScope.launch {
             workoutNames = storageService.workouts.first().map {
                 it.name
             }.distinct()
+        }
+    }
+
+    fun onEvent(event: ChatEvent) {
+        when(event) {
+            is ChatEvent.OnCheckboxFormAdd -> {
+                routineFormState = if(event.isPrimary) {
+                    routineFormState.copy(
+                        primaryMuscles = routineFormState.primaryMuscles + event.muscle
+                    )
+                } else {
+                    routineFormState.copy(
+                        secondaryMuscles = routineFormState.secondaryMuscles + event.muscle
+                    )
+                }
+            }
+            is ChatEvent.OnCheckboxFormRemove -> {
+                routineFormState = if(event.isPrimary){
+                    val tmp = routineFormState.primaryMuscles.toMutableList()
+                    tmp.remove(event.muscle)
+                    routineFormState.copy(
+                        primaryMuscles = tmp
+                    )
+                } else {
+                    val tmp = routineFormState.secondaryMuscles.toMutableList()
+                    tmp.remove(event.muscle)
+                    routineFormState.copy(
+                        secondaryMuscles = tmp
+                    )
+                }
+            }
+            is ChatEvent.OnGoalTypeSelect -> {
+                routineFormState = routineFormState.copy(
+                    weightGoalType = event.goalType
+                )
+            }
+            is ChatEvent.OnTimeLimitSelect -> {
+                routineFormState = routineFormState.copy(
+                    timeLimit = event.timeLimit
+                )
+            }
         }
     }
 }

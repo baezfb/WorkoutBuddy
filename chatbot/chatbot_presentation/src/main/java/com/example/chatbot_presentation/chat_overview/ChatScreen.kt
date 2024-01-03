@@ -88,7 +88,10 @@ fun ChatScreen(
 
                     is MessageType.RoutineForm -> {
                         if (viewModel.workoutNames.isNotEmpty()) {
-                            BalloonRoutineForm(viewModel.workoutNames, chatDefaults)
+                            BalloonRoutineForm(
+                                viewModel.workoutNames,
+                                viewModel,
+                                chatDefaults)
                         }
                     }
                 }

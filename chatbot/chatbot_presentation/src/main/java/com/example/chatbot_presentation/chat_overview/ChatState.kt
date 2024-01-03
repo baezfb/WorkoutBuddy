@@ -8,13 +8,45 @@ import com.example.chatbot_presentation.chat_overview.base.PlatformLogger.logErr
 import com.example.chatbot_presentation.chat_overview.base.RoleEnum
 import com.example.chatbot_presentation.chat_overview.model.ChatDefaults
 import com.example.chatbot_presentation.chat_overview.model.MessageType
+import com.hbaez.core.domain.model.GoalType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+
+data class Muscle(
+    val name: String,
+    val imageURL: String,
+    val isFront: Boolean
+)
+
+data class RoutineFormState(
+    val primaryMuscles: List<Muscle> = emptyList(),
+    val secondaryMuscles: List<Muscle> = emptyList(),
+    val weightGoalType: GoalType = GoalType.KeepWeight,
+    val timeLimit: Int = 60,
+    val muscles: List<Muscle> = listOf(
+        Muscle("Anterior deltoid", "/static/images/muscles/main/muscle-2.svg", true),
+        Muscle("Biceps brachii", "/static/images/muscles/main/muscle-1.svg", true),
+        Muscle("Biceps femoris", "/static/images/muscles/main/muscle-11.svg", false),
+        Muscle("Brachialis", "/static/images/muscles/main/muscle-13.svg", true),
+        Muscle("Gastrocnemius", "/static/images/muscles/main/muscle-7.svg", false),
+        Muscle("Gluteus maximus", "/static/images/muscles/main/muscle-8.svg", false),
+        Muscle("Latissimus dorsi", "/static/images/muscles/main/muscle-12.svg", false),
+        Muscle("Obliquus externus abdominis", "/static/images/muscles/main/muscle-14.svg", true),
+        Muscle("Pectoralis major", "/static/images/muscles/main/muscle-4.svg", true),
+        Muscle("Quadriceps femoris", "/static/images/muscles/main/muscle-10.svg", true),
+        Muscle("Rectus abdominis", "/static/images/muscles/main/muscle-6.svg", true),
+        Muscle("Serratus anterior", "/static/images/muscles/main/muscle-3.svg", true),
+        Muscle("Soleus", "/static/images/muscles/main/muscle-15.svg", false),
+        Muscle("Trapezius", "/static/images/muscles/main/muscle-9.svg", false),
+        Muscle("Triceps brachii", "/static/images/muscles/main/muscle-5.svg", false)
+    ),
+
+    )
 
 class ChatState(
     private val chatDefaults: ChatDefaults,
     private val yChat: YChat,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
 ) {
 
     val message = mutableStateOf("")

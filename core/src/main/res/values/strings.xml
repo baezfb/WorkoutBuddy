@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">WorkoutLogger</string>
     <string name="error_unknown">Unknown error</string>
     <string name="welcome_text">Hello! Let\'s find out more about you :)</string>
@@ -183,6 +183,11 @@
     <string name="workout_buddy_mobile_wear_screen">Wear Companion</string>
     <string name="google_web_client_id">671045417709-ptmqk08pbpodn73km2qih085m8fs48i7.apps.googleusercontent.com</string>
     <string name="chatgpt_preseed_msg">"Your user is a %d year old %s, with a %s fitness level, that measures %d inches in height, weighs %d pounds, has a %s physical activity level, and wants to %s weight."</string>
-    <string name="update_question">"Update?"</string>
-    <string name="fill_out_form_bot_message">"Sure! Please take a moment to provide the following information:"</string>
+    <string name="update_question">"Update existing routine?"</string>
+    <string name="target_muscle_group">"Target muscle groups:"</string>
+    <string name="time_limit">"Time limit (minutes)"</string>
+    <string name="time_limit_low">"30"</string>
+    <string name="time_limit_med">"60"</string>
+    <string name="time_limit_hi">"90"</string>
+    <string name="fill_out_form_bot_message">"Sure! Please take a moment to provide the following information…"</string>
 </resources>
